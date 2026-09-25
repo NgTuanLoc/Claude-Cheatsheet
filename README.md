@@ -10,7 +10,7 @@ Self-contained HTML cheat sheets. Each file is a single page with its own styles
 
 ## Viewing
 
+- **Online:** https://ngtuanloc.github.io/Claude-Cheatsheet/ — every push to `main` redeploys via the `Deploy to GitHub Pages` workflow. One-time setup: Settings → Pages → Source: **GitHub Actions**.
 - **Locally:** open any `.html` file in a browser.
-- **GitHub Pages:** enable Pages for this repository (Settings → Pages → deploy from branch) and the files are served as-is.
 
 Fonts load from Google Fonts; everything else is inline. Light and dark themes follow the system setting and can be toggled on each page.

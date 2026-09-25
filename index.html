@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Cheatsheet Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Spline+Sans:wght@400;600&family=Spline+Sans+Mono:wght@600&display=swap">
+<style>
+:root{--bg:#ffffff;--surface:#faf8f4;--ink:#1d1a16;--ink-2:#4f4940;--ink-3:#81796d;--line:#ebe5da;--accent:#95600a;--accent-fill:#e3a234;--accent-soft:#fbf1dc}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15120e;--surface:#1c1813;--ink:#f2ede5;--ink-2:#c9c1b4;--ink-3:#9a9184;--line:#2d271f;--accent:#ebb65c;--accent-fill:#e3a234;--accent-soft:#34270f}}
+:root[data-theme="dark"]{--bg:#15120e;--surface:#1c1813;--ink:#f2ede5;--ink-2:#c9c1b4;--ink-3:#9a9184;--line:#2d271f;--accent:#ebb65c;--accent-fill:#e3a234;--accent-soft:#34270f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Spline Sans',system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:56px 16px 80px}
+.eyebrow{font:600 11px/1.4 'Spline Sans Mono',ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font:600 clamp(2.2rem,6vw,3.2rem)/1.05 Fraunces,Georgia,serif;letter-spacing:-.02em;margin:.3em 0 .4em}
+.lede{color:var(--ink-2);margin:0 0 32px;max-width:60ch}
+ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:16px 18px}
+a.card:hover,a.card:focus-visible{border-color:var(--accent-fill);background:var(--accent-soft);outline:none}
+.card h2{font:600 1.3rem/1.2 Fraunces,Georgia,serif;margin:0 0 4px}
+.card p{margin:0;color:var(--ink-2);font-size:15px}
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Cheatsheet library</p>
+  <h1>Cheatsheets</h1>
+  <p class="lede">Reference pages for .NET and production engineering. Each one is a single self-contained page with search, diagrams and light/dark themes.</p>
+  <ul>
+    <li><a class="card" href="dotnet-cheatsheet.html"><h2>.NET Cheatsheet</h2><p>Copy-paste C#, ASP.NET Core and data-access patterns for .NET 10 LTS and C# 14.</p></a></li>
+    <li><a class="card" href="failure-modes-and-fixes.html"><h2>Failure Modes &amp; Fixes</h2><p>Production bugs as a lookup table: symptom, broken/fixed diagram, fix, and how to detect it.</p></a></li>
+    <li><a class="card" href="eighteen-shapes.html"><h2>Eighteen Shapes</h2><p>The eighteen mechanisms behind a hundred bugs, with a review question for each.</p></a></li>
+  </ul>
+</main>
+</body>
+</html>
