@@ -1,0 +1,1342 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Eighteen Shapes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Spline+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#ffffff; --surface:#faf8f4; --surface-2:#f3efe7;
+  --ink:#1d1a16; --ink-2:#4f4940; --ink-3:#81796d;
+  --line:#ebe5da; --line-2:#d8d0c1;
+  --accent:#95600a; --accent-fill:#e3a234; --accent-soft:#fbf1dc; --on-accent:#1d1a16;
+  --rose:#bb1a4f; --rose-soft:#fdebf0;
+  --teal:#0a766b; --teal-soft:#e2f3f0;
+  --violet:#6a3ed2; --violet-soft:#efe9fd;
+  --amber:#a86400; --amber-soft:#fdf1dc;
+  --sky:#1d6aab; --sky-soft:#e6f0fa;
+  --code-bg:#f8f5ef;
+  --shadow:0 1px 2px rgba(40,30,10,.05),0 6px 22px rgba(40,30,10,.07);
+  --f-serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --f-sans:'Spline Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:'Spline Sans Mono',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ color-scheme:dark;
+    --bg:#15120e; --surface:#1c1813; --surface-2:#262019;
+    --ink:#f2ede5; --ink-2:#c9c1b4; --ink-3:#9a9184;
+    --line:#2d271f; --line-2:#3f372c;
+    --accent:#ebb65c; --accent-fill:#e3a234; --accent-soft:#34270f; --on-accent:#15120e;
+    --rose:#ff7d9c; --rose-soft:#3b1723;
+    --teal:#52d3c0; --teal-soft:#0f302b;
+    --violet:#b9a0ff; --violet-soft:#2a2044;
+    --amber:#f4ab3e; --amber-soft:#36270d;
+    --sky:#72b6f3; --sky-soft:#12283e;
+    --code-bg:#1a1611;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 26px rgba(0,0,0,.3);
+    --tk-kw:#c6a6ff; --tk-str:#72dccb; --tk-com:#8e8578; --tk-num:#f6a660; --tk-type:#82c1f6; --tk-fn:#ebb65c; --tk-at:#ff92ad; } }
+:root[data-theme="dark"]{ color-scheme:dark;
+    --bg:#15120e; --surface:#1c1813; --surface-2:#262019;
+    --ink:#f2ede5; --ink-2:#c9c1b4; --ink-3:#9a9184;
+    --line:#2d271f; --line-2:#3f372c;
+    --accent:#ebb65c; --accent-fill:#e3a234; --accent-soft:#34270f; --on-accent:#15120e;
+    --rose:#ff7d9c; --rose-soft:#3b1723;
+    --teal:#52d3c0; --teal-soft:#0f302b;
+    --violet:#b9a0ff; --violet-soft:#2a2044;
+    --amber:#f4ab3e; --amber-soft:#36270d;
+    --sky:#72b6f3; --sky-soft:#12283e;
+    --code-bg:#1a1611;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 26px rgba(0,0,0,.3);
+    --tk-kw:#c6a6ff; --tk-str:#72dccb; --tk-com:#8e8578; --tk-num:#f6a660; --tk-type:#82c1f6; --tk-fn:#ebb65c; --tk-at:#ff92ad; }
+
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-sans);font-feature-settings:"ss01"}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent-fill);outline-offset:2px;border-radius:5px}
+code,kbd{font-family:var(--f-mono)}
+svg{flex:none}
+
+/* ---------- layout ---------- */
+.app{display:grid;grid-template-columns:268px minmax(0,1fr);gap:clamp(20px,3vw,44px);padding-inline:clamp(16px,2.4vw,36px);max-width:1320px;margin:0 auto}
+.side{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;height:100dvh;overflow-y:auto;padding-block:22px 48px;padding-right:14px;border-right:1px solid var(--line);scrollbar-width:thin}
+.side-brand{font:600 1.12rem/1.15 var(--f-serif);letter-spacing:-.01em;margin:0 0 3px 6px}
+.side-meta{margin:0 0 14px 6px;font:500 11px/1.4 var(--f-mono);color:var(--ink-3)}
+.nav-i{display:flex;gap:9px;width:100%;background:none;border:0;padding:5px 8px;font-size:13px;color:var(--ink-2);text-align:left;cursor:pointer;border-radius:6px;line-height:1.35}
+.nav-i .c{font:600 10.5px/1.6 var(--f-mono);color:var(--ink-3);flex:none;width:18px}
+.nav-i:hover{background:var(--surface-2);color:var(--ink)}
+.nav-i.on{background:var(--accent-soft);color:var(--ink);box-shadow:inset 2px 0 0 var(--accent-fill)}
+.nav-i.on .c{color:var(--accent)}
+.nav-i.nav-top{font-weight:600;color:var(--ink);margin-bottom:6px}
+.nav-i.nav-top .c{color:var(--accent)}
+.nav-sep{margin:12px 8px 6px;font:600 10px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.main{min-width:0;padding-block:0 96px}
+.scrim{position:fixed;inset:0;background:rgba(20,15,8,.42);z-index:40}
+
+/* ---------- toolbar ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);background:color-mix(in srgb,var(--bg) 93%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;padding-block:10px;flex-wrap:wrap}
+.tbtn.menu-btn{display:none}
+.tbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);background:var(--bg);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink-2);white-space:nowrap}
+.tbtn:hover{border-color:var(--ink-3);color:var(--ink)}
+.tbtn.icon{padding:6px 8px}
+.search{flex:1 1 260px;min-width:0;display:flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:9px;padding:0 8px 0 10px;background:var(--bg);color:var(--ink-3)}
+.search:focus-within{border-color:var(--accent-fill);box-shadow:0 0 0 3px var(--accent-soft)}
+.search input{flex:1;min-width:0;border:0;background:none;outline:0;padding:8px 0;font:inherit;font-size:14px;color:var(--ink)}
+.search input::placeholder{color:var(--ink-3)}
+.search kbd{font-size:11px;border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;color:var(--ink-3)}
+.hits{font:500 12px var(--f-mono);color:var(--ink-3);white-space:nowrap}
+.theme-btn .moon{display:none}
+:root[data-theme="dark"] .theme-btn .sun{display:none}
+:root[data-theme="dark"] .theme-btn .moon{display:block}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .theme-btn .sun{display:none}
+  :root:not([data-theme="light"]) .theme-btn .moon{display:block}
+}
+
+/* ---------- hero & intro ---------- */
+.hero{padding-block:38px 8px;max-width:800px}
+.eyebrow{font:600 11px/1.4 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0}
+.hero h1{font:600 clamp(2.2rem,5vw,3.4rem)/1.03 var(--f-serif);font-variation-settings:"opsz" 144;letter-spacing:-.02em;margin:.3em 0 .32em;text-wrap:balance}
+.hero h1 em{font-style:italic;font-weight:400;color:var(--accent)}
+.lede{font-size:1.06rem;line-height:1.6;color:var(--ink-2);max-width:66ch;margin:0}
+.panel{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:15px 17px;margin-top:26px}
+.panel h2{font:600 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:2px 0 10px}
+.howto{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:14px;color:var(--ink-2)}
+.howto li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:baseline}
+.howto .k{font:600 10.5px/1.5 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.sw{display:inline-block;width:18px;height:10px;border-radius:3px;border:1.5px solid var(--c);background:var(--cf);vertical-align:-1px;margin-right:6px}
+.sw-b{--c:var(--rose);--cf:var(--rose-soft)} .sw-g{--c:var(--teal);--cf:var(--teal-soft)}
+.sw-w{--c:var(--amber);--cf:var(--amber-soft)} .sw-a{--c:var(--violet);--cf:var(--violet-soft)}
+.keyrow{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}
+
+/* ---------- review checklist ---------- */
+.sec-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.sec-h .code{font:600 12px var(--f-mono);letter-spacing:.1em;color:var(--accent)}
+.sec-h h2{font:600 clamp(1.5rem,3vw,2.05rem)/1.12 var(--f-serif);letter-spacing:-.01em;margin:0;text-wrap:balance}
+.sec-h .ct{margin-left:auto;font:500 12px var(--f-mono);color:var(--ink-3)}
+.sec-blurb{color:var(--ink-2);max-width:72ch;margin:10px 0 0}
+.checks{margin-top:44px;scroll-margin-top:72px}
+.qgrid{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 26px}
+.qbtn{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:9px 6px 9px 2px;cursor:pointer;align-items:baseline;line-height:1.45;font-size:14px;color:var(--ink-2)}
+.qbtn:hover{background:linear-gradient(90deg,var(--surface),transparent);color:var(--ink)}
+.qbtn .c{font:600 11px var(--f-mono);color:var(--accent)}
+.qbtn .qn{display:block;font:600 10.5px/1.5 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-top:2px}
+
+/* ---------- pattern sections ---------- */
+.pat{margin-top:60px;scroll-margin-top:72px;border-top:2px solid var(--ink);padding-top:16px}
+.pat-h{display:flex;gap:16px;align-items:flex-start}
+.pnum{flex:none;font:600 1.5rem/1 var(--f-serif);color:var(--accent);width:44px;letter-spacing:-.01em;padding-top:4px}
+.pat-t{flex:1;min-width:0}
+.pat-t h2{font:600 clamp(1.45rem,2.7vw,1.95rem)/1.14 var(--f-serif);letter-spacing:-.012em;margin:0;text-wrap:balance}
+.law{margin:.45em 0 0;font-size:1.02rem;line-height:1.5;color:var(--ink);max-width:62ch}
+.law b{font-weight:600}
+.pct{flex:none;font:600 10.5px/1 var(--f-sans);letter-spacing:.05em;text-transform:uppercase;padding:6px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap;margin-top:5px}
+.pat-b{padding-left:60px;display:grid;gap:16px;margin-top:14px}
+.pat-b > *{min-width:0}
+.sum{margin:0;color:var(--ink-2);max-width:78ch}
+.pat code{font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+
+/* diagram frame */
+.dgf{margin:0;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.dgf-top{padding:9px 14px;border-bottom:1px solid var(--line)}
+.dgf figcaption{font-size:13.5px;color:var(--ink-2);line-height:1.45;margin:0}
+.dgf figcaption b{font-weight:600;color:var(--ink)}
+.dg-scroll{overflow-x:auto;padding:12px 10px 10px;-webkit-overflow-scrolling:touch}
+.dg-scroll svg{display:block;width:100%;height:auto;margin:0 auto}
+.dg-err{padding:12px;color:var(--rose);font:12px var(--f-mono)}
+
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 30px}
+.cols h4,.cov h4{font:600 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;margin:0 0 9px;color:var(--ink-3)}
+.cols .tells h4{color:var(--rose)}
+.cols .moves h4{color:var(--teal)}
+.cols ul{margin:0;padding-left:18px}
+.cols li{margin:.35em 0;font-size:14.5px;color:var(--ink-2)}
+.cols li::marker{color:var(--ink-3)}
+.ask{margin:0;padding:11px 15px;border-radius:9px;background:var(--accent-soft);font-size:14.5px;color:var(--ink)}
+.ask .kl{font:600 10.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-right:9px}
+
+/* covered problems */
+.cov{border-top:1px dashed var(--line-2);padding-top:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 11px 3px 8px;font-size:12.5px;color:var(--ink-2);line-height:1.55}
+.chip .c{font:600 9.5px/1 var(--f-mono);letter-spacing:.06em;color:var(--ink-3)}
+.chip.hit{border-color:var(--accent-fill);background:var(--accent-soft);color:var(--ink)}
+.chip.hit .c{color:var(--accent)}
+.empty{margin-top:40px;padding:26px;border:1px dashed var(--line-2);border-radius:12px;text-align:center;color:var(--ink-3)}
+.foot{margin-top:72px;padding-top:16px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+.foot p{margin:.4em 0}
+
+/* ---------- SVG diagrams ---------- */
+.dg{font-family:var(--f-sans);overflow:visible}
+.dg text{fill:var(--ink)}
+.dg .t-b{font-weight:600}
+.dg .t-l{fill:var(--ink-2)}
+.dg .t-s{fill:var(--ink-3)}
+.dg .t-m{font-family:var(--f-mono)}
+.dg .tn-m{fill:var(--ink-3)}
+.dg .tk{fill:var(--k)}
+.dg .k-n{--k:var(--ink-3);--kf:var(--bg)}
+.dg .k-b{--k:var(--rose);--kf:var(--rose-soft)}
+.dg .k-g{--k:var(--teal);--kf:var(--teal-soft)}
+.dg .k-w{--k:var(--amber);--kf:var(--amber-soft)}
+.dg .k-a{--k:var(--violet);--kf:var(--violet-soft)}
+.dg .k-s{--k:var(--sky);--kf:var(--sky-soft)}
+.dg .k-m{--k:var(--line-2);--kf:var(--surface-2)}
+.dg .nd{fill:var(--kf);stroke:var(--k);stroke-width:1.3}
+.dg .nd.dash{stroke-dasharray:5 4}
+.dg .nd-l{fill:none;stroke:var(--k);stroke-width:1.2}
+.dg .eg{fill:none;stroke:var(--k);stroke-width:1.5}
+.dg .eg.k-n{stroke:var(--ink-3)}
+.dg .eg.dash{stroke-dasharray:5 4}
+.dg .ah{fill:var(--k)}
+.dg .lbg{fill:var(--surface);opacity:.95}
+.dg .ll{stroke:var(--line-2);stroke-width:1;stroke-dasharray:3 4}
+.dg .grid{stroke:var(--line);stroke-width:1}
+.dg .axis{stroke:var(--line-2);stroke-width:1}
+.dg .grpbox{fill:none;stroke:var(--k);stroke-width:1.2;stroke-dasharray:6 4}
+.dg .grpfill{fill:var(--kf);opacity:.45}
+.dg .nt{fill:var(--kf);stroke:var(--k);stroke-width:1}
+.dg .dv{stroke:var(--k);stroke-width:1;stroke-dasharray:2 4}
+.dg .pillbg{fill:var(--surface);stroke:var(--k);stroke-width:1}
+.dg .bdg{fill:var(--k)}
+.dg .bdgt{fill:var(--bg);font-weight:700}
+.dg .xm-c{fill:var(--kf);stroke:var(--k);stroke-width:1.4}
+.dg .xm-l{stroke:var(--k);stroke-width:1.8;stroke-linecap:round}
+.dg .bar{fill:var(--kf);stroke:var(--k);stroke-width:1.2}
+.dg .bar.wait{stroke-dasharray:4 3;fill-opacity:.55}
+.dg .mk{stroke:var(--k);stroke-width:1.2;stroke-dasharray:4 3}
+.dg .pt{fill:var(--k);stroke:var(--bg);stroke-width:2}
+.dg .ln-s{fill:none;stroke:var(--k);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.dg .ln-s.dash{stroke-dasharray:6 4}
+.dg .ar{fill:var(--k);opacity:.12}
+
+/* ---------- responsive ---------- */
+@media (max-width:1120px){ .app{grid-template-columns:232px minmax(0,1fr)} }
+@media (max-width:960px){
+  .app{display:block}
+  .side{position:fixed;inset:0 auto 0 0;height:auto;width:min(86vw,330px);z-index:50;background:var(--bg);transform:translateX(-104%);transition:transform .2s ease;padding:calc(env(safe-area-inset-top,0px) + 18px) 14px 48px 12px;box-shadow:var(--shadow)}
+  body.nav-open .side{transform:none}
+  .tbtn.menu-btn{display:inline-flex}
+  .qgrid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  .pat-h{flex-wrap:wrap;gap:10px}
+  .pnum{width:32px;font-size:1.25rem;padding-top:2px}
+  .pct{order:3;margin-top:0}
+  .pat-b{padding-left:0}
+  .cols{grid-template-columns:minmax(0,1fr)}
+  .howto li{grid-template-columns:minmax(0,1fr);gap:2px}
+  .top .tbtn .lbl{display:none}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important;scroll-behavior:auto!important} }
+@media print{
+  .side,.top,.scrim{display:none!important}
+  .app{display:block}
+  .pat{break-inside:avoid-page}
+}
+
+</style>
+<script>(function(){try{var t=localStorage.getItem('cp-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<div class="app">
+  <aside class="side" id="side" aria-label="Contents">
+    <div class="side-brand">Eighteen Shapes</div>
+    <p class="side-meta" id="side-meta">&nbsp;</p>
+    <button class="nav-i nav-top" type="button" data-to="checks"><span class="c">?</span>The eighteen questions</button>
+    <p class="nav-sep">The shapes</p>
+    <nav id="nav"></nav>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+  <main class="main" id="top">
+    <div class="top" role="toolbar" aria-label="Page controls">
+      <button class="tbtn menu-btn" id="menu-btn" type="button" aria-controls="side" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span class="lbl">Contents</span>
+      </button>
+      <label class="search" for="cp-q">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="cp-q" type="search" placeholder="Name a problem — &ldquo;deadlock&rdquo;, &ldquo;N+1&rdquo;, &ldquo;duplicate&rdquo;, &ldquo;stale cache&rdquo; &mdash; to find its shape" autocomplete="off" spellcheck="false">
+        <span class="hits" id="hits" hidden></span>
+        <kbd aria-hidden="true">/</kbd>
+      </label>
+      <button class="tbtn icon theme-btn" id="theme-btn" type="button" aria-label="Switch light / dark theme" title="Switch light / dark theme">
+        <svg class="sun" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg class="moon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 10.4A5.6 5.6 0 0 1 5.6 2.8a5.6 5.6 0 1 0 7.6 7.6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow">Field manual &middot; the short edition</p>
+      <h1>Eighteen shapes <em>behind</em> a hundred bugs</h1>
+      <p class="lede">The long sheet has one hundred and six problems and two hundred diagrams. Underneath them are eighteen mechanisms. Learn the shape and one diagram covers a dozen bugs &mdash; including the ones nobody has written a card for yet.</p>
+    </header>
+
+    <section class="panel" aria-label="How to use this page">
+      <h2>How to use it</h2>
+      <ul class="howto">
+        <li><span class="k">Debugging</span><span>Search the symptom. The matching shape tells you what kind of mistake it is before you know which line caused it.</span></li>
+        <li><span class="k">Reviewing</span><span>Run the eighteen questions over a design or a pull request. Each one is the question that shape exists to make you ask.</span></li>
+        <li><span class="k">Each shape</span><span>The law it breaks, one diagram, how it shows up, the move that fixes it &mdash; and the problems it accounts for.</span></li>
+        <li><span class="k">Colours</span><span class="keyrow"><span><i class="sw sw-b"></i>the failure</span><span><i class="sw sw-g"></i>the move</span><span><i class="sw sw-w"></i>waiting &middot; risk</span><span><i class="sw sw-a"></i>where it starts</span></span></li>
+      </ul>
+    </section>
+
+    <section class="checks" id="checks" aria-labelledby="checks-h">
+      <div class="sec-h"><span class="code">REVIEW</span><h2 id="checks-h">The eighteen questions</h2><span class="ct" id="checks-ct"></span></div>
+      <p class="sec-blurb">One question per shape. If a design has an uncomfortable answer to any of them, the matching section says what usually happens next.</p>
+      <ul class="qgrid" id="qgrid"></ul>
+    </section>
+
+    <div id="pats"></div>
+    <div class="empty" id="empty" hidden>Nothing matches that. Try a symptom (&ldquo;timeout&rdquo;, &ldquo;duplicate&rdquo;), a mechanism (&ldquo;cache&rdquo;, &ldquo;retry&rdquo;) or a problem name (&ldquo;N+1&rdquo;).</div>
+    <footer class="foot" id="foot"></footer>
+  </main>
+</div>
+
+<script>
+/* ===== Diagram renderer: data spec -> inline SVG (seq | flow | tl | chart) ===== */
+window.DG = (function () {
+  'use strict';
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var r = function (n) { return Math.round(n * 10) / 10; };
+  var CWF = { sans: 0.555, bold: 0.6, mono: 0.62 };
+  function tw(s, fs, f) { return String(s).length * fs * (CWF[f || 'sans']); }
+  function wrap(text, maxW, fs, f) {
+    var out = [];
+    String(text == null ? '' : text).split('\n').forEach(function (par) {
+      var words = par.split(/\s+/).filter(Boolean), line = '';
+      if (!words.length) { out.push(''); return; }
+      words.forEach(function (w) {
+        var c = line ? line + ' ' + w : w;
+        if (!line || tw(c, fs, f) <= maxW) line = c; else { out.push(line); line = w; }
+      });
+      out.push(line);
+    });
+    return out;
+  }
+  function kc(k) { return 'k-' + (k || 'n'); }
+  function maxw(lines, fs, f) { var m = 0; lines.forEach(function (l) { m = Math.max(m, tw(l, fs, f)); }); return m; }
+  /* multi-line text, vertically centred on cy */
+  function T(lines, x, cy, fs, cls, anchor, lh) {
+    lh = lh || 1.28; anchor = anchor || 'middle';
+    var h = lines.length * fs * lh, s = '';
+    lines.forEach(function (ln, i) {
+      var y = cy - h / 2 + fs * lh * (i + 0.5) + fs * 0.35;
+      s += '<text x="' + r(x) + '" y="' + r(y) + '" text-anchor="' + anchor + '" class="' + (cls || '') + '" style="font-size:' + fs + 'px">' + esc(ln) + '</text>';
+    });
+    return s;
+  }
+  function AH(x, y, ang, k, size) {
+    size = size || 7.5; var a = Math.PI / 7.2;
+    return '<path class="ah ' + kc(k) + '" d="M' + r(x) + ' ' + r(y) + 'L' + r(x - size * Math.cos(ang - a)) + ' ' + r(y - size * Math.sin(ang - a)) +
+      'L' + r(x - size * Math.cos(ang + a)) + ' ' + r(y - size * Math.sin(ang + a)) + 'Z"/>';
+  }
+  function XM(x, y, k) {
+    var d = 3.4;
+    return '<circle class="xm-c ' + kc(k || 'b') + '" cx="' + r(x) + '" cy="' + r(y) + '" r="7.5"/>' +
+      '<path class="xm-l ' + kc(k || 'b') + '" d="M' + r(x - d) + ' ' + r(y - d) + 'L' + r(x + d) + ' ' + r(y + d) + 'M' + r(x + d) + ' ' + r(y - d) + 'L' + r(x - d) + ' ' + r(y + d) + '"/>';
+  }
+  /* label with a background plate so lines/lifelines don't cut through it */
+  function LBL(text, x, y, fs, k, maxW, f) {
+    var lines = wrap(text, maxW || 140, fs, f), w = maxw(lines, fs, f) + 10, h = lines.length * fs * 1.25 + 6;
+    var cls = 't-l' + (k && k !== 'n' ? ' tk ' + kc(k) : '') + (f === 'mono' ? ' t-m' : '');
+    return '<rect class="lbg" x="' + r(x - w / 2) + '" y="' + r(y - h / 2) + '" width="' + r(w) + '" height="' + r(h) + '" rx="4"/>' + T(lines, x, y, fs, cls, 'middle', 1.25);
+  }
+  function SHAPE(sh, cx, cy, w, h, k) {
+    var x = cx - w / 2, y = cy - h / 2, c = 'nd ' + kc(k), s = '', i;
+    switch (sh) {
+      case 'db': {
+        var ry = Math.min(7, h / 5);
+        return '<path class="' + c + '" d="M' + r(x) + ' ' + r(y + ry) + 'A' + r(w / 2) + ' ' + ry + ' 0 0 1 ' + r(x + w) + ' ' + r(y + ry) + 'V' + r(y + h - ry) +
+          'A' + r(w / 2) + ' ' + ry + ' 0 0 1 ' + r(x) + ' ' + r(y + h - ry) + 'Z"/><path class="nd-l ' + kc(k) + '" d="M' + r(x) + ' ' + r(y + ry) + 'A' + r(w / 2) + ' ' + ry + ' 0 0 0 ' + r(x + w) + ' ' + r(y + ry) + '"/>';
+      }
+      case 'queue':
+        s = '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="6"/>';
+        for (i = 0; i < 3; i++) { var lx = x + w - 9 - i * 6; s += '<line class="nd-l ' + kc(k) + '" x1="' + r(lx) + '" y1="' + r(y + 7) + '" x2="' + r(lx) + '" y2="' + r(y + h - 7) + '"/>'; }
+        return s;
+      case 'pill': case 'actor': case 'chip':
+        return '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="' + r(h / 2) + '"/>';
+      case 'ext':
+        return '<rect class="' + c + ' dash" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>';
+      case 'browser':
+        s = '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="7"/>' +
+          '<line class="nd-l ' + kc(k) + '" x1="' + r(x) + '" y1="' + r(y + 12) + '" x2="' + r(x + w) + '" y2="' + r(y + 12) + '"/>';
+        for (i = 0; i < 3; i++) s += '<circle class="nd ' + kc(k) + '" cx="' + r(x + 8 + i * 6) + '" cy="' + r(y + 6) + '" r="1.7"/>';
+        return s;
+      case 'doc':
+        return '<path class="' + c + '" d="M' + r(x) + ' ' + r(y) + 'H' + r(x + w - 11) + 'L' + r(x + w) + ' ' + r(y + 11) + 'V' + r(y + h) + 'H' + r(x) + 'Z"/>' +
+          '<path class="nd-l ' + kc(k) + '" d="M' + r(x + w - 11) + ' ' + r(y) + 'V' + r(y + 11) + 'H' + r(x + w) + '"/>';
+      case 'stack':
+        return '<rect class="' + c + '" x="' + r(x + 8) + '" y="' + r(y - 8) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>' +
+          '<rect class="' + c + '" x="' + r(x + 4) + '" y="' + r(y - 4) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>' +
+          '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>';
+      case 'note': return '';
+      default:
+        return '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>';
+    }
+  }
+  function svg(W, H, body, spec) {
+    var minw = Math.min(W, spec.minw || 540);
+    return '<svg class="dg" viewBox="0 0 ' + r(W) + ' ' + r(H) + '" width="' + r(W) + '" height="' + r(H) + '" style="min-width:' + minw + 'px;max-width:' + r(W * 1.18) + 'px" role="img"' +
+      (spec.alt ? ' aria-label="' + esc(spec.alt) + '"' : '') + '>' + body + '</svg>';
+  }
+
+  /* ---------- sequence diagram ---------- */
+  function seq(s) {
+    var W = s.w || 680, pad = 8, A = s.actors.map(function (a) { return typeof a === 'string' ? { l: a } : a; }), n = A.length;
+    var colW = (W - 2 * pad) / n, X = function (i) { return pad + colW * (i + 0.5); };
+    var afs = 12, lfs = 11, abW = Math.min(colW - 14, 152);
+    var aL = A.map(function (a) { return wrap(a.l, abW - (a.s === 'queue' ? 34 : 16), afs, 'bold'); });
+    var maxL = Math.max.apply(null, aL.map(function (l) { return l.length; }));
+    var hasDb = A.some(function (a) { return a.s === 'db'; });
+    var hasBr = A.some(function (a) { return a.s === 'browser'; });
+    var aH = Math.max(34, 14 + maxL * afs * 1.28) + (hasDb || hasBr ? 8 : 0), top = 6, y = top + aH + 16, body = '';
+    s.steps.forEach(function (st) {
+      if (st.gap) { y += st.gap; return; }
+      if (st.div != null) {
+        y += 8;
+        var dw = tw(st.div, lfs) + 18;
+        body += '<line class="dv ' + kc(st.k) + '" x1="' + pad + '" y1="' + r(y) + '" x2="' + r(W - pad) + '" y2="' + r(y) + '"/>' +
+          '<rect class="pillbg ' + kc(st.k) + '" x="' + r(W / 2 - dw / 2) + '" y="' + r(y - 10) + '" width="' + r(dw) + '" height="20" rx="10"/>' +
+          T([st.div], W / 2, y, lfs, 't-l' + (st.k ? ' tk ' + kc(st.k) : ''));
+        y += 22; return;
+      }
+      if (st.note != null) {
+        var at = Array.isArray(st.at) ? st.at : [st.at, st.at];
+        var x1 = Math.max(3, X(Math.min.apply(null, at)) - colW * 0.46), x2 = Math.min(W - 3, X(Math.max.apply(null, at)) + colW * 0.46);
+        var nl = wrap(st.note, x2 - x1 - 14, lfs), nh = nl.length * lfs * 1.3 + 10;
+        body += '<rect class="nt ' + kc(st.k) + '" x="' + r(x1) + '" y="' + r(y) + '" width="' + r(x2 - x1) + '" height="' + r(nh) + '" rx="6"/>' +
+          T(nl, (x1 + x2) / 2, y + nh / 2, lfs, '', 'middle', 1.3);
+        y += nh + 10; return;
+      }
+      if (st.self != null) {
+        var sx = X(st.self), right = st.self < n - 1, dx = right ? 20 : -20;
+        var sl = wrap(st.l, colW * 0.62, lfs, st.mono ? 'mono' : 'sans'), sh = Math.max(20, sl.length * lfs * 1.25 + 4);
+        body += '<path class="eg ' + kc(st.k) + '" d="M' + r(sx) + ' ' + r(y) + 'h' + dx + 'v' + r(sh) + 'h' + (-dx + (right ? 3 : -3)) + '"/>' + AH(sx + (right ? 1 : -1), y + sh, right ? Math.PI : 0, st.k, 6.5);
+        var tx = right ? sx + dx + 6 : sx + dx - 6;
+        body += T(sl, tx, y + sh / 2, lfs, 't-l' + (st.k && st.k !== 'n' ? ' tk ' + kc(st.k) : '') + (st.mono ? ' t-m' : ''), right ? 'start' : 'end', 1.25);
+        y += sh + 12; return;
+      }
+      var fx = X(st.f), txx = X(st.t), dir = txx >= fx ? 1 : -1, span = Math.abs(txx - fx);
+      var f = st.mono ? 'mono' : 'sans';
+      var ml = st.l ? wrap(st.l, Math.max(span - 16, 96), lfs, f) : [];
+      var lh = lfs * 1.25, lbH = ml.length * lh, cyL = y + lbH / 2;
+      y += lbH + 5;
+      var xe = st.lost ? fx + (txx - fx) * 0.56 : txx - dir * 2;
+      body += '<line class="eg ' + kc(st.k) + (st.d ? ' dash' : '') + '" x1="' + r(fx) + '" y1="' + r(y) + '" x2="' + r(xe) + '" y2="' + r(y) + '"/>';
+      body += st.lost ? XM(xe, y, st.k) : AH(txx - dir, y, dir > 0 ? 0 : Math.PI, st.k);
+      if (ml.length) {
+        var mid = st.lost ? (fx + xe) / 2 : (fx + txx) / 2, mw = maxw(ml, lfs, f) + 8;
+        body += '<rect class="lbg" x="' + r(mid - mw / 2) + '" y="' + r(cyL - lbH / 2 - 1) + '" width="' + r(mw) + '" height="' + r(lbH + 2) + '" rx="3"/>';
+        body += T(ml, mid, cyL, lfs, 't-l' + (st.k && st.k !== 'n' ? ' tk ' + kc(st.k) : '') + (st.mono ? ' t-m' : ''), 'middle', 1.25);
+      }
+      y += 15;
+    });
+    var H = y + 6, head = '', ll = '';
+    A.forEach(function (a, i) {
+      ll += '<line class="ll" x1="' + r(X(i)) + '" y1="' + r(top + aH) + '" x2="' + r(X(i)) + '" y2="' + r(H - 3) + '"/>';
+      head += SHAPE(a.s || 'box', X(i), top + aH / 2, abW, aH, a.k) + T(aL[i], X(i) - (a.s === 'queue' ? 9 : 0), top + aH / 2 + (a.s === 'db' ? 4 : a.s === 'browser' ? 5 : 0), afs, 't-b' + (a.k === 'm' ? ' tn-m' : ''));
+    });
+    return svg(W, H, ll + head + body, s);
+  }
+
+  /* ---------- box & arrow flow ---------- */
+  function border(nd, tx, ty) {
+    var dx = tx - nd.cx, dy = ty - nd.cy, hw = nd.w / 2 + 4, hh = nd.h / 2 + 4;
+    if (!dx && !dy) return [nd.cx, nd.cy];
+    var t = Math.min(dx ? hw / Math.abs(dx) : Infinity, dy ? hh / Math.abs(dy) : Infinity);
+    return [nd.cx + dx * t, nd.cy + dy * t];
+  }
+  function flow(s) {
+    var W = s.w || 680, nodes = s.nodes, edges = s.edges || [], groups = s.groups || [];
+    var cols = s.cols || Math.max.apply(null, nodes.map(function (n) { return n.x; })) + 1;
+    var rows = s.rows || Math.max.apply(null, nodes.map(function (n) { return n.y; })) + 1;
+    var padX = 10, padT = groups.length ? 26 : 12, padB = groups.length ? 18 : 12, cw = (W - 2 * padX) / cols, ch = s.ch || 86, N = {};
+    nodes.forEach(function (n) {
+      var sh = n.s || 'box', fs = n.fs || (sh === 'chip' ? 11 : 12);
+      var w = n.w || Math.min(cw - 22, sh === 'chip' ? 124 : 170);
+      var tW = w - (sh === 'queue' ? 34 : 16);
+      var lines = wrap(n.l, tW, fs, sh === 'note' ? 'sans' : 'bold');
+      var sub = n.sub ? wrap(n.sub, tW, 10.5, 'sans') : [];
+      var extra = sh === 'db' ? 9 : sh === 'browser' ? 11 : 0;
+      var h = n.h || (sh === 'chip' ? Math.max(24, lines.length * fs * 1.25 + 8) : Math.max(38, 14 + lines.length * fs * 1.28 + (sub.length ? 3 + sub.length * 10.5 * 1.25 : 0) + extra));
+      if (n.badge && !n.h) h += 8;
+      N[n.id] = { n: n, sh: sh, fs: fs, w: w, h: h, lines: lines, sub: sub, cx: padX + cw * (n.x + 0.5) + (n.dx || 0), cy: padT + ch * (n.y + 0.5) + (n.dy || 0) };
+    });
+    var g = '', e = '', nd = '', lb = '';
+    groups.forEach(function (gr) {
+      var ns = gr.n.map(function (id) { if (!N[id]) throw new Error('group node ' + id); return N[id]; });
+      var x1 = Math.min.apply(null, ns.map(function (q) { return q.cx - q.w / 2; })) - 12, x2 = Math.max.apply(null, ns.map(function (q) { return q.cx + q.w / 2; })) + 12;
+      var y1 = Math.min.apply(null, ns.map(function (q) { return q.cy - q.h / 2 - (q.sh === 'stack' ? 8 : 0); })) - 21, y2 = Math.max.apply(null, ns.map(function (q) { return q.cy + q.h / 2; })) + 11;
+      g += '<rect class="grpfill ' + kc(gr.k) + '" x="' + r(x1) + '" y="' + r(y1) + '" width="' + r(x2 - x1) + '" height="' + r(y2 - y1) + '" rx="11"/>' +
+        '<rect class="grpbox ' + kc(gr.k) + '" x="' + r(x1) + '" y="' + r(y1) + '" width="' + r(x2 - x1) + '" height="' + r(y2 - y1) + '" rx="11"/>' +
+        '<text class="tk ' + kc(gr.k) + '" x="' + r(x1 + 9) + '" y="' + r(y1 + 13) + '" style="font-size:9.5px;font-weight:700;letter-spacing:.08em">' + esc(String(gr.l).toUpperCase()) + '</text>';
+    });
+    edges.forEach(function (ed) {
+      var a = N[ed.f], b = N[ed.t];
+      if (!a || !b) throw new Error('edge ' + ed.f + '->' + ed.t);
+      var dx = b.cx - a.cx, dy = b.cy - a.cy, len = Math.hypot(dx, dy) || 1, cv = ed.c || 0;
+      var mx = (a.cx + b.cx) / 2, my = (a.cy + b.cy) / 2, qx = mx - dy / len * cv, qy = my + dx / len * cv;
+      var p1 = border(a, cv ? qx : b.cx, cv ? qy : b.cy), p2 = border(b, cv ? qx : a.cx, cv ? qy : a.cy), d, lx, ly, ang, angS;
+      if (cv) {
+        d = 'M' + r(p1[0]) + ' ' + r(p1[1]) + 'Q' + r(qx) + ' ' + r(qy) + ' ' + r(p2[0]) + ' ' + r(p2[1]);
+        lx = 0.25 * p1[0] + 0.5 * qx + 0.25 * p2[0]; ly = 0.25 * p1[1] + 0.5 * qy + 0.25 * p2[1];
+        ang = Math.atan2(p2[1] - qy, p2[0] - qx); angS = Math.atan2(p1[1] - qy, p1[0] - qx);
+      } else {
+        d = 'M' + r(p1[0]) + ' ' + r(p1[1]) + 'L' + r(p2[0]) + ' ' + r(p2[1]);
+        lx = (p1[0] + p2[0]) / 2; ly = (p1[1] + p2[1]) / 2; ang = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]); angS = ang + Math.PI;
+      }
+      if (ed.lt != null) { lx = p1[0] + (p2[0] - p1[0]) * ed.lt; ly = p1[1] + (p2[1] - p1[1]) * ed.lt; }
+      e += '<path class="eg ' + kc(ed.k) + (ed.d ? ' dash' : '') + '" d="' + d + '"/>';
+      if (!ed.na) e += AH(p2[0], p2[1], ang, ed.k);
+      if (ed.both) e += AH(p1[0], p1[1], angS, ed.k);
+      if (ed.l) lb += LBL((ed.x ? '✕ ' : '') + ed.l, lx + (ed.lx || 0), ly + (ed.ly || 0), 10.5, ed.x && !ed.k ? 'b' : ed.k, ed.lw || Math.max(84, Math.min(150, len * 0.72)), ed.mono ? 'mono' : 'sans');
+    });
+    nodes.forEach(function (n) {
+      var q = N[n.id], k = n.k, off = (q.sh === 'db' ? 4 : q.sh === 'browser' ? 6 : 0) + (n.badge ? 4 : 0), cxT = q.cx - (q.sh === 'queue' ? 9 : 0);
+      nd += SHAPE(q.sh, q.cx, q.cy, q.w, q.h, k);
+      var mh = q.lines.length * q.fs * 1.28, shh = q.sub.length ? 3 + q.sub.length * 10.5 * 1.25 : 0, top = q.cy + off - (mh + shh) / 2;
+      var cls = q.sh === 'note' ? 't-l' + (k && k !== 'n' ? ' tk ' + kc(k) : '') : 't-b' + (k === 'm' ? ' tn-m' : '');
+      nd += T(q.lines, cxT, top + mh / 2, q.fs, cls + (n.mono ? ' t-m' : ''));
+      if (q.sub.length) nd += T(q.sub, cxT, top + mh + 3 + (shh - 3) / 2, 10.5, 't-s' + (n.submono ? ' t-m' : ''), 'middle', 1.25);
+      if (n.badge) {
+        var bw = tw(n.badge, 10, 'bold') + 12, bx = q.cx + q.w / 2 - bw / 2 - 4, by = q.cy - q.h / 2;
+        nd += '<rect class="bdg ' + kc(n.bk || k || 'b') + '" x="' + r(bx - bw / 2) + '" y="' + r(by - 9) + '" width="' + r(bw) + '" height="18" rx="9"/>' + T([n.badge], bx, by, 10, 'bdgt');
+      }
+    });
+    var H = padT + rows * ch + padB + (s.hb || 0);
+    return svg(W, H, g + e + nd + lb, s);
+  }
+
+  /* ---------- timeline / gantt ---------- */
+  function niceTicks(span) {
+    var steps = [0.5, 1, 2, 2.5, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000], st = steps[steps.length - 1], out = [], i;
+    for (i = 0; i < steps.length; i++) if (span / steps[i] <= 8) { st = steps[i]; break; }
+    for (i = 0; i <= span + 1e-9; i += st) out.push(Math.round(i * 100) / 100);
+    return out;
+  }
+  function tl(s) {
+    var W = s.w || 680, LW = s.lw || 108, R = 14, span = s.span, rowH = s.rh || 32, bh = Math.min(20, rowH - 9);
+    var marks = s.marks || [], mrows = marks.length ? Math.max.apply(null, marks.map(function (m) { return m.row || 0; })) + 1 : 0;
+    var top = 8 + mrows * 15 + 18, lanes = s.lanes, px = function (t) { return LW + (W - LW - R) * t / span; }, Y = function (i) { return top + rowH * i; };
+    var bottom = top + rowH * lanes.length, H = bottom + 10, o = '', lb = '';
+    var ticks = s.ticks || niceTicks(span);
+    ticks.forEach(function (t) {
+      o += '<line class="grid" x1="' + r(px(t)) + '" y1="' + r(top - 3) + '" x2="' + r(px(t)) + '" y2="' + r(bottom) + '"/>';
+      var lbl = t + (s.unit || ''), lw2 = tw(lbl, 10) / 2, tx = px(t), anc = 'middle';
+      if (tx + lw2 > W - 2) { anc = 'end'; tx = W - 2; }
+      o += '<text class="t-s" x="' + r(tx) + '" y="' + r(top - 7) + '" text-anchor="' + anc + '" style="font-size:10px">' + esc(lbl) + '</text>';
+    });
+    lanes.forEach(function (ln, i) {
+      o += T(wrap(ln, LW - 14, 11, 'sans'), LW - 8, Y(i) + rowH / 2, 11, 't-l', 'end', 1.2);
+      o += '<line class="axis" x1="' + LW + '" y1="' + r(Y(i) + rowH) + '" x2="' + r(W - R) + '" y2="' + r(Y(i) + rowH) + '"/>';
+    });
+    (s.bars || []).forEach(function (b) {
+      var x1 = px(b.s), x2 = px(b.e), w = Math.max(2, x2 - x1), yb = Y(b.lane) + (rowH - bh) / 2, fs = 10.5;
+      o += '<rect class="bar ' + kc(b.k) + (b.wait ? ' wait' : '') + '" x="' + r(x1) + '" y="' + r(yb) + '" width="' + r(w) + '" height="' + bh + '" rx="4"/>';
+      if (b.l) {
+        var t = tw(b.l, fs), cy = yb + bh / 2;
+        if (t <= w - 8) lb += T([b.l], x1 + w / 2, cy, fs, 't-l');
+        else if (x2 + 6 + t <= W - R + 2) lb += T([b.l], x2 + 5, cy, fs, 't-l', 'start');
+        else if (x1 - 6 - t >= LW) lb += T([b.l], x1 - 5, cy, fs, 't-l', 'end');
+        else { var cut = Math.max(3, Math.floor((w - 8) / (fs * CWF.sans)) - 1); lb += T([b.l.slice(0, cut) + '…'], x1 + w / 2, cy, fs, 't-l'); }
+      }
+    });
+    (s.arrows || []).forEach(function (a) {
+      var x1 = px(a.a[1]), y1 = Y(a.a[0]) + rowH / 2, x2 = px(a.b[1]), y2 = Y(a.b[0]) + rowH / 2, ang = Math.atan2(y2 - y1, x2 - x1);
+      o += '<path class="eg ' + kc(a.k) + (a.d ? ' dash' : '') + '" d="M' + r(x1) + ' ' + r(y1) + 'L' + r(x2) + ' ' + r(y2) + '"/>' + AH(x2, y2, ang, a.k, 6.5);
+    });
+    (s.pts || []).forEach(function (p) {
+      var x = px(p.t), y = Y(p.lane) + rowH / 2;
+      lb += '<circle class="pt ' + kc(p.k) + '" cx="' + r(x) + '" cy="' + r(y) + '" r="5"/>';
+      if (p.l) {
+        var t = tw(p.l, 10), anchor = 'start', lx = x + 8;
+        if (lx + t > W - R) { anchor = 'end'; lx = x - 8; }
+        lb += T([p.l], lx, y + (p.up ? -9 : 0), 10, 't-l' + (p.k && p.k !== 'n' ? ' tk ' + kc(p.k) : ''), anchor);
+      }
+    });
+    marks.forEach(function (m) {
+      var x = px(m.t), ly = 8 + (m.row || 0) * 15 + 7, t = tw(m.l, 10), lx = Math.max(LW + t / 2 - 40, Math.min(W - R - t / 2, x));
+      o += '<line class="mk ' + kc(m.k) + '" x1="' + r(x) + '" y1="' + r(ly + 6) + '" x2="' + r(x) + '" y2="' + r(bottom) + '"/>';
+      lb += T([m.l], lx, ly, 10, 't-l tk ' + kc(m.k || 'n'));
+    });
+    return svg(W, H, o + lb, s);
+  }
+
+  /* ---------- line chart ---------- */
+  function chart(s) {
+    var W = s.w || 680, H = s.h || 200, L = s.ml || 50, R = 16, series = s.series, Tp = 26, B = 24;
+    var n = s.x.length, px = function (i) { return L + (W - L - R) * i / (n - 1); };
+    var ymin = s.ymin || 0, ymax = s.ymax, py = function (v) { return Tp + (H - Tp - B) * (1 - (v - ymin) / (ymax - ymin)); };
+    var yt = s.yt || [0, 1, 2, 3, 4].map(function (i) { return ymin + (ymax - ymin) * i / 4; }), o = '', lb = '';
+    yt.forEach(function (v) {
+      o += '<line class="grid" x1="' + L + '" y1="' + r(py(v)) + '" x2="' + r(W - R) + '" y2="' + r(py(v)) + '"/>';
+      o += '<text class="t-s" x="' + (L - 7) + '" y="' + r(py(v) + 3.5) + '" text-anchor="end" style="font-size:10px">' + esc(v + (s.yu || '')) + '</text>';
+    });
+    var every = n > 12 ? Math.ceil(n / 8) : 1;
+    s.x.forEach(function (x, i) { if (i % every === 0 || i === n - 1) o += '<text class="t-s" x="' + r(px(i)) + '" y="' + (H - 7) + '" text-anchor="middle" style="font-size:10px">' + esc(x) + '</text>'; });
+    o += '<line class="axis" x1="' + L + '" y1="' + r(py(ymin)) + '" x2="' + r(W - R) + '" y2="' + r(py(ymin)) + '"/>';
+    (s.bands || []).forEach(function (b) {
+      o += '<line class="mk ' + kc(b.k) + '" x1="' + L + '" y1="' + r(py(b.y)) + '" x2="' + r(W - R) + '" y2="' + r(py(b.y)) + '"/>';
+      lb += b.left ? T([b.l], L + 6, py(b.y) - 8, 10, 't-l tk ' + kc(b.k), 'start') : T([b.l], W - R - 2, py(b.y) - 8, 10, 't-l tk ' + kc(b.k), 'end');
+    });
+    (s.vmarks || []).forEach(function (m) {
+      var x = px(m.x), right = x > W * 0.62;
+      o += '<line class="mk ' + kc(m.k) + '" x1="' + r(x) + '" y1="' + Tp + '" x2="' + r(x) + '" y2="' + r(py(ymin)) + '"/>';
+      lb += T(wrap(m.l, 150, 10), right ? x - 6 : x + 6, Tp + 12 + (m.dy || 0), 10, 't-l tk ' + kc(m.k), right ? 'end' : 'start', 1.2);
+    });
+    series.forEach(function (se) {
+      var pts = se.v.map(function (v, i) { return [px(i), py(v)]; });
+      var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + r(p[0]) + ' ' + r(p[1]); }).join('');
+      if (se.area) o += '<path class="ar ' + kc(se.k) + '" d="' + d + 'L' + r(pts[pts.length - 1][0]) + ' ' + r(py(ymin)) + 'L' + r(pts[0][0]) + ' ' + r(py(ymin)) + 'Z"/>';
+      o += '<path class="ln-s ' + kc(se.k) + (se.d ? ' dash' : '') + '" d="' + d + '"/>';
+      var last = pts[pts.length - 1];
+      lb += '<circle class="pt ' + kc(se.k) + '" cx="' + r(last[0]) + '" cy="' + r(last[1]) + '" r="4.5"/>';
+    });
+    var lx = L;
+    series.forEach(function (se) {
+      lb += '<rect class="bar ' + kc(se.k) + '" x="' + r(lx) + '" y="7" width="14" height="8" rx="2"/>' + T([se.l], lx + 19, 11, 10.5, 't-l', 'start');
+      lx += 30 + tw(se.l, 10.5);
+    });
+    return svg(W, H, o + lb, s);
+  }
+
+  var R_ = { seq: seq, flow: flow, tl: tl, chart: chart };
+  function render(spec) {
+    try {
+      if (!spec || !R_[spec.type]) throw new Error('unknown diagram type ' + (spec && spec.type));
+      return R_[spec.type](spec);
+    } catch (err) {
+      if (window.console) console.error('Diagram failed', err, spec);
+      return '<div class="dg-err">Diagram failed to render: ' + esc(err.message) + '</div>';
+    }
+  }
+  return { render: render, esc: esc, wrap: wrap };
+})();
+
+window.CPN = {"race":{"n":"Check-then-act race","g":"con","i":"data"},"lost-update":{"n":"Lost update","g":"con","i":"data"},"db-deadlock":{"n":"DB deadlock","g":"con","i":"outage"},"blocking":{"n":"Blocking chain","g":"con","i":"outage"},"write-skew":{"n":"Write skew","g":"con","i":"data"},"dbcontext":{"n":"Shared DbContext","g":"con","i":"outage"},"captive":{"n":"Captive dependency","g":"con","i":"data"},"async-void":{"n":"Fire-and-forget","g":"con","i":"outage"},"sync-context-deadlock":{"n":"Sync-context deadlock","g":"net","i":"outage"},"cancellation":{"n":"Cancellation not flowed","g":"net","i":"perf"},"valuetask-misuse":{"n":"ValueTask misuse","g":"net","i":"data"},"semaphore-leak":{"n":"Leaked SemaphoreSlim","g":"net","i":"outage"},"timer-overlap":{"n":"Overlapping timers","g":"net","i":"data"},"n-plus-1":{"n":"N+1 queries","g":"db","i":"perf"},"missing-index":{"n":"Missing index","g":"db","i":"perf"},"param-sniff":{"n":"Parameter sniffing","g":"db","i":"perf"},"paging":{"n":"Deep OFFSET paging","g":"db","i":"perf"},"conn-pool":{"n":"Pool exhaustion","g":"db","i":"outage"},"cartesian-explosion":{"n":"Cartesian explosion","g":"db","i":"perf"},"soft-delete-leak":{"n":"Soft-delete leaks","g":"db","i":"data"},"bulk-insert":{"n":"Row-by-row import","g":"db","i":"perf"},"threadpool":{"n":"Thread-pool starvation","g":"perf","i":"outage"},"mem-leak":{"n":"Memory leak","g":"perf","i":"outage"},"gc-pressure":{"n":"GC pressure","g":"perf","i":"perf"},"sockets":{"n":"Socket exhaustion","g":"perf","i":"outage"},"backpressure":{"n":"No backpressure","g":"perf","i":"outage"},"stampede":{"n":"Cache stampede","g":"perf","i":"outage"},"stale-cache":{"n":"Stale cache","g":"perf","i":"ux"},"lock-contention":{"n":"Lock contention","g":"perf","i":"perf"},"dual-write":{"n":"Dual write","g":"msg","i":"data"},"dup-msg":{"n":"Duplicate messages","g":"msg","i":"data"},"ordering":{"n":"Out-of-order events","g":"msg","i":"data"},"poison":{"n":"Poison message","g":"msg","i":"outage"},"hot-partition":{"n":"Hot partition","g":"msg","i":"perf"},"read-your-writes":{"n":"Read-your-writes","g":"msg","i":"ux"},"claim-check":{"n":"Oversized messages","g":"msg","i":"outage"},"double-submit":{"n":"Double submit","g":"res","i":"data"},"retry-storm":{"n":"Retry storm","g":"res","i":"outage"},"cascade":{"n":"Cascading failure","g":"res","i":"outage"},"saga":{"n":"Partial failure / saga","g":"res","i":"data"},"clock-skew":{"n":"Clock skew","g":"res","i":"data"},"dup-job":{"n":"Duplicate scheduled job","g":"res","i":"data"},"noisy-neighbor":{"n":"Noisy neighbour","g":"res","i":"perf"},"contract-break":{"n":"Breaking contract","g":"res","i":"outage"},"timeout-budget":{"n":"Misaligned timeouts","g":"res","i":"outage"},"sb-lock-lost":{"n":"Service Bus lock lost","g":"az","i":"data"},"cosmos-429":{"n":"Cosmos DB 429s","g":"az","i":"perf"},"cold-start":{"n":"Cold starts","g":"az","i":"perf"},"signalr-scaleout":{"n":"SignalR scale-out","g":"az","i":"ux"},"kv-throttling":{"n":"Key Vault on hot path","g":"az","i":"outage"},"dp-keys":{"n":"Per-instance state","g":"az","i":"ux"},"sqli":{"n":"SQL injection","g":"sec","i":"security"},"xss":{"n":"XSS","g":"sec","i":"security"},"csrf":{"n":"CSRF","g":"sec","i":"security"},"idor":{"n":"IDOR","g":"sec","i":"security"},"token-storage":{"n":"Tokens in localStorage","g":"sec","i":"security"},"jwt-validation":{"n":"Weak JWT validation","g":"sec","i":"security"},"secrets":{"n":"Leaked secrets","g":"sec","i":"security"},"ssrf":{"n":"SSRF","g":"sec","i":"security"},"overposting":{"n":"Over-posting","g":"sec","i":"security"},"cors":{"n":"CORS misconfiguration","g":"sec","i":"security"},"pii-logs":{"n":"PII in logs","g":"sec","i":"security"},"token-refresh-race":{"n":"Token refresh race","g":"sec","i":"ux"},"open-redirect":{"n":"Open redirect","g":"sec","i":"security"},"credential-stuffing":{"n":"Credential stuffing","g":"sec","i":"security"},"tenant-confusion":{"n":"Tenant confusion","g":"sec","i":"security"},"scim-drift":{"n":"Leaver keeps access","g":"sec","i":"security"},"rerenders":{"n":"Re-render storms","g":"fe","i":"perf"},"stale-closure":{"n":"Stale closure","g":"fe","i":"ux"},"fetch-race":{"n":"Fetch race","g":"fe","i":"ux"},"effect-loop":{"n":"Effect loop","g":"fe","i":"perf"},"waterfall":{"n":"Request waterfall","g":"fe","i":"perf"},"derived-state":{"n":"Derived state drift","g":"fe","i":"ux"},"hydration":{"n":"Hydration mismatch","g":"fe","i":"ux"},"big-list":{"n":"Huge lists","g":"fe","i":"perf"},"bundle":{"n":"Bundle bloat","g":"fe","i":"perf"},"mfe-deps":{"n":"MFE dependency clash","g":"fe","i":"ux"},"rxjs-leak":{"n":"RxJS subscription leak","g":"fe","i":"perf"},"optimistic-rollback":{"n":"Optimistic rollback","g":"fe","i":"ux"},"layout-shift":{"n":"Layout shift","g":"fe","i":"ux"},"a11y":{"n":"Accessibility gaps","g":"fe","i":"ux"},"flaky-tests":{"n":"Flaky tests","g":"ops","i":"debt"},"env-drift":{"n":"Environment drift","g":"ops","i":"outage"},"risky-deploy":{"n":"Big-bang deploys","g":"ops","i":"outage"},"breaking-migration":{"n":"Breaking migration","g":"ops","i":"outage"},"no-tracing":{"n":"No tracing","g":"ops","i":"outage"},"alert-fatigue":{"n":"Alert fatigue","g":"ops","i":"outage"},"vuln-deps":{"n":"Vulnerable dependencies","g":"ops","i":"security"},"merge-hell":{"n":"Merge hell","g":"ops","i":"debt"},"cert-expiry":{"n":"Credential expiry","g":"ops","i":"outage"},"untested-backups":{"n":"Untested backups","g":"ops","i":"data"},"log-volume":{"n":"Log volume explosion","g":"ops","i":"perf"},"outbound-429":{"n":"Outbound 429s","g":"ops","i":"outage"},"money-float":{"n":"Money in floats","g":"cor","i":"data"},"timezones":{"n":"Time zone bugs","g":"cor","i":"data"},"culture-strings":{"n":"Culture bugs","g":"cor","i":"data"},"null-refs":{"n":"Null references","g":"cor","i":"outage"},"swallowed-exceptions":{"n":"Swallowed exceptions","g":"cor","i":"data"},"unicode":{"n":"Unicode normalization","g":"cor","i":"data"},"int-overflow":{"n":"Integer overflow","g":"cor","i":"outage"},"distributed-monolith":{"n":"Distributed monolith","g":"arc","i":"debt"},"god-class":{"n":"God class","g":"arc","i":"debt"},"primitive-obsession":{"n":"Primitive obsession","g":"arc","i":"data"},"duplicated-rules":{"n":"Duplicated rules","g":"arc","i":"data"},"legacy-rewrite":{"n":"Big-bang rewrite","g":"arc","i":"debt"},"generic-repo":{"n":"Generic repository","g":"arc","i":"debt"}};
+window.CPG = {"con":{"c":"CON","n":"Concurrency & Consistency"},"net":{"c":"NET","n":".NET Async & Runtime"},"db":{"c":"DB","n":"Data & Queries"},"perf":{"c":"PERF","n":"Performance & Resources"},"msg":{"c":"MSG","n":"Messaging & Events"},"res":{"c":"RES","n":"Resilience & Distributed State"},"az":{"c":"AZ","n":"Azure Platform"},"sec":{"c":"SEC","n":"Security & Identity"},"fe":{"c":"FE","n":"Frontend & React"},"ops":{"c":"OPS","n":"Delivery, Testing & Operations"},"cor":{"c":"COR","n":"Correctness Traps"},"arc":{"c":"ARC","n":"Architecture & Code Health"}};
+
+window.CP = window.CP || [];
+window.CP.push(
+  {
+    id: 'check-act', t: 'The gap between check and act',
+    law: 'Anything you read and then act on can change in between.',
+    q: 'If two of these ran in the same millisecond, would the result still be right?',
+    sum: "Almost every concurrency bug is this one shape. The code reads a value, decides something, then writes — and the decision is made on a fact that is already out of date by the time the write lands. It passes every test, because tests send one request at a time.",
+    tells: [
+      'Two of something that should be one: two seats sold, two refunds, two “first” refresh tokens, two runs of the same job.',
+      'Only under load, only on a retry, only when the user double-clicks — never on your machine.',
+      'The code contains a <code>SELECT</code>, an <code>if</code>, and an <code>UPDATE</code> as three separate steps.'
+    ],
+    moves: [
+      'Decide inside the write: <code>UPDATE … WHERE &lt;still true&gt;</code> and check rows affected. A unique constraint is a decision the database makes for you.',
+      'Carry a version — <code>rowversion</code>, an ETag with <code>If-Match</code> — so the second writer is told it lost instead of silently winning.',
+      'When it can’t be one statement, take a lease: exactly one holder, with an expiry, renewed while it works.',
+      'Single-flight the expensive rebuild: one caller does the work, everyone else awaits that same result.'
+    ],
+    cap: '**Both requests read “1 left” before either wrote.** Closing the gap means deciding inside the write.',
+    d: { type: 'seq', w: 660, minw: 500, alt: 'Two requests read the same stock value, both write, both succeed; the fixed version decides inside the UPDATE',
+      actors: [{ l: 'Request A', k: 'a' }, { l: 'Request B', k: 'a' }, { l: 'Database', s: 'db' }],
+      steps: [
+        { f: 0, t: 2, l: 'SELECT stock → 1' },
+        { f: 1, t: 2, l: 'SELECT stock → 1' },
+        { note: 'the gap: both have decided “there is one left”', at: [0, 2], k: 'b' },
+        { f: 0, t: 2, l: 'UPDATE stock = 0' },
+        { f: 1, t: 2, l: 'UPDATE stock = 0', k: 'b' },
+        { note: 'two orders, one item', at: [0, 2], k: 'b' },
+        { div: 'close the gap', k: 'g' },
+        { f: 0, t: 2, l: 'UPDATE … WHERE stock > 0 → 1 row', mono: true, k: 'g' },
+        { f: 1, t: 2, l: 'UPDATE … WHERE stock > 0 → 0 rows → “sold out”', mono: true, k: 'g' }
+      ] },
+    covers: ['race', 'lost-update', 'write-skew', 'stampede', 'timer-overlap', 'token-refresh-race']
+  },
+  {
+    id: 'shared-state', t: 'Shared state without an owner',
+    law: 'Anything two threads can reach needs one owner, one lock order, and the shortest possible hold.',
+    q: 'Who owns this object, and how long is the lock held?',
+    sum: "The other half of concurrency: not a gap in time but a thing in common. One object, one row, one lock — reached from several threads at once. Either nobody guards it and it corrupts, or everybody queues on it and the system stalls.",
+    tells: [
+      'Errors that name it outright: “A second operation started on this context”, deadlock victim <code>1205</code>, lock wait timeouts.',
+      'Fine with one user, wrong or frozen with ten — and the stack traces all mention the same object.',
+      'Every slow trace passes through the same row, table, lock or singleton.'
+    ],
+    moves: [
+      'One instance per unit of work — per request, per message, per scope — instead of one instance shared by all of them.',
+      'Touch resources in the same order everywhere. That single rule removes most deadlocks.',
+      'Hold the lock around the write only: never around I/O, a call to another service, or anything waiting on a human.',
+      'Lower contention instead of waiting better: shorter transactions, narrower updates, split or partitioned counters.'
+    ],
+    cap: '**One shared object, three callers:** corruption if nothing guards it, a queue if everything does.',
+    d: { type: 'flow', w: 660, minw: 520, cols: 4, rows: 2, ch: 98, alt: 'Three parallel requests share one object and corrupt or block; giving each its own scope removes the contention',
+      nodes: [
+        { id: 'a', x: 0, y: 0, l: '3 requests', sub: 'at the same moment', s: 'stack', k: 'a', w: 118 },
+        { id: 's', x: 1.35, y: 0, l: 'one shared DbContext · one row · one lock', k: 'b', w: 168, badge: 'contended' },
+        { id: 'r', x: 2.85, y: 0, l: 'corrupted state, deadlock 1205, or everyone waiting', s: 'note', k: 'b', w: 156 },
+        { id: 'b', x: 0, y: 1, l: '3 requests', sub: 'at the same moment', s: 'stack', k: 'g', w: 118 },
+        { id: 'o', x: 1.35, y: 1, l: 'one scope each · one lock order · held for the write only', k: 'g', w: 168 },
+        { id: 'g', x: 2.85, y: 1, l: 'nothing mutable is shared, nothing queues', s: 'note', k: 'g', w: 156 }
+      ],
+      edges: [{ f: 'a', t: 's', k: 'b' }, { f: 's', t: 'r', k: 'b' }, { f: 'b', t: 'o', k: 'g' }, { f: 'o', t: 'g', k: 'g' }] },
+    covers: ['dbcontext', 'captive', 'db-deadlock', 'blocking', 'lock-contention']
+  },
+  {
+    id: 'not-returned', t: 'Borrowed and never returned',
+    law: 'Threads, connections, sockets, memory, subscriptions — every one is a pool. What you take, you must give back.',
+    q: 'What does this take, and on which path is it released?',
+    sum: "The app is not doing more work; it has less to work with. Something is taken per request and returned on the happy path only — or not at all — so capacity drains until everything queues behind a resource instead of behind the actual work.",
+    tells: [
+      'Healthy after a restart, degraded after hours, fine again after a recycle.',
+      'Timeouts waiting for a resource rather than doing anything: “Timeout expired … from the pool”, thread-pool starvation warnings, socket exhaustion.',
+      'A counter that only ever goes up: memory, handles, open connections, live subscriptions.'
+    ],
+    moves: [
+      '<code>await</code> all the way down. No <code>.Result</code>, <code>.Wait()</code> or <code>async void</code> — sync-over-async burns two threads per request and can deadlock outright.',
+      'Release in <code>finally</code>, never on the happy path: <code>using</code>, <code>try…finally</code>, <code>takeUntilDestroyed()</code>, <code>-=</code> for every <code>+=</code>.',
+      'Reuse what is expensive to create: <code>IHttpClientFactory</code>, one connection per unit of work, one credential — not a new one per call.',
+      'Flow the <code>CancellationToken</code> so work the caller abandoned actually stops instead of holding its share to the end.'
+    ],
+    cap: '**Capacity, not throughput, is what runs out.** The leak is invisible until the pool reaches zero — then everything waits at once.',
+    d: { type: 'chart', w: 660, h: 210, minw: 480, alt: 'Available pool capacity drains to zero over six hours when resources are not returned, and stays flat when they are',
+      x: ['start', '1 h', '2 h', '3 h', '4 h', '5 h', '6 h'], ymax: 100, yt: [0, 25, 50, 75, 100], yu: '%',
+      series: [
+        { l: 'taken and not returned', k: 'b', v: [100, 82, 64, 45, 27, 9, 1], area: true },
+        { l: 'released in finally', k: 'g', v: [100, 97, 99, 96, 98, 97, 98] }
+      ],
+      bands: [{ y: 10, l: 'pool empty — every request queues, then times out', k: 'b', left: true }] },
+    covers: ['threadpool', 'sync-context-deadlock', 'conn-pool', 'sockets', 'semaphore-leak', 'mem-leak', 'rxjs-leak', 'valuetask-misuse', 'async-void', 'cancellation']
+  },
+  {
+    id: 'round-trips', t: 'The loop is on the wrong side of the wire',
+    law: 'A loop in your code becomes a round trip per item the moment it crosses a boundary.',
+    q: 'How many round trips does one user action make?',
+    sum: "Each call is fast; there are simply hundreds of them, in series, and latency multiplies. Nothing looks broken in the database or the API — the mistake is where the loop lives, not what it does.",
+    tells: [
+      'One page produces hundreds of nearly identical queries or HTTP calls in the trace.',
+      'Response time tracks the number of rows on screen rather than the amount of work.',
+      'The dependency is busy but unstressed: high call count, low CPU, short individual durations.'
+    ],
+    moves: [
+      'Ask for the set, not the item: a join and a projection, <code>Include</code>, <code>WHERE Id IN (…)</code>, a batch endpoint, <code>SqlBulkCopy</code>.',
+      'Push the loop across the wire — let the database do the set operation and return the shape the screen needs.',
+      'Read process-wide values once per process, not once per request: configuration, secrets, feature flags.',
+      'Start independent calls together (<code>Task.WhenAll</code>, <code>Promise.all</code>) instead of one after another, and prefetch what the next screen will need.'
+    ],
+    cap: '**501 round trips for one page.** Same data, same database — the difference is where the loop runs.',
+    d: { type: 'seq', w: 660, minw: 520, alt: 'A page issues one query plus 500 per-row queries; the fixed version issues one joined query',
+      actors: [{ l: 'Browser', s: 'browser' }, 'API', { l: 'Database', s: 'db' }],
+      steps: [
+        { f: 0, t: 1, l: 'GET /orders' },
+        { f: 1, t: 2, l: 'SELECT orders → 500 rows' },
+        { f: 1, t: 2, l: 'SELECT customer WHERE Id = @id', mono: true, k: 'b' },
+        { note: '… × 500 — 501 round trips in series; the page waits for every one of them', at: [1, 2], k: 'b' },
+        { f: 1, t: 0, l: '11 s later', d: true, k: 'b' },
+        { div: 'fetch the set, not the item', k: 'g' },
+        { f: 0, t: 1, l: 'GET /orders' },
+        { f: 1, t: 2, l: 'one query, joined and projected', k: 'g' },
+        { f: 1, t: 0, l: '40 ms', d: true, k: 'g' }
+      ] },
+    covers: ['n-plus-1', 'waterfall', 'bulk-insert', 'kv-throttling']
+  },
+  {
+    id: 'no-bound', t: 'It worked because the number was small',
+    law: 'Every size in the system is an input, not a constant — rows, payloads, list items, log lines, bundle bytes.',
+    q: 'What does this cost at a thousand times today’s volume, and what stops it?',
+    sum: "Nothing is wrong with the code; the data grew. Anything without a ceiling eventually meets one that someone else chose — a timeout, a message size limit, a memory limit, a bill — and it always meets it for your largest customer first.",
+    tells: [
+      'Fast in test, slow in production, slowest for the biggest tenant.',
+      'Endpoints and queries with no page size, no <code>WHERE</code>, no limit, no retention.',
+      'Payload and memory that scale with the result set: megabytes of JSON, 60,000-row joins, thousands of DOM nodes, a bundle that only grows.'
+    ],
+    moves: [
+      'Put a ceiling on everything that can grow: page size, message size, queue depth, retention, bundle budget — and make exceeding it an error.',
+      'Ask for exactly what the screen shows: filter, project, <code>TOP n</code>, keyset paging instead of deep <code>OFFSET</code>, an index that makes the filter sargable.',
+      'Handle a window, not the whole set: virtualized lists, streaming, split queries, a claim check instead of a fat message.',
+      'Fail in CI, not in production — bundle budgets, row-count assertions and load tests shaped like real data.'
+    ],
+    cap: '**Unbounded work follows the data;** a bounded page, projection and index stay flat no matter how big the table gets.',
+    d: { type: 'chart', w: 660, h: 210, minw: 480, alt: 'Cost grows superlinearly with data volume when unbounded and stays flat when bounded',
+      x: ['100 rows', '1 k', '10 k', '100 k', '1 M'], ymax: 100, yt: [0, 25, 50, 75, 100], yu: '×',
+      series: [
+        { l: 'no limit: cost follows the data', k: 'b', v: [1, 6, 22, 58, 100], area: true },
+        { l: 'bounded: page + projection + index', k: 'g', v: [1, 1.2, 1.4, 1.5, 1.6] }
+      ],
+      bands: [{ y: 66, l: 'timeout · out of memory · size limit · the bill', k: 'b', left: true }] },
+    covers: ['paging', 'generic-repo', 'cartesian-explosion', 'missing-index', 'backpressure', 'big-list', 'bundle', 'gc-pressure', 'log-volume', 'claim-check']
+  }
+);
+
+window.CP.push(
+  {
+    id: 'skew', t: 'Average is fine, one slice is on fire',
+    law: 'Load is never evenly spread. The hot key, the biggest tenant and the one bad plan decide your p99.',
+    q: 'Which key, tenant or partition takes the most traffic — and what protects everyone else from it?',
+    sum: "Capacity is allocated evenly and demand arrives unevenly. The dashboard averages the two together and looks healthy, while one partition, one tenant or one query plan absorbs everything and starts refusing work.",
+    tells: [
+      'Overall metrics normal; a small, stable set of requests timing out — always the same customer or key.',
+      'One partition, shard, queue or collection hot while the rest idle; <code>429</code>s concentrated in one place.',
+      'Latency that changes after a restart, a plan cache eviction or a new tenant, with no code change at all.'
+    ],
+    moves: [
+      'Pick a partition key with high cardinality and even traffic; add a second dimension (tenant + month, id + bucket) when one value dominates.',
+      'Give every tenant a quota — rate limits, concurrency caps, separate queues — so one caller cannot take the whole system.',
+      'Ask for a plan per shape rather than one plan for everyone: <code>OPTIMIZE FOR UNKNOWN</code>, recompile the skewed query, or split it.',
+      'Respect someone else’s limit as if it were yours: honour <code>Retry-After</code>, cap outbound concurrency, and queue rather than hammer.',
+      'Measure per key, not on average: p99 by tenant, RU by partition, throttled requests by resource.'
+    ],
+    cap: '**One tenant holds 78% of the traffic on one partition.** A composite key and a per-tenant quota flatten the same load.',
+    d: { type: 'flow', w: 660, minw: 540, cols: 5, rows: 2, ch: 92, alt: 'Four partitions with a skewed key where one takes 78 percent of traffic, and the same four balanced after adding a second key dimension',
+      nodes: [
+        { id: 'l0', x: 0, y: 0, l: 'key = tenantId', s: 'note', k: 'b', w: 116 },
+        { id: 'p1', x: 1, y: 0, l: 'Acme', k: 'b', w: 106, badge: '78% · 429' },
+        { id: 'p2', x: 2, y: 0, l: 'Bảo', w: 106, badge: '9%', bk: 'n' },
+        { id: 'p3', x: 3, y: 0, l: 'Chi', w: 106, badge: '8%', bk: 'n' },
+        { id: 'p4', x: 4, y: 0, l: 'Đức', w: 106, badge: '5%', bk: 'n' },
+        { id: 'l1', x: 0, y: 1, l: 'key = tenantId + month', s: 'note', k: 'g', w: 116 },
+        { id: 'q1', x: 1, y: 1, l: 'Acme · 04', k: 'g', w: 106, badge: '26%', bk: 'g' },
+        { id: 'q2', x: 2, y: 1, l: 'Acme · 05', k: 'g', w: 106, badge: '27%', bk: 'g' },
+        { id: 'q3', x: 3, y: 1, l: 'Acme · 06', k: 'g', w: 106, badge: '25%', bk: 'g' },
+        { id: 'q4', x: 4, y: 1, l: 'others', k: 'g', w: 106, badge: '22%', bk: 'g' }
+      ], edges: [] },
+    covers: ['hot-partition', 'cosmos-429', 'noisy-neighbor', 'param-sniff', 'outbound-429']
+  },
+  {
+    id: 'retry', t: 'The retry made it worse',
+    law: 'A failure repeated without a budget becomes an outage. The cure has to fail faster than the disease.',
+    q: 'When this dependency slows down, what stops us from making it slower?',
+    sum: "A dependency wobbles, every layer retries, and offered load multiplies while capacity is already reduced. Long timeouts hold threads open so the caller can't shed anything, and a small degradation turns into a full stop.",
+    tells: [
+      'Traffic on a struggling service that goes up, not down, after it starts failing.',
+      'Three layers of retries: one user action becomes 3 × 3 × 3 attempts, and nobody owns the total.',
+      'Every thread parked on the same slow call; inner timeouts longer than the outer one, so nothing ever gives up in time.'
+    ],
+    moves: [
+      'Retry in exactly one place — usually the outermost client — with jitter, a cap, and only for errors that can succeed later.',
+      'Give the call chain a timeout budget: each hop gets less than its caller, so the caller always gives up first.',
+      'Open a circuit after repeated failures: fail fast, shed load, probe occasionally, and let the dependency recover.',
+      'Isolate with bulkheads so one slow dependency can only consume its own share — and keep what is slow to start warm.'
+    ],
+    cap: '**The dependency slows at t3; retries then quadruple the load it cannot serve.** One retry, a budget and a breaker keep offered load under capacity.',
+    d: { type: 'chart', w: 660, h: 214, minw: 480, alt: 'Offered load quadruples after a dependency slows when every layer retries, and stays near capacity with one retry and a circuit breaker',
+      x: ['t0', 't1', 't2', 't3', 't4', 't5', 't6'], ymax: 420, yt: [0, 100, 200, 300, 400], yu: '%',
+      series: [
+        { l: 'retries at every layer', k: 'b', v: [100, 100, 105, 215, 340, 410, 395], area: true },
+        { l: 'one retry + budget + breaker', k: 'g', v: [100, 100, 105, 140, 95, 70, 92] }
+      ],
+      bands: [{ y: 150, l: 'what the dependency can actually serve', k: 'w', left: true }],
+      vmarks: [{ x: 3, l: 'dependency slows down', k: 'n' }] },
+    covers: ['retry-storm', 'cascade', 'timeout-budget', 'cold-start']
+  },
+  {
+    id: 'at-least-once', t: 'Delivered at least once, in no particular order',
+    law: 'The broker promises delivery — not exactly once, and not in order. The consumer supplies the rest.',
+    q: 'What happens if this message arrives twice, late, or before the one that created it?',
+    sum: "Every queue, every webhook and every retried POST can deliver the same work again, and can deliver the second thing first. A handler written as if delivery were exactly-once will double-charge, overwrite newer data with older, or wedge the queue behind one message that can never succeed.",
+    tells: [
+      'Duplicate rows, double charges or double emails after a deploy, a retry or a lock expiry.',
+      'Handlers that assume the event that created the entity already landed.',
+      'A dead-letter queue filling with the same message, or a partition stuck behind one poisoned message.'
+    ],
+    moves: [
+      'Make the handler idempotent: a natural key with a unique index, an inbox of processed message ids, or an upsert that is safe to repeat.',
+      'Carry a version or sequence on the entity and ignore anything older than what you already have.',
+      'Finish inside the lock — or renew it — and complete the message only after the work has committed.',
+      'Give up deliberately: a delivery-count limit, dead-letter with the reason attached, and an alert somebody owns.'
+    ],
+    cap: '**The lock expired, so the broker delivered again — correctly.** An inbox of processed ids makes the second delivery free.',
+    d: { type: 'seq', w: 660, minw: 520, alt: 'A message is delivered twice after a lock expires and is charged twice; an inbox of processed ids makes redelivery harmless',
+      actors: ['Producer', { l: 'Broker', s: 'queue' }, 'Consumer', { l: 'Database', s: 'db' }],
+      steps: [
+        { f: 0, t: 1, l: 'OrderPaid #42' },
+        { f: 1, t: 2, l: 'deliver' },
+        { f: 2, t: 3, l: 'INSERT payment' },
+        { note: 'lock expired before the work finished', at: [1, 2], k: 'b' },
+        { f: 1, t: 2, l: 'deliver again — at least once', k: 'b' },
+        { f: 2, t: 3, l: 'INSERT payment — charged twice', k: 'b' },
+        { div: 'make the second delivery free', k: 'g' },
+        { f: 1, t: 2, l: 'deliver again', k: 'g' },
+        { f: 2, t: 3, l: 'message id already in Inbox → ignore, complete', k: 'g' }
+      ] },
+    covers: ['dup-msg', 'ordering', 'poison', 'sb-lock-lost', 'double-submit']
+  },
+  {
+    id: 'two-copies', t: 'One fact, more than one copy',
+    law: 'The moment a fact lives in two places they can disagree — and one of the two writes will fail.',
+    q: 'Where else does this fact live, and how does that copy learn it changed?',
+    sum: "A database, a cache, a search index, a read model, a browser, another instance's memory. Each copy is a promise to keep something in sync, and there is no transaction across them: the commit succeeds, the publish fails, and the two views of the world drift apart.",
+    tells: [
+      'The database is right and the cache, index, read model or screen shows something else.',
+      '“Saved” in the UI, gone after a refresh; a user who changes something and immediately sees the old value.',
+      'A crash between two writes leaves half the work done and nothing retries the rest.',
+      'Users logged out at random, notifications reaching some of them, a job running once per replica — state that assumed one process.'
+    ],
+    moves: [
+      'Commit once: write the fact and the intent to publish in the same transaction (an outbox), then dispatch from there.',
+      'Name the owner of every fact. Other copies are derived and disposable — never authoritative, never the place you fix data.',
+      'Update or invalidate the copy on the write path, with a short TTL only as a safety net.',
+      'For a user’s own change, read from the source until the copy catches up — and roll the optimistic copy back when the write fails.',
+      'Nothing important in one process’s memory: shared key ring, shared cache, a backplane, a single leased scheduler.',
+      'Across services, model the undo: a saga with an explicit compensation for every step that already succeeded.'
+    ],
+    cap: '**Commit then publish is two writes with no transaction around them.** The outbox turns them into one.',
+    d: { type: 'flow', w: 660, minw: 540, cols: 5, rows: 2, ch: 100, alt: 'A dual write where the commit succeeds and the publish fails, versus an outbox that commits both in one transaction',
+      nodes: [
+        { id: 'a', x: 0, y: 0, l: 'App', sub: 'one action, two writes', w: 116 },
+        { id: 'd', x: 1.3, y: 0, l: 'Database', s: 'db', sub: 'committed', w: 116 },
+        { id: 'q', x: 2.7, y: 0, l: 'Broker / cache', s: 'queue', k: 'b', sub: 'never got the news', w: 126 },
+        { id: 'n', x: 4, y: 0, l: 'every copy is now wrong, and nobody knows', s: 'note', k: 'b', w: 124 },
+        { id: 'a2', x: 0, y: 1, l: 'App', sub: 'one action, one transaction', k: 'g', w: 116 },
+        { id: 'o', x: 1.3, y: 1, l: 'Database + Outbox', s: 'db', sub: 'both rows, one commit', k: 'g', w: 116 },
+        { id: 'p', x: 2.7, y: 1, l: 'Dispatcher → broker', s: 'queue', k: 'g', sub: 'retries until sent', w: 116 },
+        { id: 'n2', x: 4, y: 1, l: 'copies converge, worst case a little late', s: 'note', k: 'g', w: 124 }
+      ],
+      edges: [
+        { f: 'a', t: 'd', l: 'commit', lw: 34 }, { f: 'd', t: 'q', l: 'publish', k: 'b', x: true, lw: 34 }, { f: 'q', t: 'n', k: 'b', d: true },
+        { f: 'a2', t: 'o', l: 'commit both', k: 'g', lw: 34 }, { f: 'o', t: 'p', l: 'dispatch', k: 'g', lw: 34 }, { f: 'p', t: 'n2', k: 'g' }
+      ] },
+    covers: ['dual-write', 'saga', 'stale-cache', 'read-your-writes', 'derived-state', 'optimistic-rollback', 'dp-keys', 'signalr-scaleout', 'dup-job']
+  },
+  {
+    id: 'boundaries', t: 'Boundaries in the wrong place',
+    law: 'If one change touches five places, the boundary is wrong — and a rule enforced in only some of them is enforced nowhere.',
+    q: 'For a typical change, how many files, services and teams have to move together?',
+    sum: "Code is split by technical layer or by service name rather than by what changes together. Every feature then cuts across all of them, the same business rule gets written several times, and the copies drift until the report disagrees with the screen.",
+    tells: [
+      'A one-field change needs a coordinated release of three services.',
+      'The same rule — a discount, a tax, an “IsDeleted” flag — written in SQL, C# and TypeScript, and only two of them are right.',
+      'Types named after layers (<code>Manager</code>, <code>Helper</code>, <code>Service</code>) instead of after what the business does.',
+      'Everything is a <code>string</code>, an <code>int</code> or a <code>Dictionary</code>, so the compiler cannot help you at all.'
+    ],
+    moves: [
+      'Draw the boundary around what changes together; keep the slice — endpoint, handler, data access — in one place.',
+      'Own each rule once, and make everything call it: jobs, reports and raw SQL included.',
+      'Enforce the invariant where it cannot be bypassed — a database constraint, a global query filter, a filtered index, a shared contract.',
+      'Give meaning a type: value objects and records instead of bare primitives, so an illegal state will not compile.',
+      'Replace a legacy system in slices behind a façade, never in one big rewrite.'
+    ],
+    cap: '**One small change, three repositories and a report that forgets the rule** — because the boundary follows the technology, not the behaviour.',
+    d: { type: 'flow', w: 660, minw: 520, cols: 4, rows: 3, ch: 76, alt: 'One change touching three components that each re-implement the rule, versus a single slice that owns it',
+      nodes: [
+        { id: 'ch', x: 0, y: 1, l: '“Add a delivery note”', s: 'note', k: 'a', w: 132 },
+        { id: 'x1', x: 1.35, y: 0, l: 'Orders API', sub: 'contract + handler', k: 'b', w: 128 },
+        { id: 'x2', x: 1.35, y: 1, l: 'Billing service', sub: 'the rule, copied', k: 'b', w: 128 },
+        { id: 'x3', x: 1.35, y: 2, l: 'Reporting SQL', sub: 'the rule, forgotten', k: 'b', w: 128 },
+        { id: 'y', x: 2.85, y: 1, l: 'Deliveries slice', sub: 'endpoint · handler · data · one rule, enforced at the boundary', k: 'g', w: 156 }
+      ],
+      edges: [
+        { f: 'ch', t: 'x1', k: 'b' }, { f: 'ch', t: 'x2', k: 'b' }, { f: 'ch', t: 'x3', k: 'b' },
+        { f: 'x2', t: 'y', l: 'one owner', k: 'g', lw: 72 }
+      ] },
+    covers: ['distributed-monolith', 'god-class', 'duplicated-rules', 'primitive-obsession', 'soft-delete-leak']
+  }
+);
+
+window.CP.push(
+  {
+    id: 'two-versions', t: 'Two versions must live together',
+    law: 'There is always a moment when the old and the new are both running. Design that moment, or it designs your outage.',
+    q: 'During the rollout, can the old code and the new schema — and the old client and the new contract — both work?',
+    sum: "Deploys, migrations, contracts and dependencies all share one assumption: that the change is instantaneous. It never is. Old pods serve traffic while new ones start, old clients hold old bundles, old readers still query the column you just renamed.",
+    tells: [
+      'A burst of errors during every release that stops on its own, so nobody investigates it.',
+      'A migration that renames or drops a column in the same release that starts using the new name.',
+      'A two-week-old branch, a remote micro-frontend built against a different framework version, a consumer that breaks when a field disappears.',
+      'Dependency upgrades postponed until they are a project — then shipped all at once, with the security fixes.'
+    ],
+    moves: [
+      'Expand → migrate → contract, in separate releases: add the new thing, write both, backfill, switch readers, and only then remove the old one.',
+      'Separate deploy from release: ship dark behind a flag, warm the new instance, swap, and keep the previous version one click away.',
+      'Change contracts additively — add optional fields, never repurpose one; version anything breaking and run both for a while.',
+      'Merge to trunk daily, share platform packages as versioned singletons, and take dependency upgrades in small continuous steps.'
+    ],
+    cap: '**Three small releases instead of one big one:** every moment in between has a version of the code that works with a version of the schema.',
+    d: { type: 'tl', w: 660, minw: 540, span: 6, ticks: [], lw: 128, rh: 34, alt: 'Expand migrate contract timeline where the old column is kept until nothing reads it',
+      lanes: ['v1 code', 'v2 code', 'new column', 'old column'],
+      bars: [
+        { lane: 0, s: 0, e: 2.6, l: 'reads & writes the old column' },
+        { lane: 1, s: 2, e: 3.6, l: 'writes both', k: 'g' },
+        { lane: 1, s: 3.6, e: 6, l: 'reads the new one', k: 'g' },
+        { lane: 2, s: 2, e: 3.6, l: 'added, nullable', k: 'g' },
+        { lane: 2, s: 3.6, e: 6, l: 'backfilled → authoritative', k: 'g' },
+        { lane: 3, s: 0, e: 4.6, l: 'kept until nothing reads it', k: 'w', wait: true }
+      ],
+      marks: [
+        { t: 2, l: 'release 1 · expand', k: 'n', row: 0 },
+        { t: 3.6, l: 'release 2 · switch readers', k: 'n', row: 1 },
+        { t: 4.6, l: 'release 3 · contract', k: 'n', row: 0 }
+      ] },
+    covers: ['risky-deploy', 'breaking-migration', 'contract-break', 'merge-hell', 'mfe-deps', 'legacy-rewrite', 'vuln-deps']
+  },
+  {
+    id: 'input-trust', t: 'Input is a proposal, not a fact',
+    law: 'Everything that crosses your boundary is untrusted data — including the parts you never thought of as input.',
+    q: 'Where does this value end up: a query, a page, a URL, a file path, an entity?',
+    sum: "Injection in all its forms is one mistake: a value supplied by someone else is pasted into something that gets interpreted. SQL, HTML, a redirect target, an outbound URL, a model binder — each of them will happily execute what you concatenated into it.",
+    tells: [
+      'Strings being concatenated into SQL, HTML, URLs, file paths or shell commands.',
+      '<code>dangerouslySetInnerHTML</code>, <code>[innerHTML]</code>, <code>eval</code>, or a redirect built from a query parameter.',
+      'Requests bound straight onto entities, and outbound calls whose host comes from the caller.'
+    ],
+    moves: [
+      'Never concatenate: parameterize SQL, let the framework encode HTML, build URLs with a URI builder.',
+      'Bind to a DTO containing exactly the fields the caller may set, then map explicitly to the entity.',
+      'Allow-list rather than block-list: permitted outbound hosts, permitted redirect targets, permitted content types, permitted file names.',
+      'Validate and normalize once at the edge, so every comparison further in sees the same canonical value.'
+    ],
+    cap: '**The same value, twice.** Concatenated, it becomes code; passed as a parameter, encoded and mapped, it stays data.',
+    d: { type: 'flow', w: 660, minw: 520, cols: 3, rows: 2, ch: 100, alt: 'An untrusted value concatenated into SQL or HTML becomes code, while the same value passed as a parameter and encoded stays data',
+      nodes: [
+        { id: 'u', x: 0, y: 0, l: 'Value from outside', sub: 'form · query · header · file name · message', k: 'a', w: 168 },
+        { id: 'bad', x: 1, y: 0, l: '"… " + value + " …"', mono: true, sub: 'concatenated into SQL, HTML, a URL, an entity', k: 'b', w: 186 },
+        { id: 'br', x: 2, y: 0, l: 'it runs as code', sub: 'injection · XSS · open redirect · SSRF · mass assignment', s: 'note', k: 'b', w: 176 },
+        { id: 'u2', x: 0, y: 1, l: 'The same value', sub: 'nothing about it has changed', k: 'a', w: 168 },
+        { id: 'good', x: 1, y: 1, l: 'parameter · encoder · DTO · allow-list', k: 'g', w: 186 },
+        { id: 'gr', x: 2, y: 1, l: 'it stays data', sub: 'quoted, escaped, mapped, or refused at the edge', s: 'note', k: 'g', w: 176 }
+      ],
+      edges: [{ f: 'u', t: 'bad', k: 'b' }, { f: 'bad', t: 'br', k: 'b' }, { f: 'u2', t: 'good', k: 'g' }, { f: 'good', t: 'gr', k: 'g' }] },
+    covers: ['sqli', 'xss', 'ssrf', 'open-redirect', 'overposting']
+  },
+  {
+    id: 'prove-it', t: 'Every request must prove itself',
+    law: 'Authentication says who is calling. Authorization has to be checked again on every request, for that exact resource, in that exact tenant.',
+    q: 'If someone changes the id in this URL to a stranger’s, what stops them?',
+    sum: "The screen hides the button and the API allows the call. The token proves someone signed in somewhere — not that this caller may touch this row, in this tenant, right now. Everything from IDOR to cross-tenant leakage is that missing second check.",
+    tells: [
+      'Queries that filter by id but not by owner or tenant: <code>/orders/{id}</code> works for any id.',
+      'Tokens accepted without checking issuer, audience, signing key, lifetime or tenant claim.',
+      '<code>AllowAnyOrigin</code> together with credentials; cookie calls with no antiforgery or <code>SameSite</code>.',
+      'A leaver whose sessions and tokens still work days after the account was disabled.'
+    ],
+    moves: [
+      'Put the caller’s scope in the query itself — <code>WHERE Id = @id AND TenantId = @tenant</code> — enforced in one shared place, not endpoint by endpoint.',
+      'Validate tokens completely, and check the tenant claim against the resource being touched, not just against the token.',
+      'Default to deny: <code>[Authorize]</code> globally with explicit opt-outs, a fixed CORS origin list, antiforgery on cookie-based writes.',
+      'Treat revocation as a feature: short lifetimes, SCIM deprovisioning, and a way to end a session immediately.',
+      'Return the same answer for “not yours” and “does not exist”, so the API does not confirm what it is hiding.'
+    ],
+    cap: '**A valid token is not permission for this row.** The fix is one predicate the caller cannot influence.',
+    d: { type: 'seq', w: 660, minw: 520, alt: 'A request with a valid token from another tenant reads a stranger record until the query also filters by tenant',
+      actors: [{ l: 'Signed-in user', k: 'a' }, 'API', { l: 'Database', s: 'db' }],
+      steps: [
+        { f: 0, t: 1, l: 'GET /api/orders/9981  · valid token, different tenant' },
+        { note: 'the only question asked: “is there a token?”', at: 1, k: 'b' },
+        { f: 1, t: 2, l: 'SELECT … WHERE Id = 9981', mono: true, k: 'b' },
+        { f: 2, t: 1, l: 'somebody else’s order', d: true, k: 'b' },
+        { f: 1, t: 0, l: '200 OK', d: true, k: 'b' },
+        { div: 'authorize the resource, not the session', k: 'g' },
+        { f: 1, t: 2, l: 'SELECT … WHERE Id = 9981 AND TenantId = @tid', mono: true, k: 'g' },
+        { f: 2, t: 1, l: '0 rows', d: true, k: 'g' },
+        { f: 1, t: 0, l: '404 — same answer as “does not exist”', d: true, k: 'g' }
+      ] },
+    covers: ['idor', 'tenant-confusion', 'jwt-validation', 'csrf', 'cors', 'scim-drift']
+  },
+  {
+    id: 'credentials', t: 'Secrets escape and expire',
+    law: 'Every credential has a birth, a rotation and a death. Skip one and it leaks — or it stops working at 3 a.m.',
+    q: 'If this leaked today, what would we do — and what expires in the next ninety days?',
+    sum: "Two failure modes, one lifecycle. Secrets spread into places that outlive them — repositories, pipelines, browser storage, logs — and the ones you do manage quietly reach an expiry date nobody put in a calendar.",
+    tells: [
+      'Connection strings and keys in <code>appsettings</code>, in pipeline variables, or still readable in git history.',
+      'Tokens in <code>localStorage</code>, where any script on the page can read them.',
+      'Logs and error payloads carrying tokens, emails, ID numbers or whole request bodies.',
+      'An outage that begins exactly at a certificate’s expiry; a login that suddenly fails for everyone.',
+      'Password-only sign-in with no lockout and no MFA, meeting lists of leaked credentials.'
+    ],
+    moves: [
+      'Have no secret to leak: managed identity for SQL, Storage, Service Bus and Key Vault.',
+      'What must exist lives in Key Vault, is loaded at startup and cached — never read per request, never committed.',
+      'Keep tokens out of JavaScript’s reach: a BFF with <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code> cookies.',
+      'Redact by default — a logging filter for tokens, ids and personal data, and structured fields instead of whole payloads.',
+      'Inventory every expiry — certificates, client secrets, keys — alert thirty days out, and rotate on a schedule rather than during an incident.',
+      'Assume passwords are already known: MFA, lockout with backoff, and checks against breached-password lists.'
+    ],
+    cap: '**Nothing failed on the day it leaked.** A copy stays valid in an old commit; a certificate quietly reaches its last day.',
+    d: { type: 'tl', w: 660, minw: 540, span: 9, unit: ' mo', lw: 132, rh: 32, alt: 'Timeline showing a secret valid with a rotation window, a certificate expiring into an outage, and a leaked copy still valid in git history',
+      lanes: ['Secret in Key Vault', 'TLS certificate', 'Copy in git history', 'Token in localStorage'],
+      bars: [
+        { lane: 0, s: 0, e: 5, l: 'valid', k: 'g' },
+        { lane: 0, s: 5, e: 6, l: 'rotated', k: 'g' },
+        { lane: 1, s: 0, e: 7.2, l: 'valid' },
+        { lane: 2, s: 0, e: 9, l: 'still readable — assume compromised', k: 'b', wait: true },
+        { lane: 3, s: 0, e: 9, l: 'one XSS away from being someone else’s', k: 'b', wait: true }
+      ],
+      marks: [{ t: 5, l: 'alert 30 days out → rotate', k: 'g', row: 0 }, { t: 7.2, l: 'certificate expires — every sign-in fails', k: 'b', row: 1 }] },
+    covers: ['secrets', 'token-storage', 'pii-logs', 'cert-expiry', 'credential-stuffing']
+  }
+);
+
+window.CP.push(
+  {
+    id: 'my-machine', t: 'It worked on my machine',
+    law: 'Your locale, clock, network, screen and input device are not the user’s — and not the server’s.',
+    q: 'What does this do in another culture, another time zone, on a slow phone, with a keyboard only?',
+    sum: "The code reads state it never declared: the machine's culture, the machine's clock, the browser's fonts and connection, the tester's mouse. Everything works where it was written, and the ambient values change underneath it everywhere else.",
+    tells: [
+      'Bugs that depend on the day of the month (13/07 against 07/13), on the hour, or on one machine’s regional settings.',
+      'Tests that pass alone and fail together, or fail at midnight, or fail only in the pipeline.',
+      'Hydration warnings, content that jumps as images and fonts arrive, controls nobody can reach with Tab.',
+      'Two strings that look identical and do not match; a length limit that cuts a letter in half.'
+    ],
+    moves: [
+      'Make the ambient explicit: <code>InvariantCulture</code> for machine formats, the user’s culture for display, <code>DateTimeOffset</code> in UTC plus an IANA zone for instants.',
+      'Inject the clock (<code>TimeProvider</code>) instead of reading <code>DateTime.Now</code>, so time is an input you can set in a test.',
+      'Normalize text at the boundary (<code>FormC</code>) and measure it in text elements, not UTF-16 units.',
+      'One artifact everywhere, configuration outside it, environments provisioned from code — so no machine is special.',
+      'Reserve the space before content arrives, and walk the page once with the keyboard and once with a screen reader.',
+      'Render the same thing on server and client: no <code>Date.now()</code>, <code>Math.random()</code> or <code>window</code> in the first render.'
+    ],
+    cap: '**One build, two environments, two answers** — because the culture, clock, network and input device were never stated.',
+    d: { type: 'flow', w: 660, minw: 540, cols: 4, rows: 3, ch: 80, alt: 'One build behaving differently on a developer laptop and a user device until the ambient culture, clock and layout are made explicit',
+      nodes: [
+        { id: 'c', x: 0, y: 0.5, l: 'One build', sub: 'implicit culture, clock, network, input', k: 'a', w: 140 },
+        { id: 'e1', x: 1.4, y: 0, l: 'Your laptop', sub: 'en-US · UTC+7 · fibre · mouse', w: 142 },
+        { id: 'e2', x: 1.4, y: 1, l: 'The user', sub: 'de-DE · UTC · 3G phone · keyboard', k: 'b', w: 142 },
+        { id: 'o1', x: 2.85, y: 0, l: '“7/9/2026” · nothing moves · all reachable', s: 'note', w: 140 },
+        { id: 'o2', x: 2.85, y: 1, l: '“09.07.2026” · content jumps · Tab goes nowhere', s: 'note', k: 'b', w: 148 },
+        { id: 'fx', x: 1.4, y: 2, l: 'State the ambient', sub: 'InvariantCulture · UTC + IANA zone · TimeProvider · reserved space · keyboard path', k: 'g', w: 196 },
+        { id: 'o3', x: 2.85, y: 2, l: 'the same answer everywhere', s: 'note', k: 'g', w: 140 }
+      ],
+      edges: [
+        { f: 'c', t: 'e1' }, { f: 'c', t: 'e2', k: 'b' },
+        { f: 'e1', t: 'o1' }, { f: 'e2', t: 'o2', k: 'b' },
+        { f: 'c', t: 'fx', k: 'g' }, { f: 'fx', t: 'o3', k: 'g' }
+      ] },
+    covers: ['culture-strings', 'timezones', 'clock-skew', 'env-drift', 'flaky-tests', 'hydration', 'layout-shift', 'a11y']
+  },
+  {
+    id: 'type-lies', t: 'The type can’t hold the value',
+    law: 'A type that silently accepts a value it cannot represent will lie about it later.',
+    q: 'What is the largest, smallest, emptiest and strangest value this can ever hold?',
+    sum: "Nothing throws. A binary fraction rounds, an integer wraps, a missing value passes as present, two spellings of the same letter compare as different — and the wrong answer travels downstream until a total, an identity column or a login stops making sense.",
+    tells: [
+      'Totals off by a cent; a reconciliation that never balances however often you re-run it.',
+      'Counters or ids that suddenly go negative, or inserts failing with “arithmetic overflow converting IDENTITY to int”.',
+      '<code>NullReferenceException</code> in production on a field the model swore was there.',
+      'Two names that look identical but never match; a 50-character limit that cuts a letter in half.'
+    ],
+    moves: [
+      '<code>decimal</code> for money — or integer minor units — never <code>double</code>; decide and write down the rounding rule once.',
+      '<code>bigint</code> / <code>long</code> for anything that counts events, and <code>checked</code> arithmetic where silence is worse than an exception.',
+      'Turn nullability on and keep it on: nullable reference types, <code>strictNullChecks</code>, parse methods that return a result instead of throwing.',
+      'Normalize strings to one canonical form at the boundary, and count them in text elements.',
+      'Monitor the ceilings you cannot change — identity headroom, column widths, message sizes — and alert well before them.'
+    ],
+    cap: '**The same four values through two sets of types.** One set quietly changes them; the other refuses to.',
+    d: { type: 'flow', w: 660, minw: 520, cols: 3, rows: 2, ch: 104, alt: 'Four values passed through loose types produce wrong results, and through precise types produce exact ones',
+      nodes: [
+        { id: 'v', x: 0, y: 0, l: '0.1 + 0.2 · 2,147,483,648 · “Lộc” (combining) · a missing field', mono: true, k: 'a', w: 178 },
+        { id: 't', x: 1, y: 0, l: 'double · int · raw string · non-nullable reference', k: 'b', w: 176 },
+        { id: 'r', x: 2, y: 0, l: '0.30000000000000004 · −2,147,483,648 · a second “Lộc” · NullReferenceException', s: 'note', k: 'b', w: 180 },
+        { id: 'v2', x: 0, y: 1, l: 'The same four values', k: 'a', w: 178 },
+        { id: 't2', x: 1, y: 1, l: 'decimal · bigint · normalized text · nullable-aware', k: 'g', w: 176 },
+        { id: 'r2', x: 2, y: 1, l: 'exact totals · headroom for years · one canonical string · a compile error instead', s: 'note', k: 'g', w: 180 }
+      ],
+      edges: [{ f: 'v', t: 't', k: 'b' }, { f: 't', t: 'r', k: 'b' }, { f: 'v2', t: 't2', k: 'g' }, { f: 't2', t: 'r2', k: 'g' }] },
+    covers: ['money-float', 'int-overflow', 'null-refs', 'unicode']
+  },
+  {
+    id: 'nobody-looking', t: 'Nobody was looking',
+    law: 'Most incidents were visible long before they were noticed — in a log nobody read, an exception nobody threw, a backup nobody restored.',
+    q: 'How would we find out about this, and who would be told?',
+    sum: "This is not a bug; it is the reason a bug became an incident. The signal was swallowed, or unjoinable across services, or buried under alerts everyone had muted — so the first person to notice was the customer.",
+    tells: [
+      'The customer reports it first, and the first question in the channel is “when did this start?”',
+      '<code>catch (Exception) { }</code>, or a log line where an error should have been raised.',
+      'Requests you cannot follow across services, because nothing carries a shared id.',
+      'Hundreds of alerts a day that everyone ignores — or one dashboard nobody opens.',
+      'A restore procedure that has never actually been run.'
+    ],
+    moves: [
+      'One trace id across every hop (OpenTelemetry), attached to every log line and returned to the client.',
+      'Let exceptions travel: handle only what you can act on, add context, and map the rest to a <code>ProblemDetails</code> response and a real log with the stack.',
+      'Alert on user-visible symptoms against an SLO — latency, error rate, queue age — and page only for what someone must act on now.',
+      'Rehearse the recovery: restore a backup on a schedule and measure how long it took.'
+    ],
+    cap: '**The failure ran for nine and a half hours before anyone knew.** The signal existed within minutes.',
+    d: { type: 'tl', w: 660, minw: 540, span: 12, unit: ' h', lw: 136, rh: 34, alt: 'An incident running for nine hours before a customer reports it, compared with an SLO alert firing within minutes',
+      lanes: ['What was happening', 'What we saw', 'With one signal'],
+      bars: [
+        { lane: 0, s: 0.2, e: 12, l: 'errors climbing after the deploy', k: 'b' },
+        { lane: 1, s: 0.2, e: 9.4, l: 'nothing: swallowed exception, no trace id, muted alert', k: 'm', wait: true },
+        { lane: 2, s: 0.2, e: 0.9, l: '', k: 'g' }
+      ],
+      pts: [{ lane: 2, t: 0.9, l: 'SLO burn alert → one owner paged', k: 'g' }],
+      marks: [{ t: 0.2, l: 'deploy', k: 'n', row: 0 }, { t: 9.5, l: 'a customer tells us', k: 'b', row: 1 }] },
+    covers: ['no-tracing', 'alert-fatigue', 'swallowed-exceptions', 'untested-backups']
+  },
+  {
+    id: 'ui-identity', t: 'The UI re-ran on identity, not value',
+    law: 'A component re-runs when a reference changes, not when the value does — and an effect that writes what it watches never stops.',
+    q: 'What exactly changed to make this run again?',
+    sum: "Reactive UIs compare references. A new object literal, a new arrow function, a new array — same value, different identity — and everything downstream re-runs. Put a write inside an effect that watches its own result and the loop closes.",
+    tells: [
+      'Typing in one field re-renders half the page; the profiler shows props that “changed” to identical values.',
+      '“Maximum update depth exceeded”, or an effect that sets state it also depends on.',
+      'Responses arriving out of order, so the list shows the results of the previous search.',
+      'A handler that reads a value from three renders ago and cannot see the current one.'
+    ],
+    moves: [
+      'Derive instead of duplicating: compute from the source during render rather than copying into state and keeping it in sync.',
+      'Keep identities stable — <code>useMemo</code>, selectors, split contexts, the React Compiler — and pass values, not freshly built objects.',
+      'Name dependencies honestly: put the changing value in the array and keep event-shaped logic out of the effect (<code>useEffectEvent</code>).',
+      'Let a query library own server state: keys, cancellation and ordering are solved there, and the newest response for the current key wins.'
+    ],
+    cap: '**Nothing changed except the references.** Stable identities and a query key break the loop and the race at once.',
+    d: { type: 'flow', w: 660, minw: 540, cols: 4, rows: 2, ch: 106, hb: 10, alt: 'A render loop caused by new references each render, and the same flow with stable identities and a query key',
+      nodes: [
+        { id: 'p', x: 0, y: 0, l: 'Parent renders', sub: 'style={{…}} · onPick={() => …}', submono: true, w: 148 },
+        { id: 'n', x: 1.05, y: 0, l: 'new reference, same value', k: 'b', w: 132 },
+        { id: 'c', x: 2.05, y: 0, l: 'every child re-renders', k: 'b', w: 132 },
+        { id: 'e', x: 3.05, y: 0, l: 'effect runs → setState', k: 'b', w: 132, badge: 'and again' },
+        { id: 'p2', x: 0, y: 1, l: 'Parent renders', sub: 'memoized values, stable handlers', k: 'g', w: 148 },
+        { id: 'n2', x: 1.05, y: 1, l: 'same reference, same value', k: 'g', w: 132 },
+        { id: 'c2', x: 2.05, y: 1, l: 'only what changed re-renders', k: 'g', w: 132 },
+        { id: 'e2', x: 3.05, y: 1, l: 'query key owns the request', sub: 'newest response for this key wins', k: 'g', w: 140 }
+      ],
+      edges: [
+        { f: 'p', t: 'n', k: 'b' }, { f: 'n', t: 'c', k: 'b' }, { f: 'c', t: 'e', k: 'b' },
+        { f: 'e', t: 'p', k: 'b', c: -62, d: true },
+        { f: 'p2', t: 'n2', k: 'g' }, { f: 'n2', t: 'c2', k: 'g' }, { f: 'c2', t: 'e2', k: 'g' }
+      ] },
+    covers: ['rerenders', 'effect-loop', 'stale-closure', 'fetch-race']
+  }
+);
+
+/* ===== Eighteen Shapes: build the page from window.CP ===== */
+(function () {
+  'use strict';
+  var CP = window.CP || [], N = window.CPN || {}, G = window.CPG || {};
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = window.DG.esc;
+  var pad2 = function (i) { return i < 10 ? '0' + i : String(i); };
+  var strong = function (s) { return String(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'); };
+  var li = function (a) { return a.map(function (x) { return '<li>' + x + '</li>'; }).join(''); };
+
+  /* ---------- markup ---------- */
+  function chipHTML(id) {
+    var c = N[id];
+    if (!c) return '<span class="chip">' + esc(id) + '</span>';
+    return '<span class="chip" data-id="' + esc(id) + '"><i class="c">' + esc((G[c.g] || {}).c || '') + '</i>' + esc(c.n) + '</span>';
+  }
+  function patHTML(p, i) {
+    var n = p.covers.length;
+    return '<section class="pat" id="p-' + p.id + '" aria-labelledby="h-' + p.id + '">' +
+      '<div class="pat-h">' +
+        '<span class="pnum" aria-hidden="true">' + pad2(i + 1) + '</span>' +
+        '<div class="pat-t"><h2 id="h-' + p.id + '">' + esc(p.t) + '</h2>' +
+          '<p class="law">' + strong(p.law) + '</p></div>' +
+        '<span class="pct">' + n + ' problem' + (n === 1 ? '' : 's') + '</span>' +
+      '</div>' +
+      '<div class="pat-b">' +
+        '<p class="sum">' + p.sum + '</p>' +
+        '<figure class="dgf"><div class="dgf-top"><figcaption>' + strong(p.cap) + '</figcaption></div>' +
+          '<div class="dg-scroll">' + window.DG.render(p.d) + '</div></figure>' +
+        '<div class="cols">' +
+          '<div class="tells"><h4>You&rsquo;ll know it by</h4><ul>' + li(p.tells) + '</ul></div>' +
+          '<div class="moves"><h4>The move</h4><ul>' + li(p.moves) + '</ul></div>' +
+        '</div>' +
+        '<p class="ask"><b class="kl">Ask</b>' + esc(p.q) + '</p>' +
+        '<div class="cov"><h4>Accounts for ' + n + ' of the 106 problems</h4>' +
+          '<div class="chips">' + p.covers.map(chipHTML).join('') + '</div></div>' +
+      '</div></section>';
+  }
+
+  /* ---------- render ---------- */
+  var total = CP.reduce(function (s, p) { return s + p.covers.length; }, 0);
+  $('#pats').innerHTML = CP.map(patHTML).join('');
+  $('#nav').innerHTML = CP.map(function (p, i) {
+    return '<button class="nav-i" type="button" data-to="p-' + p.id + '"><span class="c">' + pad2(i + 1) + '</span>' + esc(p.t) + '</button>';
+  }).join('');
+  $('#qgrid').innerHTML = CP.map(function (p, i) {
+    return '<li><button class="qbtn" type="button" data-to="p-' + p.id + '"><span class="c">' + pad2(i + 1) + '</span>' +
+      '<span>' + esc(p.q) + '<span class="qn">' + esc(p.t) + '</span></span></button></li>';
+  }).join('');
+  $('#side-meta').textContent = CP.length + ' shapes · ' + total + ' problems';
+  $('#checks-ct').textContent = CP.length + ' questions';
+  $('#foot').innerHTML = '<p><b>' + CP.length + ' shapes · ' + total + ' problems.</b> Every problem in the long sheet appears under exactly one shape here. ' +
+    'When a new bug does not fit any of them, it is worth writing down — that is a nineteenth shape.</p>' +
+    '<p>Examples are .NET, React, Angular and Azure, but the shapes are not specific to them.</p>';
+
+  /* ---------- navigate ---------- */
+  var nav = Array.prototype.slice.call(document.querySelectorAll('.nav-i')), body = document.body;
+  function closeNav() { body.classList.remove('nav-open'); $('#scrim').hidden = true; $('#menu-btn').setAttribute('aria-expanded', 'false'); }
+  function go(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (el.closest('.pat') && el.closest('.pat').hidden) clear();
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    closeNav();
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-to]');
+    if (b) { e.preventDefault(); go(b.getAttribute('data-to')); }
+  });
+  $('#menu-btn').addEventListener('click', function () {
+    var open = !body.classList.contains('nav-open');
+    body.classList.toggle('nav-open', open); $('#scrim').hidden = !open; this.setAttribute('aria-expanded', String(open));
+  });
+  $('#scrim').addEventListener('click', closeNav);
+
+  /* ---------- search ---------- */
+  var q = $('#cp-q'), hits = $('#hits'), empty = $('#empty'), checks = $('#checks');
+  var HAY = CP.map(function (p) {
+    return (p.t + ' ' + p.law + ' ' + p.q + ' ' + p.sum + ' ' + p.tells.join(' ') + ' ' + p.moves.join(' ') + ' ' +
+      p.covers.map(function (id) { var c = N[id]; return id + ' ' + (c ? c.n + ' ' + ((G[c.g] || {}).n || '') : ''); }).join(' '))
+      .replace(/<[^>]+>/g, ' ').toLowerCase();
+  });
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.pat'));
+  function clear() { q.value = ''; filter(); }
+  function filter() {
+    var v = q.value.trim().toLowerCase(), shown = 0;
+    sections.forEach(function (s, i) {
+      var on = !v || HAY[i].indexOf(v) >= 0;
+      s.hidden = !on; if (on) shown++;
+      Array.prototype.forEach.call(s.querySelectorAll('.chip'), function (c) {
+        var id = c.getAttribute('data-id') || '', nm = ((N[id] || {}).n || '').toLowerCase();
+        c.classList.toggle('hit', !!v && on && (nm.indexOf(v) >= 0 || id.indexOf(v) >= 0));
+      });
+    });
+    checks.hidden = !!v;
+    empty.hidden = shown > 0;
+    hits.hidden = !v;
+    hits.textContent = shown + '/' + CP.length;
+    nav.forEach(function (b) {
+      var t = b.getAttribute('data-to'), el = t && document.getElementById(t);
+      b.hidden = !!v && !!el && el.classList.contains('pat') && el.hidden;
+    });
+  }
+  q.addEventListener('input', filter);
+  q.addEventListener('keydown', function (e) { if (e.key === 'Escape') { clear(); q.blur(); } });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) { e.preventDefault(); q.focus(); q.select(); }
+  });
+
+  /* ---------- scroll spy ---------- */
+  var byId = {};
+  nav.forEach(function (b) { byId[b.getAttribute('data-to')] = b; });
+  var seen = {};
+  var io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (en) { seen[en.target.id] = en.isIntersecting ? en.boundingClientRect.top : null; });
+    var best = null, bt = 1e9;
+    Object.keys(seen).forEach(function (id) {
+      var t = seen[id];
+      if (t == null) return;
+      var d = Math.abs(t - 80);
+      if (d < bt) { bt = d; best = id; }
+    });
+    nav.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-to') === best); });
+  }, { rootMargin: '-70px 0px -55% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+  if (byId.checks) io.observe(checks);
+
+  /* ---------- theme ---------- */
+  $('#theme-btn').addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme');
+    if (!cur) cur = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('cp-theme', next); } catch (e) {}
+  });
+})();
+
+</script>
+
+</body></html>
