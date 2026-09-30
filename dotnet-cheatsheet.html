@@ -856,6 +856,7 @@ window.NCS_PROG = [
   ['mw', 'builder.Services.AddProblemDetails()'],
   ['mw', '    .AddExceptionHandler<GlobalExceptionHandler>();'],
   ['api', 'builder.Services.AddValidation().AddOpenApi();'],
+  ['ctr', 'builder.Services.AddApiVersioning().AddApiExplorer();'],
   ['api', 'builder.Services.AddAuthentication().AddJwtBearer();'],
   ['api', 'builder.Services.AddAuthorization();'],
   ['log', 'builder.Services.AddOpenTelemetry()'],
@@ -895,7 +896,10 @@ window.NCS_FINDER = [
   ['Choose a DI lifetime', 'transient, scoped or singleton', ['di-sim', 'di-life', 'di-validate', 'di-reg']],
   ['Protect an endpoint', 'auth policies, rate limits, CORS', ['api-auth', 'api-rate', 'sec-cors', 'mw-pipe']],
   ['Trace a request across services', 'logs, spans and metrics together', ['log-otel', 'log-custom', 'log-template', 'mw-custom']],
-  ['Test against real dependencies', 'API + database, fake time', ['tst-int', 'tst-time', 'tst-nsub', 'tst-xunit']],
+  ['Write fast unit tests', 'xUnit, NSubstitute, test data, fake time', ['tst-xunit', 'tst-nsub', 'tst-bogus', 'tst-time']],
+  ['Test an API against real dependencies', 'real pipeline and database, fakes for the rest', ['tst-int', 'tst-int-test', 'tst-int-auth', 'tst-int-map']],
+  ['Enforce architecture rules in CI', 'layer dependencies as tests', ['tst-layers', 'tst-arch']],
+  ['Load-test an API', 'k6 scripts, thresholds, test types', ['tst-k6', 'tst-k6-kinds', 'tst-k6-run']],
   ['Find a memory or CPU problem', 'counters, traces, dumps', ['mem-diag', 'mem-gc', 'mem-bench', 'mem-span']],
   ['Set up or ship a solution', 'solution files, packages, publish', ['cli-cmds', 'cli-props', 'cli-cpm', 'cli-file']],
   ['Publish events without losing them', 'outbox, confirms, idempotent consumers', ['msg-outbox', 'msg-outbox-write', 'msg-relay', 'msg-inbox']],
@@ -904,7 +908,9 @@ window.NCS_FINDER = [
   ['Write generic code over numbers or IDs', 'constraints, static abstract members', ['gen-math', 'gen-static', 'gen-cons', 'gen-box']],
   ['Make an app or library AOT-ready', 'source generators, trimming', ['aot-compat', 'aot-csproj', 'aot-trim', 'aot-builtin']],
   ['Run the whole system locally', 'Aspire AppHost and dashboard', ['dep-graph', 'dep-apphost', 'dep-defaults', 'dep-cli']],
-  ['Ship to containers or Kubernetes', 'images, probes, proxies', ['dep-container', 'dep-k8s', 'dep-dockerfile', 'dep-proxy']]
+  ['Ship to containers or Kubernetes', 'images, probes, proxies', ['dep-container', 'dep-k8s', 'dep-dockerfile', 'dep-proxy']],
+  ['Evolve an API without breaking clients', 'versioning, breaking changes, contract diffs', ['ctr-changes', 'ctr-version', 'ctr-oas-diff', 'ctr-enum']],
+  ['Page, patch and update safely', 'keyset cursors, merge patch, ETags, idempotency keys', ['ctr-keyset', 'ctr-patch', 'ctr-etag', 'ctr-idem']]
 ];
 
 /* Collection picker */
@@ -2175,6 +2181,242 @@ app.MapGet("/orders/{id:int}/events",
 });
 
 window.NCS.push({
+  id: 'ctr', code: 'CTR', grp: 'App host', name: 'API contracts',
+  blurb: 'A contract is everything clients depend on: shapes, status codes, versions and guarantees. Change it additively, version the rest, and make concurrency and retries explicit.',
+  blocks: [
+    { k: 'table', id: 'ctr-changes', t: 'Breaking or safe?', cols: ['Change', 'Verdict', 'Why'], rows: [
+      ['Add an endpoint, or an optional response field', 'safe', 'System.Text.Json ignores unknown properties by default'],
+      ['Add an optional request field with a default', 'safe', 'old clients keep working unchanged'],
+      ['Add a **required** request field', 'breaking', 'old clients start getting 400s'],
+      ['Remove or rename a field, or change its type or format', 'breaking', 'deserialization fails or data silently disappears'],
+      ['Add an enum value', 'breaking for strict clients', 'a client that maps every value throws on the new one'],
+      ['Tighten validation, or change status codes or the error shape', 'breaking', 'client error handling was written against the old behaviour'],
+      ['Change the default sort order or page size', 'breaking in practice', 'clients quietly depend on it']
+    ] },
+
+    { k: 'snip', id: 'ctr-version', t: 'Versioning with Asp.Versioning', v: 'Asp.Versioning 10', code: `
+builder.Services.AddApiVersioning(o =>
+{
+    o.DefaultApiVersion = new ApiVersion(1);
+    o.ReportApiVersions = true;                        // api-supported-versions response header
+    o.ApiVersionReader = new UrlSegmentApiVersionReader();
+}).AddApiExplorer(o =>
+{
+    o.GroupNameFormat = "'v'VVV";                      // one OpenAPI document per version
+    o.SubstituteApiVersionInUrl = true;
+});
+
+var orders = app.NewVersionedApi("Orders");
+var v1 = orders.MapGroup("/api/v{version:apiVersion}/orders").HasApiVersion(1);
+var v2 = orders.MapGroup("/api/v{version:apiVersion}/orders").HasApiVersion(2);
+
+v1.MapGet("/{id:int}", GetOrderV1);
+v2.MapGet("/{id:int}", GetOrderV2);                    // v2 changed the response shape
+// retiring v1: HasDeprecatedApiVersion(1) adds the api-deprecated-versions header`,
+      note: 'Packages `Asp.Versioning.Http` and `Asp.Versioning.Mvc.ApiExplorer`; version 10.2 also ships Roslyn analyzers for common mistakes.' },
+
+    { k: 'snip', id: 'ctr-keyset', t: 'Keyset pagination with an opaque cursor', code: `
+public readonly record struct Cursor(DateTime CreatedAt, long Id)
+{
+    public string Encode() => Base64Url.EncodeToString(JsonSerializer.SerializeToUtf8Bytes(this));
+    public static Cursor? Decode(string? s) =>
+        s is null ? null : JsonSerializer.Deserialize<Cursor>(Base64Url.DecodeFromChars(s));
+}
+
+app.MapGet("/api/orders", async (string? after, int? limit, AppDb db, CancellationToken ct) =>
+{
+    int take = Math.Clamp(limit ?? 50, 1, 200);
+    IQueryable<Order> q = db.Orders.AsNoTracking();
+    if (Cursor.Decode(after) is { } c)
+        q = q.Where(o => o.CreatedAt < c.CreatedAt || (o.CreatedAt == c.CreatedAt && o.Id < c.Id));
+    var page = await q.OrderByDescending(o => o.CreatedAt).ThenByDescending(o => o.Id)
+        .Take(take + 1).Select(o => new OrderRow(o.Id, o.CreatedAt, o.Total)).ToListAsync(ct);
+    string? next = page.Count > take
+        ? new Cursor(page[take - 1].CreatedAt, page[take - 1].Id).Encode() : null;
+    return TypedResults.Ok(new { items = page.Take(take), next });   // index (CreatedAt, Id)
+});`,
+      note: 'Clients must treat the cursor as opaque. Fetching `take + 1` rows tells you whether a next page exists without a `COUNT(*)`; a malformed cursor should return 400, not 500.' },
+
+    { k: 'dg', id: 'ctr-lost-update', t: 'Two clients edit the same order', seg: ['Last write wins', 'If-Match'],
+      capB: '**Last write wins:** both clients read version 1. B saves last and silently erases A\'s change: a lost update, with two 200s.',
+      capF: '**If-Match:** each write carries the ETag it was based on. B\'s stale write gets 412, so B re-reads and merges instead of overwriting.',
+      b: { type: 'seq', w: 680, minw: 520,
+        actors: ['Client A', { l: 'Orders API', k: 'a' }, 'Client B'],
+        steps: [
+          { f: 0, t: 1, l: 'GET /orders/7' }, { f: 1, t: 0, l: '200, total 100', d: true },
+          { f: 2, t: 1, l: 'GET /orders/7' }, { f: 1, t: 2, l: '200, total 100', d: true },
+          { f: 0, t: 1, l: 'PUT total 120' }, { f: 1, t: 0, l: '200', d: true },
+          { f: 2, t: 1, l: 'PUT total 100 + note', k: 'b' }, { f: 1, t: 2, l: '200', d: true },
+          { note: 'B sent the total it read: A\'s change to 120 is gone.', at: [0, 2], k: 'b' }
+        ] },
+      f: { type: 'seq', w: 680, minw: 520,
+        actors: ['Client A', { l: 'Orders API', k: 'a' }, 'Client B'],
+        steps: [
+          { f: 0, t: 1, l: 'GET /orders/7' }, { f: 1, t: 0, l: '200, ETag "v1"', d: true },
+          { f: 2, t: 1, l: 'GET /orders/7' }, { f: 1, t: 2, l: '200, ETag "v1"', d: true },
+          { f: 0, t: 1, l: 'PUT, If-Match "v1"' }, { f: 1, t: 0, l: '204, ETag "v2"', d: true, k: 'g' },
+          { f: 2, t: 1, l: 'PUT, If-Match "v1"', k: 'w' }, { f: 1, t: 2, l: '412 Precondition Failed', d: true, k: 'b' },
+          { note: 'B re-reads version 2 and reapplies its note: nothing is lost.', at: [0, 2], k: 'g' }
+        ] } },
+
+    { k: 'snip', id: 'ctr-etag', t: 'ETags and If-Match on top of rowversion', code: `
+static string ETagOf(byte[] rowVersion) => '"' + Convert.ToBase64String(rowVersion) + '"';
+
+app.MapGet("/api/orders/{id:int}", async (int id, AppDb db, HttpContext http,
+    CancellationToken ct) =>
+{
+    var o = await db.Orders.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
+    if (o is null) return Results.NotFound();
+    string etag = ETagOf(o.RowVersion);
+    if (http.Request.Headers.IfNoneMatch == etag) return Results.StatusCode(304);   // still current
+    http.Response.Headers.ETag = etag;
+    return Results.Ok(o.ToDto());
+});
+
+app.MapPut("/api/orders/{id:int}", async (int id, OrderDto dto, AppDb db, HttpContext http,
+    CancellationToken ct) =>
+{
+    string? ifMatch = http.Request.Headers.IfMatch;
+    if (ifMatch is null) return Results.StatusCode(428);   // Precondition Required
+    var o = await db.Orders.FindAsync([id], ct);
+    if (o is null) return Results.NotFound();
+    db.Entry(o).Property(x => x.RowVersion).OriginalValue =
+        Convert.FromBase64String(ifMatch.Trim('"'));          // compare with the client's version
+    o.Apply(dto);
+    try { await db.SaveChangesAsync(ct); }
+    catch (DbUpdateConcurrencyException) { return Results.StatusCode(412); }   // stale
+    http.Response.Headers.ETag = ETagOf(o.RowVersion);
+    return Results.NoContent();
+});`, note: '`428` tells a client it forgot `If-Match`; `412` tells it someone else changed the row first.' },
+
+    { k: 'snip', id: 'ctr-patch', t: 'PATCH: tell null from missing', code: `
+// JSON Merge Patch (RFC 7396): a missing property means "leave it", null means "clear it"
+app.MapPatch("/api/customers/{id:int}", async (int id, JsonElement patch, AppDb db,
+    CancellationToken ct) =>
+{
+    var c = await db.Customers.FindAsync([id], ct);
+    if (c is null) return Results.NotFound();
+
+    if (patch.TryGetProperty("email", out var email))
+        c.Email = email.ValueKind == JsonValueKind.Null ? null : email.GetString();
+    if (patch.TryGetProperty("creditLimit", out var limit))
+    {
+        if (limit.ValueKind != JsonValueKind.Number) return Results.BadRequest();   // not clearable
+        c.CreditLimit = limit.GetDecimal();
+    }
+    await db.SaveChangesAsync(ct);
+    return Results.NoContent();
+}).Accepts<JsonElement>("application/merge-patch+json");
+
+// JSON Patch (RFC 6902) on STJ: Microsoft.AspNetCore.JsonPatch.SystemTextJson (.NET 10)
+// apply it to a DTO, validate the result, then map to the entity; never patch entities directly` },
+
+    { k: 'snip', id: 'ctr-idem', t: 'Idempotency-Key with a stored replay', code: `
+// dbo.IdempotencyKeys: [Key] varchar(80) PRIMARY KEY, RequestHash binary(32),
+//                      ResponseJson nvarchar(max), CreatedAt datetime2
+public async Task<IResult> Run<T>(string key, object request,
+    Func<DbConnection, DbTransaction, Task<T>> work, CancellationToken ct)
+{
+    byte[] hash = SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(request));
+    await using var conn = new SqlConnection(cs);
+    await conn.OpenAsync(ct);
+    await using var tx = await conn.BeginTransactionAsync(ct);
+
+    var prior = await conn.QuerySingleOrDefaultAsync<(byte[]? Hash, string? Json)>("""
+        SELECT RequestHash, ResponseJson FROM dbo.IdempotencyKeys WITH (UPDLOCK, HOLDLOCK)
+        WHERE [Key] = @key
+        """, new { key }, tx);                          // a concurrent duplicate waits here
+    if (prior.Hash is not null)
+        return prior.Hash.AsSpan().SequenceEqual(hash)
+            ? Results.Content(prior.Json!, "application/json")   // replay the first answer
+            : Results.Problem("Idempotency-Key reused with a different body", statusCode: 422);
+
+    T result = await work(conn, tx);                    // the business write, same transaction
+    await conn.ExecuteAsync(
+        "INSERT dbo.IdempotencyKeys ([Key], RequestHash, ResponseJson) VALUES (@key, @hash, @json)",
+        new { key, hash, json = JsonSerializer.Serialize(result) }, tx);
+    await tx.CommitAsync(ct);
+    return Results.Ok(result);
+}`, note: 'Purge keys older than your clients\' retry window (24 hours is common). If you also want to replay errors, store the status code alongside the body.' },
+
+    { k: 'snip', id: 'ctr-upload', t: 'Stream large uploads straight to storage', code: `
+app.MapPut("/api/statements/{name}", async (string name, HttpRequest req,
+    BlobContainerClient container, CancellationToken ct) =>
+{
+    var blob = container.GetBlobClient(
+        $"incoming/{Guid.CreateVersion7()}-{Path.GetFileName(name)}");
+    await blob.UploadAsync(req.Body, new BlobUploadOptions
+    {
+        HttpHeaders = new BlobHttpHeaders { ContentType = req.ContentType },
+        TransferOptions = new StorageTransferOptions { MaximumConcurrency = 4 },
+    }, ct);                                                    // streamed, never fully in memory
+    return TypedResults.Accepted(blob.Uri.ToString());
+}).WithMetadata(new RequestSizeLimitAttribute(200_000_000));  // Kestrel's default is about 30 MB`,
+      note: '`IFormFile` buffers each file (in memory up to 64 KB, then on disk) before your handler runs. For large files stream the body as above, or read multipart sections with `MultipartReader`.' },
+
+    { k: 'snip', id: 'ctr-enum', t: 'Enums on the wire', v: '.NET 9', code: `
+[JsonConverter(typeof(JsonStringEnumConverter<OrderStatus>))]    // strings on the wire, not numbers
+public enum OrderStatus
+{
+    Unknown = 0,                                      // what tolerant consumers fall back to
+    Pending = 1,
+    [JsonStringEnumMemberName("on_hold")] OnHold = 2, // .NET 9: decouples wire and C# names
+    Paid = 3,
+    Cancelled = 4,                                    // add new values at the end; never renumber
+}`, note: '`JsonStringEnumConverter` throws on a string it does not know, so one new server value breaks every strict client at once. Announce additions, and give consumers an `Unknown` fallback.' },
+
+    { k: 'snip', id: 'ctr-oas-build', t: 'Generate the OpenAPI document at build time', lang: 'xml', code: `
+<!-- dotnet add package Microsoft.Extensions.ApiDescription.Server -->
+<PropertyGroup>
+  <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/openapi</OpenApiDocumentsDirectory>
+  <OpenApiGenerateDocumentsOptions>--file-name shop-api</OpenApiGenerateDocumentsOptions>
+</PropertyGroup>
+<!-- every build writes openapi/shop-api.json: commit it and review its diff like code -->` },
+
+    { k: 'snip', id: 'ctr-oas-diff', t: 'Fail the pull request on a breaking change', lang: 'bash', code: `
+# compare the contract on main with the one this branch builds
+NEW=src/Shop.Api/openapi/shop-api.json
+git show origin/main:$NEW > base.json
+oasdiff breaking base.json $NEW --fail-on ERR    # ERR = definitely breaking, WARN = possibly
+oasdiff changelog base.json $NEW                 # readable summary for the PR description`,
+      note: 'oasdiff checks over 100 kinds of breaking change, such as removed fields, new required parameters and narrowed enums. It is also available as a GitHub Action and a Docker image.' },
+
+    { k: 'snip', id: 'ctr-grpc-proto', t: 'gRPC: the .proto is the contract', lang: 'proto', half: true, code: `
+syntax = "proto3";
+option csharp_namespace = "Shop.Rates";
+
+service Rates {
+  rpc Get (RateRequest) returns (RateReply);
+  rpc Watch (RateRequest) returns (stream RateReply);
+}
+message RateRequest { string pair = 1; }
+message RateReply {
+  string pair = 1;
+  string rate = 2;       // decimal as a string
+  int64 at_unix_ms = 3;
+}
+// field numbers are the contract: never reuse one` },
+
+    { k: 'snip', id: 'ctr-grpc-cs', t: 'gRPC server and typed client', half: true, code: `
+// csproj: <Protobuf Include="Protos/rates.proto" />
+builder.Services.AddGrpc();
+app.MapGrpcService<RatesService>();
+
+builder.Services.AddGrpcClient<Rates.RatesClient>(o =>
+        o.Address = new Uri("https://rates"))
+    .AddStandardResilienceHandler();
+
+var reply = await client.GetAsync(
+    new RateRequest { Pair = "EUR/VND" },
+    deadline: DateTime.UtcNow.AddSeconds(2),
+    cancellationToken: ct);` },
+
+    { k: 'call', kind: 'trap', text: '`Skip(n).Take(50)` makes the database read and discard n rows for every page, and rows inserted in the meantime shift the window, so clients see duplicates or miss rows. Use keyset cursors for anything a client iterates through.' },
+    { k: 'call', kind: 'tip', text: 'Keep consumers tolerant: leave `UnmappedMemberHandling` at its default (ignore unknown properties). Tolerant readers are what make "add an optional field" a safe change.' }
+  ]
+});
+
+window.NCS.push({
   id: 'http', code: 'HTTP', grp: 'App host', name: 'HttpClient, JSON and resilience',
   blurb: 'Outbound calls through `IHttpClientFactory`, one resilience pipeline per client, and System.Text.Json configured once.',
   blocks: [
@@ -2735,9 +2977,16 @@ activity?.SetTag("statement.id", statementId);` },
 
 window.NCS.push({
   id: 'tst', code: 'TST', grp: 'Ship it', name: 'Testing',
-  blurb: 'xUnit v3, NSubstitute and Bogus for units; `WebApplicationFactory` and Testcontainers for the real thing; fake time and logs for determinism.',
+  blurb: 'Unit tests for logic, integration tests for the real HTTP pipeline and database, architecture tests for layering rules, and k6 for behaviour under load.',
   blocks: [
-    { k: 'snip', id: 'tst-xunit', t: 'xUnit: facts, theories, async', v: 'xUnit v3', code: `
+    { k: 'table', id: 'tst-types', t: 'Which test for what', cols: ['Type', 'Checks', 'Real', 'Faked', 'Run'], rows: [
+      ['Unit', 'one class or function', 'the code under test', 'its dependencies (NSubstitute)', 'every build'],
+      ['Integration', 'an endpoint through the whole pipeline', 'routing, middleware, DI, JSON, SQL in a container', 'external APIs, the clock, sign-in', 'every build'],
+      ['Architecture', 'dependency and naming rules', 'your compiled assemblies', 'nothing', 'every build'],
+      ['Load (k6)', 'latency and errors under traffic', 'a deployed, production-like environment', 'nothing', 'nightly and before releases']
+    ] },
+
+    { k: 'snip', id: 'tst-xunit', t: 'Unit: facts, theories, async', v: 'xUnit v3', code: `
 public class FeeCalculatorTests
 {
     [Fact]
@@ -2760,7 +3009,7 @@ public class FeeCalculatorTests
             new OrderService().PlaceAsync(new Order(), TestContext.Current.CancellationToken));
 }`, note: '`decimal` can\'t appear in attribute arguments, so money cases go in `TheoryData` rather than `[InlineData]`.' },
 
-    { k: 'snip', id: 'tst-nsub', t: 'NSubstitute: stub, then verify', code: `
+    { k: 'snip', id: 'tst-nsub', t: 'Unit: stub with NSubstitute, then verify', code: `
 var repo = Substitute.For<IOrderRepo>();
 repo.FindAsync(42, Arg.Any<CancellationToken>()).Returns(new Order { Id = 42 });
 repo.FindAsync(Arg.Is<int>(id => id <= 0), Arg.Any<CancellationToken>())
@@ -2773,7 +3022,7 @@ await repo.Received(1).SaveAsync(
     Arg.Is<Order>(o => o.Status == Status.Cancelled), Arg.Any<CancellationToken>());
 repo.DidNotReceive().Delete(Arg.Any<int>());` },
 
-    { k: 'snip', id: 'tst-bogus', t: 'Bogus: realistic, repeatable data', half: true, code: `
+    { k: 'snip', id: 'tst-bogus', t: 'Unit: realistic, repeatable data', half: true, code: `
 var orders = new Faker<Order>()
     .UseSeed(1234)               // same data every run
     .RuleFor(o => o.Id, f => f.IndexFaker + 1)
@@ -2785,7 +3034,7 @@ var orders = new Faker<Order>()
 
 List<Order> hundred = orders.Generate(100);` },
 
-    { k: 'snip', id: 'tst-time', t: 'Fake time and captured logs', v: '.NET 8', half: true, code: `
+    { k: 'snip', id: 'tst-time', t: 'Unit: fake time and captured logs', v: '.NET 8', half: true, code: `
 var time = new FakeTimeProvider(
     new DateTimeOffset(2026, 9, 1, 9, 0, 0,
                        TimeSpan.Zero));
@@ -2798,42 +3047,228 @@ var logger = new FakeLogger<InvoiceService>();
 Assert.Contains(logger.Collector.GetSnapshot(),
     r => r.Level == LogLevel.Warning);` },
 
-    { k: 'snip', id: 'tst-int', t: 'Integration test against a real SQL Server', code: `
+    { k: 'dg', id: 'tst-int-map', t: 'Integration: what is real, what is replaced',
+      cap: '**Real where the bugs hide:** routing, middleware, DI, serialization and SQL all run for real. Only what you cannot control (third-party APIs, the clock, the identity provider) is swapped in `ConfigureTestServices`.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 100, minw: 560,
+        alt: 'The test calls the app through an in-memory test server; the app talks to a real SQL Server container; external APIs, the clock and sign-in are replaced with fakes',
+        nodes: [
+          { id: 'test', x: 0, y: 0, l: 'xUnit test', sub: 'factory.CreateClient()', k: 'a' },
+          { id: 'srv', x: 1, y: 0, l: 'TestServer', sub: 'in memory, no port' },
+          { id: 'app', x: 2, y: 0, l: 'Your app', sub: 'middleware, DI, endpoints', k: 'g' },
+          { id: 'db', x: 3, y: 0, l: 'SQL Server', sub: 'Testcontainers', s: 'db', k: 'g' },
+          { id: 'fake', x: 2, y: 1, l: 'Fakes', sub: 'external API, clock, sign-in', k: 'w' }
+        ],
+        edges: [{ f: 'test', t: 'srv' }, { f: 'srv', t: 'app' }, { f: 'app', t: 'db' }, { f: 'fake', t: 'app' }],
+        groups: [{ n: ['app', 'db'], l: 'runs for real', k: 'g' }] } },
+
+    { k: 'snip', id: 'tst-int', t: 'Integration: one factory, a real SQL Server', code: `
 public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly MsSqlContainer _sql = new MsSqlBuilder()             // Testcontainers.MsSql
-        .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-        .Build();
+    // package: Testcontainers.MsSql (pass the image to the constructor)
+    private readonly MsSqlContainer _sql =
+        new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest").Build();
 
-    public async ValueTask InitializeAsync() => await _sql.StartAsync();
+    public FakeTimeProvider Time { get; } =
+        new(new DateTimeOffset(2026, 9, 1, 9, 0, 0, TimeSpan.Zero));
+
+    public async ValueTask InitializeAsync()
+    {
+        await _sql.StartAsync();                          // one container for the whole test class
+        using var scope = Services.CreateScope();         // first access builds the app
+        await scope.ServiceProvider.GetRequiredService<AppDb>().Database.MigrateAsync();
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.UseEnvironment("Testing");
+        builder.UseSetting("ConnectionStrings:Db", _sql.GetConnectionString());
+        builder.ConfigureTestServices(services =>
+        {
+            services.RemoveAll<IFxClient>();
+            services.AddSingleton<IFxClient, FakeFxClient>();   // never call the real FX provider
+            services.AddSingleton<TimeProvider>(Time);          // tests control the clock
+        });
+    }
 
     public override async ValueTask DisposeAsync()
     {
         await _sql.DisposeAsync();
         await base.DisposeAsync();
     }
+}`, note: 'On .NET 10 the test project can see `Program` automatically. On .NET 9 and earlier, add `public partial class Program;` to `Program.cs`.' },
 
-    protected override void ConfigureWebHost(IWebHostBuilder builder) =>
-        builder.UseSetting("ConnectionStrings:Db", _sql.GetConnectionString());
-}
-
+    { k: 'snip', id: 'tst-int-test', t: 'Integration: call the API like a client does', code: `
 public class OrdersApiTests(ApiFactory api) : IClassFixture<ApiFactory>
 {
+    private readonly HttpClient _client = api.CreateClient();
+    private static CancellationToken Ct => TestContext.Current.CancellationToken;
+
     [Fact]
-    public async Task Unknown_order_returns_404()
+    public async Task Created_order_can_be_read_back()
     {
-        var client = api.CreateClient();
-        var res = await client.GetAsync("/api/orders/999", TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
+        var create = await _client.PostAsJsonAsync("/api/orders",
+            new { customerId = $"c-{Guid.NewGuid():N}", quantity = 2 }, Ct);   // unique per test
+        Assert.Equal(HttpStatusCode.Created, create.StatusCode);
+
+        var order = await _client.GetFromJsonAsync<OrderDto>(create.Headers.Location, Ct);
+        Assert.Equal(2, order!.Quantity);
     }
-}`, note: 'On .NET 9 and earlier, make `Program` visible to the test project by adding `public partial class Program;` to `Program.cs`.' },
+
+    [Fact]
+    public async Task Invalid_input_returns_problem_details()
+    {
+        var res = await _client.PostAsJsonAsync("/api/orders", new { quantity = 0 }, Ct);
+        Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+        var problem = await res.Content.ReadFromJsonAsync<HttpValidationProblemDetails>(Ct);
+        Assert.NotEmpty(problem!.Errors);
+    }
+}` },
+
+    { k: 'snip', id: 'tst-int-auth', t: 'Integration: sign in with a test scheme', code: `
+public sealed class TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
+    ILoggerFactory logger, UrlEncoder encoder)
+    : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+{
+    public const string Scheme = "Test";
+
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        if (!Request.Headers.TryGetValue("X-Test-User", out var user))   // no header = anonymous
+            return Task.FromResult(AuthenticateResult.NoResult());
+
+        Claim[] claims = [new("sub", user.ToString()), new("scp", "orders.read orders.write")];
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme));
+        var ticket = new AuthenticationTicket(principal, Scheme);
+        return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
+}
+
+// in ConfigureTestServices: make it the default scheme
+services.AddAuthentication(TestAuthHandler.Scheme)
+    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.Scheme, _ => { });
+
+// in a test
+_client.DefaultRequestHeaders.Add("X-Test-User", "alice");`,
+      note: 'Endpoints with `RequireAuthorization()` now work without a real identity provider, and requests without the header exercise the 401 path.' },
+
+    { k: 'dg', id: 'tst-layers', t: 'Architecture: the dependency rules to enforce',
+      cap: '**Dependencies point inward:** Api and Infrastructure depend on Application, and Application on Domain. The crossed edge, Domain reaching into Infrastructure, is exactly what an architecture test fails the build on.',
+      d: { type: 'flow', w: 680, cols: 3, rows: 2, ch: 100, minw: 540,
+        alt: 'Api depends on Application, Application depends on Domain, Infrastructure depends on Application; Domain must not depend on Infrastructure',
+        nodes: [
+          { id: 'api', x: 0, y: 0, l: 'Shop.Api', sub: 'endpoints, DI wiring' },
+          { id: 'app', x: 1, y: 0, l: 'Shop.Application', sub: 'use cases, interfaces' },
+          { id: 'dom', x: 2, y: 0, l: 'Shop.Domain', sub: 'entities, business rules', k: 'a' },
+          { id: 'inf', x: 1, y: 1, l: 'Shop.Infrastructure', sub: 'EF Core, Dapper, HTTP clients' }
+        ],
+        edges: [
+          { f: 'api', t: 'app', k: 'g' }, { f: 'app', t: 'dom', k: 'g' }, { f: 'inf', t: 'app', k: 'g' },
+          { f: 'dom', t: 'inf', k: 'b', d: true, x: true, l: 'forbidden' }
+        ] } },
+
+    { k: 'snip', id: 'tst-arch', t: 'Architecture: rules as tests', code: `
+public class ArchitectureTests                                  // package: NetArchTest.Rules
+{
+    static readonly Assembly Domain = typeof(Order).Assembly;
+    static readonly Assembly Application = typeof(PlaceOrderHandler).Assembly;
+
+    [Fact]
+    public void Domain_depends_on_nothing_else() =>
+        AssertRule(Types.InAssembly(Domain)
+            .ShouldNot().HaveDependencyOnAny(
+                "Shop.Application", "Shop.Infrastructure", "Shop.Api",
+                "Microsoft.EntityFrameworkCore", "Dapper")
+            .GetResult());
+
+    [Fact]
+    public void Application_does_not_reference_infrastructure() =>
+        AssertRule(Types.InAssembly(Application)
+            .ShouldNot().HaveDependencyOn("Shop.Infrastructure")
+            .GetResult());
+
+    [Fact]
+    public void Handlers_are_sealed() =>
+        AssertRule(Types.InAssembly(Application)
+            .That().HaveNameEndingWith("Handler")
+            .Should().BeSealed()
+            .GetResult());
+
+    static void AssertRule(TestResult r) =>
+        Assert.True(r.IsSuccessful, "Violations: " + string.Join(", ", r.FailingTypeNames ?? []));
+}`, note: 'Prove each rule can fail: add a forbidden reference once, watch the test go red, then remove it. A filter that matches no types passes without protecting anything.' },
+
+    { k: 'table', id: 'tst-k6-kinds', t: 'Load: k6 test types', half: true, cols: ['Type', 'Load', 'Answers'], rows: [
+      ['Smoke', '1–5 VUs for a minute', 'does it work at all?'],
+      ['Average load', 'normal traffic, 10–60 min', 'do we meet the SLO on a normal day?'],
+      ['Stress', 'above normal, rising', 'how do we degrade and recover?'],
+      ['Spike', 'a sudden burst', 'do we survive a flash crowd?'],
+      ['Soak', 'normal load for hours', 'leaks and slow drift'],
+      ['Breakpoint', 'ramp until failure', 'where is the ceiling?']
+    ] },
+
+    { k: 'snip', id: 'tst-k6-run', t: 'Load: run k6', lang: 'bash', half: true, code: `
+brew install k6              # or: winget install k6
+k6 run --vus 5 --duration 1m load.js   # smoke
+k6 run -e BASE_URL=https://staging.shop load.js
+k6 run --out json=results.json load.js
+docker run --rm -i grafana/k6 run - < load.js
+# a failed threshold exits with code 99: CI gate` },
+
+    { k: 'snip', id: 'tst-k6', t: 'Load: a k6 script with thresholds', lang: 'js', code: `
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  scenarios: {
+    average_load: {
+      executor: 'ramping-arrival-rate',     // requests per second, independent of latency
+      startRate: 10, timeUnit: '1s', preAllocatedVUs: 50, maxVUs: 300,
+      stages: [
+        { target: 100, duration: '5m' },    // ramp up
+        { target: 100, duration: '20m' },   // hold
+        { target: 0, duration: '2m' },      // ramp down
+      ],
+    },
+  },
+  thresholds: {
+    http_req_failed: ['rate<0.01'],                          // under 1% errors
+    http_req_duration: ['p(95)<300', 'p(99)<800'],           // milliseconds
+    'http_req_duration{name:create-order}': ['p(95)<500'],   // per-endpoint threshold
+  },
+};
+
+export function setup() {                    // runs once: sign in and share the token
+  const res = http.post(__ENV.BASE_URL + '/connect/token', {
+    grant_type: 'client_credentials',
+    client_id: __ENV.CLIENT_ID, client_secret: __ENV.CLIENT_SECRET,
+  });
+  return { token: res.json('access_token') };
+}
+
+export default function (data) {
+  const params = {
+    headers: { Authorization: 'Bearer ' + data.token, 'Content-Type': 'application/json' },
+  };
+  const list = http.get(__ENV.BASE_URL + '/api/orders?limit=50',
+    { ...params, tags: { name: 'list-orders' } });
+  check(list, { 'list is 200': (r) => r.status === 200 });
+
+  const created = http.post(__ENV.BASE_URL + '/api/orders',
+    JSON.stringify({ customerId: 'load-test', quantity: 1 }),
+    { ...params, tags: { name: 'create-order' } });
+  check(created, { 'create is 201': (r) => r.status === 201 });
+  sleep(1);
+}` },
 
     { k: 'snip', id: 'tst-cli', t: 'Run a subset, collect coverage', lang: 'bash', code: `
-dotnet test --filter "FullyQualifiedName~Orders&Category!=Slow"
+dotnet test --filter "Category=Unit"                 # [Trait("Category", "Unit")] on the class
+dotnet test --filter "FullyQualifiedName~Orders&Category!=Integration"
 dotnet test --collect:"XPlat Code Coverage"          # coverlet.collector → coverage.cobertura.xml
 dotnet test --logger "trx;LogFileName=results.trx"   # results file for the CI test tab` },
 
-    { k: 'call', kind: 'trap', text: 'A mock that returns whatever the test wants proves nothing about the real dependency. Mock the edges you own (ports, clients), and cover SQL, serialization and middleware with integration tests against real infrastructure.' }
+    { k: 'call', kind: 'trap', text: 'A mock that returns whatever the test wants proves nothing about the real dependency. Mock the edges you own (ports, clients), and cover SQL, serialization and middleware with integration tests against real infrastructure.' },
+    { k: 'call', kind: 'trap', text: 'Tests that share one database container share its data. Create unique data per test instead of relying on order: xUnit runs test classes in parallel, and a test that passes alone can fail in the full run.' },
+    { k: 'call', kind: 'trap', text: 'Load-test a production-like environment with production-like data and resource limits. A run against localhost measures your laptop, and an unannounced run against production is an incident.' }
   ]
 });
 
@@ -3462,7 +3897,7 @@ cache.GetOrCreateAsync(                         // ✓
   'use strict';
   var SECS = window.NCS || [], esc = DG.esc;
   var GROUPS = ['Language', 'Runtime', 'App host', 'Data', 'Distributed', 'Ship it'];
-  var LANG = { cs: 'C#', bash: 'Shell', json: 'JSON', xml: 'XML', sql: 'SQL', yaml: 'YAML', docker: 'Dockerfile', text: 'Text' };
+  var LANG = { cs: 'C#', bash: 'Shell', json: 'JSON', xml: 'XML', sql: 'SQL', yaml: 'YAML', docker: 'Dockerfile', js: 'JavaScript', proto: 'Protobuf', text: 'Text' };
   var $ = function (s, el) { return (el || document).querySelector(s); };
   var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
   var COPY = {};
@@ -3482,7 +3917,9 @@ cache.GetOrCreateAsync(                         // ✓
     cs: 'abstract as async await base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for foreach goto if implicit in init int interface internal is lock long namespace new null object operator out override params private protected public readonly record ref required return sbyte sealed short sizeof stackalloc static string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using var virtual void volatile when where while with yield get set value nameof extension field union closed global partial and or not file scoped dynamic',
     sql: 'select from where and or not insert into values update set delete merge join inner left right outer cross apply on group by order having as with begin commit rollback transaction create table index primary key unique alter add drop column exec declare top offset fetch next rows only is null in exists case when then else end output inserted deleted type bigint int decimal varchar nvarchar count sum',
     bash: 'if then fi for do done in export', json: 'true false null', xml: '', text: '',
-    yaml: 'true false null', docker: 'FROM AS WORKDIR COPY RUN USER EXPOSE ENTRYPOINT ARG ENV CMD'
+    yaml: 'true false null', docker: 'FROM AS WORKDIR COPY RUN USER EXPOSE ENTRYPOINT ARG ENV CMD',
+    js: 'import export from const let var function return if else for of in new await async default true false null undefined typeof',
+    proto: 'syntax option service rpc returns stream message string int32 int64 uint32 uint64 bool bytes double float repeated map oneof enum import package reserved'
   };
   var KWS = {}; Object.keys(KW).forEach(function (k) { KWS[k] = {}; KW[k].split(' ').forEach(function (w) { if (w) KWS[k][w] = 1; }); });
   function hlLine(src, lang) {
