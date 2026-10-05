@@ -1,0 +1,2988 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Docker &amp; Kubernetes Cheatsheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Spline+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
+<script>(function(){try{var t=localStorage.getItem('dks-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#ffffff; --surface:#faf8f4; --surface-2:#f3efe7;
+  --ink:#1d1a16; --ink-2:#4f4940; --ink-3:#81796d;
+  --line:#ebe5da; --line-2:#d8d0c1;
+  --accent:#95600a; --accent-fill:#e3a234; --accent-soft:#fbf1dc; --on-accent:#1d1a16;
+  --rose:#bb1a4f; --rose-soft:#fdebf0;
+  --teal:#0a766b; --teal-soft:#e2f3f0;
+  --violet:#6a3ed2; --violet-soft:#efe9fd;
+  --amber:#a86400; --amber-soft:#fdf1dc;
+  --sky:#1d6aab; --sky-soft:#e6f0fa;
+  --code-bg:#f8f5ef;
+  --shadow:0 1px 2px rgba(40,30,10,.05),0 6px 22px rgba(40,30,10,.07);
+  --tk-kw:#7a3fc8; --tk-str:#0a766b; --tk-com:#8b8376; --tk-num:#b3580b; --tk-type:#1d6aab; --tk-fn:#8f5c06; --tk-at:#bb1a4f;
+  --f-serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --f-sans:'Spline Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:'Spline Sans Mono',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ color-scheme:dark;
+    --bg:#15120e; --surface:#1c1813; --surface-2:#262019;
+    --ink:#f2ede5; --ink-2:#c9c1b4; --ink-3:#9a9184;
+    --line:#2d271f; --line-2:#3f372c;
+    --accent:#ebb65c; --accent-fill:#e3a234; --accent-soft:#34270f; --on-accent:#15120e;
+    --rose:#ff7d9c; --rose-soft:#3b1723;
+    --teal:#52d3c0; --teal-soft:#0f302b;
+    --violet:#b9a0ff; --violet-soft:#2a2044;
+    --amber:#f4ab3e; --amber-soft:#36270d;
+    --sky:#72b6f3; --sky-soft:#12283e;
+    --code-bg:#1a1611;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 26px rgba(0,0,0,.3);
+    --tk-kw:#c6a6ff; --tk-str:#72dccb; --tk-com:#8e8578; --tk-num:#f6a660; --tk-type:#82c1f6; --tk-fn:#ebb65c; --tk-at:#ff92ad; } }
+:root[data-theme="dark"]{ color-scheme:dark;
+    --bg:#15120e; --surface:#1c1813; --surface-2:#262019;
+    --ink:#f2ede5; --ink-2:#c9c1b4; --ink-3:#9a9184;
+    --line:#2d271f; --line-2:#3f372c;
+    --accent:#ebb65c; --accent-fill:#e3a234; --accent-soft:#34270f; --on-accent:#15120e;
+    --rose:#ff7d9c; --rose-soft:#3b1723;
+    --teal:#52d3c0; --teal-soft:#0f302b;
+    --violet:#b9a0ff; --violet-soft:#2a2044;
+    --amber:#f4ab3e; --amber-soft:#36270d;
+    --sky:#72b6f3; --sky-soft:#12283e;
+    --code-bg:#1a1611;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 26px rgba(0,0,0,.3);
+    --tk-kw:#c6a6ff; --tk-str:#72dccb; --tk-com:#8e8578; --tk-num:#f6a660; --tk-type:#82c1f6; --tk-fn:#ebb65c; --tk-at:#ff92ad; }
+
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%;overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-sans);font-feature-settings:"ss01"}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent-fill);outline-offset:2px;border-radius:5px}
+code,kbd,pre{font-family:var(--f-mono)}
+svg{flex:none}
+
+/* ---------- layout ---------- */
+.app{display:grid;grid-template-columns:260px minmax(0,1fr);gap:clamp(20px,3vw,44px);padding-inline:clamp(14px,2.4vw,36px);max-width:1400px;margin:0 auto}
+.side{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;height:100dvh;overflow-y:auto;padding-block:22px 48px;padding-right:14px;border-right:1px solid var(--line);scrollbar-width:thin}
+.side-brand{font:600 1.12rem/1.15 var(--f-serif);letter-spacing:-.01em;margin:0 0 4px 6px}
+.side-meta{margin:0 0 12px 6px;font:500 11px/1.4 var(--f-mono);color:var(--ink-3)}
+.nav-g{margin-top:12px}
+.nav-gh{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;padding:6px;cursor:pointer;text-align:left;border-radius:6px;font:600 11px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.nav-gh:hover{background:var(--surface-2);color:var(--ink)}
+.nav-gh .chev{margin-left:auto;transition:transform .15s}
+.nav-g.shut .chev{transform:rotate(-90deg)}
+.nav-list{list-style:none;margin:2px 0 0 6px;padding:0 0 0 6px;border-left:1px solid var(--line)}
+.nav-g.shut .nav-list{display:none}
+.nav-i{display:flex;gap:6px;width:100%;background:none;border:0;padding:4px 8px;font-size:13.5px;color:var(--ink-2);text-align:left;cursor:pointer;border-radius:5px;line-height:1.35;align-items:baseline}
+.nav-i .c{font:600 10.5px/1.7 var(--f-mono);color:var(--accent);flex:none;width:40px;letter-spacing:.04em}
+.nav-i .n{flex:1;min-width:0}
+.nav-i .ct{font:500 10.5px var(--f-mono);color:var(--ink-3)}
+.nav-i:hover{background:var(--surface-2);color:var(--ink)}
+.nav-i.on{background:var(--accent-soft);color:var(--ink);box-shadow:inset 2px 0 0 var(--accent-fill)}
+.nav-i.nav-top{font-weight:600;color:var(--ink)}
+.main{min-width:0;padding-block:0 96px}
+.scrim{position:fixed;inset:0;background:rgba(20,15,8,.42);z-index:40}
+
+/* ---------- toolbar ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);background:color-mix(in srgb,var(--bg) 93%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;padding-block:10px;flex-wrap:wrap}
+.tbtn.menu-btn{display:none}
+.tbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);background:var(--bg);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink-2);white-space:nowrap}
+.tbtn:hover{border-color:var(--ink-3);color:var(--ink)}
+.tbtn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent-fill);color:var(--ink)}
+.tbtn.icon{padding:6px 8px}
+.search{flex:1 1 240px;min-width:0;display:flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:9px;padding:0 8px 0 10px;background:var(--bg);color:var(--ink-3)}
+.search:focus-within{border-color:var(--accent-fill);box-shadow:0 0 0 3px var(--accent-soft)}
+.search input{flex:1;min-width:0;border:0;background:none;outline:0;padding:8px 0;font:inherit;font-size:14px;color:var(--ink)}
+.search input::placeholder{color:var(--ink-3)}
+.search kbd{font-size:11px;border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;color:var(--ink-3)}
+.hits{font:500 12px var(--f-mono);color:var(--ink-3);white-space:nowrap}
+.theme-btn .moon{display:none}
+:root[data-theme="dark"] .theme-btn .sun{display:none}
+:root[data-theme="dark"] .theme-btn .moon{display:block}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .theme-btn .sun{display:none}
+  :root:not([data-theme="light"]) .theme-btn .moon{display:block}
+}
+
+/* ---------- hero ---------- */
+.hero{padding-block:34px 4px;max-width:820px}
+.eyebrow{font:600 11px/1.4 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0}
+.hero h1{font:600 clamp(2.3rem,5.2vw,3.6rem)/1.02 var(--f-serif);font-variation-settings:"opsz" 144;letter-spacing:-.025em;margin:.28em 0 .3em;text-wrap:balance}
+.lede{font-size:1.06rem;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0}
+.now{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:22px;max-width:820px}
+.now-i{border-left:3px solid var(--c);background:var(--surface);border-radius:0 9px 9px 0;padding:8px 12px 9px;font-size:13px;line-height:1.45;color:var(--ink-2);min-width:0}
+.now-i b{display:block;font-size:14px;color:var(--ink);font-weight:600;margin-bottom:1px}
+.now-g{--c:var(--teal)} .now-b{--c:var(--rose)} .now-a{--c:var(--violet)}
+
+.intro{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:18px;margin-top:28px;align-items:start}
+.panel{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;min-width:0}
+.panel h2{font:600 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:2px 0 10px}
+.panel p{margin:.4em 0;color:var(--ink-2);font-size:14px}
+.howto{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:14px;color:var(--ink-2)}
+.howto li{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;align-items:baseline}
+.howto .k{font:600 10.5px/1.5 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.vkey{display:flex;flex-wrap:wrap;gap:6px}
+
+/* program map */
+.pmap{border:1px solid var(--line);border-radius:10px;background:var(--code-bg);overflow-x:auto;padding:8px 0;font-size:12.6px;line-height:1.62}
+.pl{display:grid;grid-template-columns:52px minmax(0,1fr);align-items:stretch;min-width:max-content}
+.pl.to{cursor:pointer}
+.pl.to:hover,.pl.to.hot{background:var(--accent-soft)}
+.pl code{white-space:pre;padding:0 16px 0 4px;color:var(--ink);font-size:inherit}
+.pg{display:flex;align-items:center;justify-content:flex-end;padding:0 8px 0 0;border:0;background:none;font:600 10px/1 var(--f-mono);letter-spacing:.05em;color:var(--accent);cursor:pointer;border-right:1px solid var(--line)}
+.pg:empty{cursor:default}
+.pl.to:hover .pg{color:var(--ink)}
+.pmap-cap{font-size:13px;color:var(--ink-3);margin:8px 2px 0}
+
+/* ---------- task finder ---------- */
+.finder{margin-top:44px;scroll-margin-top:70px}
+.sec-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.sec-h .code{font:600 12px var(--f-mono);letter-spacing:.1em;color:var(--accent)}
+.sec-h h2{font:600 clamp(1.5rem,3vw,2.05rem)/1.12 var(--f-serif);letter-spacing:-.01em;margin:0;text-wrap:balance}
+.sec-h .ct{margin-left:auto;font:500 12px var(--f-mono);color:var(--ink-3)}
+.sec-tg{align-self:center;flex:none;width:28px;height:28px;border:1px solid var(--line-2);border-radius:7px;background:var(--bg);cursor:pointer;display:grid;place-items:center;color:var(--ink-3)}
+.sec-tg:hover{color:var(--ink);border-color:var(--ink-3)}
+.sec-tg svg{transition:transform .15s}
+.sec.shut .sec-tg svg{transform:rotate(-90deg)}
+.sec.shut .blks{display:none}
+.sec-blurb{color:var(--ink-2);max-width:72ch;margin:10px 0 0}
+.fd{margin-top:6px}
+.fd-row{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:6px 20px;padding:10px 0;border-bottom:1px solid var(--line)}
+.fd-row:hover{background:linear-gradient(90deg,var(--surface),transparent)}
+.fd-sym{font-weight:600;line-height:1.35}
+.fd-chips{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.chipbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);background:var(--bg);border-radius:999px;padding:3px 10px 3px 8px;font-size:12.5px;cursor:pointer;color:var(--ink);line-height:1.5}
+.chipbtn .c{font:600 10px var(--f-mono);color:var(--accent);letter-spacing:.04em}
+.chipbtn:hover{border-color:var(--accent-fill);background:var(--accent-soft)}
+
+/* ---------- sections & blocks ---------- */
+.sec{margin-top:60px;scroll-margin-top:70px}
+.blks{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:18px}
+.blk{border:1px solid var(--line);border-radius:12px;background:var(--bg);min-width:0;scroll-margin-top:76px;overflow:hidden}
+.blk.flash{box-shadow:0 0 0 3px var(--accent-soft),var(--shadow);border-color:var(--accent-fill)}
+.blk-h{display:flex;align-items:center;gap:8px 10px;padding:10px 10px 9px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.blk-h h3{font:600 15px/1.35 var(--f-sans);margin:0;flex:1 1 14rem;min-width:0;letter-spacing:-.003em}
+.blk-h h3 code,.note code,.tbl code,.call code,.sec-blurb code,.lede code,.panel code,.wdg code,.fd code{font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.blk-h .tools{display:flex;align-items:center;gap:6px;flex:none;margin-left:auto}
+.ver{display:inline-flex;align-items:center;font:600 10.5px/1 var(--f-mono);padding:4px 7px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap;letter-spacing:.02em}
+.ver.v-new{background:var(--teal-soft);color:var(--teal)}
+.ver.v-next{background:var(--violet-soft);color:var(--violet)}
+.lang{font:600 10.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line-2);border-radius:5px;padding:3px 6px}
+.cp{border:1px solid var(--line-2);background:var(--bg);border-radius:6px;padding:4px 9px;font:600 11px var(--f-sans);letter-spacing:.02em;cursor:pointer;color:var(--ink-2)}
+.cp:hover{color:var(--ink);border-color:var(--ink-3)}
+.src{margin:0;padding:10px 0;overflow-x:auto;font-size:12.8px;line-height:1.6;tab-size:4;color:var(--ink);background:var(--code-bg)}
+.src code{display:inline-block;min-width:100%;background:none;padding:0;font-size:inherit}
+.ln{display:block;padding:0 16px;min-height:1.6em;white-space:pre}
+.ln-b{background:color-mix(in srgb,var(--rose) 11%,transparent);box-shadow:inset 3px 0 0 var(--rose)}
+.ln-g{background:color-mix(in srgb,var(--teal) 11%,transparent);box-shadow:inset 3px 0 0 var(--teal)}
+.tk-kw{color:var(--tk-kw)} .tk-str{color:var(--tk-str)} .tk-com{color:var(--tk-com);font-style:italic}
+.tk-num{color:var(--tk-num)} .tk-type{color:var(--tk-type)} .tk-fn{color:var(--tk-fn)} .tk-at{color:var(--tk-at)}
+body.wrap .ln{white-space:pre-wrap;overflow-wrap:anywhere}
+body.wrap .src code{display:block}
+.note{margin:0;padding:9px 16px 11px;font-size:13.5px;color:var(--ink-2);border-top:1px solid var(--line);background:var(--bg)}
+
+/* good vs bad */
+.gb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.gb-c{min-width:0;display:flex;flex-direction:column}
+.gb-c + .gb-c{border-left:1px solid var(--line)}
+.gb-h{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 16px;border-bottom:1px solid var(--line)}
+.verdict{font:600 10.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:999px}
+.gb-b .verdict{background:var(--rose-soft);color:var(--rose)}
+.gb-g .verdict{background:var(--teal-soft);color:var(--teal)}
+.gb-h .cp{margin-left:auto}
+.gb-c .src{flex:1}
+.gb-c .note{border-top:1px solid var(--line)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.45}
+.tbl th{text-align:left;font:600 10.5px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:9px 12px;border-bottom:1px solid var(--line-2);background:var(--surface);white-space:nowrap}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2);min-width:7rem}
+.tbl td:first-child{color:var(--ink);font-weight:600}
+.tbl.mono1 td:first-child{font:600 12.5px/1.5 var(--f-mono)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover td{background:var(--surface)}
+.tbl .y{color:var(--teal);font-weight:600} .tbl .n{color:var(--rose);font-weight:600}
+
+/* callouts */
+.call{margin:0;padding:10px 14px 11px;border-radius:10px;font-size:14px;color:var(--ink);border:0}
+.call .kl{font:600 10.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;margin-right:8px}
+.call-trap{background:var(--amber-soft)} .call-trap .kl{color:var(--amber)}
+.call-tip{background:var(--teal-soft)} .call-tip .kl{color:var(--teal)}
+.call-key{background:var(--violet-soft)} .call-key .kl{color:var(--violet)}
+
+/* diagram frame */
+.dgf{margin:0}
+.dgf-top{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 10px 8px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap;background:var(--surface)}
+.dgf figcaption{font-size:13.5px;color:var(--ink-2);flex:1 1 16rem;min-width:0;line-height:1.45}
+.dgf figcaption b{font-weight:600;color:var(--ink)}
+.dg-scroll{overflow-x:auto;padding:12px 10px 10px;-webkit-overflow-scrolling:touch;background:var(--surface)}
+.dg-scroll svg{display:block;width:100%;height:auto;margin:0 auto}
+.dg-err{padding:12px;color:var(--rose);font:12px var(--f-mono)}
+.blk[data-state="b"] .st-f,.blk[data-state="f"] .st-b{display:none}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:9px;padding:2px;background:var(--bg);flex:none}
+.seg button{border:0;background:none;padding:4px 12px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--ink-3);cursor:pointer;line-height:1.5}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+.seg button[data-s="b"][aria-pressed="true"]{background:var(--rose-soft);color:var(--rose)}
+.seg button[data-s="f"][aria-pressed="true"]{background:var(--teal-soft);color:var(--teal)}
+
+/* ---------- widgets ---------- */
+.wdg{padding:14px 16px 16px;display:grid;gap:14px;min-width:0}
+.wdg-row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.wdg-lbl{font:500 13px/1.3 var(--f-sans);color:var(--ink-2);min-width:11.5rem}
+.wdg-code{font:500 12.5px/1.6 var(--f-mono);background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;overflow-x:auto;white-space:pre;color:var(--ink)}
+.verdict-line{padding:10px 14px;border-radius:10px;font-size:14px;line-height:1.5}
+.verdict-line.ok{background:var(--teal-soft)} .verdict-line.warn{background:var(--amber-soft)} .verdict-line.bad{background:var(--rose-soft)}
+.verdict-line b{font-weight:600}
+
+/* DI simulator */
+.di-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.di-scope{border:1px dashed var(--line-2);border-radius:10px;padding:10px 12px;background:var(--surface);min-width:0}
+.di-scope h4{margin:0 0 8px;font:600 12px/1.3 var(--f-sans);color:var(--ink)}
+.di-scope h4 span{font:500 11px var(--f-mono);color:var(--ink-3);margin-left:6px}
+.di-res{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px;padding:4px 0;color:var(--ink-3)}
+.di-res .rn{font:500 11px var(--f-mono);width:4.4rem;flex:none}
+.inst{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--k);background:var(--kf);border-radius:7px;padding:2px 8px;font:600 12px/1.5 var(--f-mono);color:var(--ink);white-space:nowrap}
+.inst.cap{box-shadow:0 0 0 2px var(--rose-soft);border-style:dashed}
+.k1{--k:var(--violet);--kf:var(--violet-soft)} .k2{--k:var(--sky);--kf:var(--sky-soft)}
+.k3{--k:var(--teal);--kf:var(--teal-soft)} .k4{--k:var(--amber);--kf:var(--amber-soft)}
+.arrow{color:var(--ink-3);font-size:13px}
+
+/* config layering */
+.cfg-layers{display:grid;gap:6px}
+.cfg-l{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:8px 12px;background:var(--bg)}
+.cfg-l.off{opacity:.5;background:var(--surface)}
+.cfg-l label{display:flex;gap:8px;align-items:center;font-weight:600;font-size:13.5px;cursor:pointer}
+.cfg-l input{accent-color:var(--accent-fill);width:16px;height:16px;margin:0}
+.cfg-l .rank{font:500 10.5px var(--f-mono);color:var(--ink-3);white-space:nowrap;justify-self:end}
+.cfg-l .keys{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
+.cfg-l .why{grid-column:1/-1;font-size:12.5px;color:var(--ink-3)}
+.kchip{font:500 11.5px/1.5 var(--f-mono);border:1px solid var(--line-2);border-radius:6px;padding:1px 7px;color:var(--ink-2);background:var(--surface);overflow-wrap:anywhere}
+.kchip.win{border-color:var(--teal);color:var(--teal);background:var(--teal-soft)}
+.kchip.lost{text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.cfg-res td:nth-child(2){font-family:var(--f-mono);font-size:12.5px;overflow-wrap:anywhere;min-width:12rem}
+.src-tag{display:inline-block;font:600 11px/1.5 var(--f-mono);padding:1px 7px;border-radius:6px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.src-tag.kv{background:var(--rose-soft);color:var(--rose)}
+
+/* collection picker */
+.coll{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:14px;align-items:start}
+.coll-needs{display:grid;gap:4px}
+.coll-needs button{text-align:left;border:1px solid transparent;background:none;border-radius:8px;padding:7px 10px;font-size:13.5px;cursor:pointer;color:var(--ink-2);line-height:1.35}
+.coll-needs button:hover{background:var(--surface-2);color:var(--ink)}
+.coll-needs button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent-fill);color:var(--ink);font-weight:600}
+.coll-out{border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.coll-out .ty{padding:10px 14px;border-bottom:1px solid var(--line);font:600 15px/1.4 var(--f-mono);display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;background:var(--surface)}
+.coll-out .ty small{font:500 12px var(--f-sans);color:var(--ink-3)}
+.coll-out p{margin:0;padding:9px 14px;font-size:13.5px;color:var(--ink-2);border-top:1px solid var(--line)}
+.coll-out p b{color:var(--ink)}
+
+/* middleware pipeline */
+.mw{display:grid;grid-template-columns:22px minmax(0,1fr) 22px;gap:0 10px}
+.rail{display:flex;flex-direction:column;align-items:center;font:600 10px/1.2 var(--f-mono);color:var(--ink-3);writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.08em;text-transform:uppercase;border-radius:11px;background:var(--surface-2);padding:10px 0;justify-content:space-between}
+.rail.down{color:var(--sky)} .rail.up{color:var(--teal);transform:rotate(180deg)}
+.mw-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;min-width:0}
+.mw-i{display:grid;grid-template-columns:26px minmax(0,13.5rem) minmax(0,1fr);gap:4px 12px;align-items:baseline;border:1px solid var(--line);border-radius:9px;padding:8px 12px;background:var(--bg)}
+.mw-i .ix{font:600 11px var(--f-mono);color:var(--ink-3)}
+.mw-i code{font:600 12.5px/1.45 var(--f-mono);color:var(--ink);overflow-wrap:anywhere}
+.mw-i .d{font-size:13.5px;color:var(--ink-2)}
+.mw-i.bad{border-color:var(--rose);background:var(--rose-soft)}
+.mw-i.bad .d{color:var(--ink)}
+.mw-i.bad .d b{color:var(--rose)}
+.mw-i.term{border-style:dashed}
+
+.empty{margin-top:40px;padding:26px;border:1px dashed var(--line-2);border-radius:12px;text-align:center;color:var(--ink-3)}
+.foot{margin-top:72px;padding-top:16px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px;max-width:78ch}
+
+/* ---------- responsive ---------- */
+@media (min-width:1260px){
+  .blks{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .blk{grid-column:1/-1}
+  .blk.half{grid-column:auto}
+}
+@media (max-width:1120px){ .app{grid-template-columns:230px minmax(0,1fr)} }
+@media (max-width:960px){
+  .app{display:block}
+  .side{position:fixed;inset:0 auto 0 0;height:auto;width:min(86vw,320px);z-index:50;background:var(--bg);transform:translateX(-104%);transition:transform .2s ease;padding:calc(env(safe-area-inset-top,0px) + 18px) 14px 48px 12px;box-shadow:var(--shadow);visibility:hidden}
+  body.nav-open .side{transform:none;visibility:visible}
+  .tbtn.menu-btn{display:inline-flex}
+  .intro{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .now{grid-template-columns:minmax(0,1fr)}
+  .fd-row{grid-template-columns:minmax(0,1fr)}
+  .gb{grid-template-columns:minmax(0,1fr)}
+  .gb-c + .gb-c{border-left:0;border-top:1px solid var(--line)}
+  .di-grid{grid-template-columns:minmax(0,1fr)}
+  .coll{grid-template-columns:minmax(0,1fr)}
+  .coll-needs{display:flex;flex-wrap:wrap;gap:6px}
+  .coll-needs button{border-color:var(--line-2);border-radius:999px;padding:4px 11px;font-size:13px}
+  .mw{grid-template-columns:minmax(0,1fr)}
+  .rail{display:none}
+  .mw-i{grid-template-columns:22px minmax(0,1fr)}
+  .mw-i .d{grid-column:2}
+  .top .tbtn .lbl{display:none}
+  .howto li{grid-template-columns:minmax(0,1fr);gap:2px}
+  .wdg-lbl{min-width:0;flex-basis:100%}
+  .blk-h{padding-left:14px}
+  .ln{padding:0 14px}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important;scroll-behavior:auto!important} }
+@media print{
+  .side,.top,.scrim,.cp,.sec-tg{display:none!important}
+  .app{display:block}
+  .sec.shut .blks{display:grid!important}
+  .blk{break-inside:avoid-page}
+  .ln{white-space:pre-wrap}
+}
+
+/* ---------- additions ---------- */
+.blks > .call{grid-column:1/-1}
+.call.flash{box-shadow:0 0 0 3px var(--accent-soft)}
+.fd-sym small{display:block;font-weight:400;color:var(--ink-3);font-size:12.5px;margin-top:2px}
+body.searching .sec.shut .blks{display:grid}
+.pmap-cap{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.vkey{display:flex;flex-direction:column;gap:6px}
+.vk{display:grid;grid-template-columns:5.8rem minmax(0,1fr);gap:8px;align-items:center}
+.vk .ver{justify-self:start}
+.foot p{margin:.5em 0}
+.foot a{color:var(--accent);text-underline-offset:2px}
+.panel kbd{font:500 11px var(--f-mono);border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;background:var(--bg)}
+
+@media (max-width:760px){
+  .top{flex-wrap:nowrap;gap:6px}
+  .top .search{flex:1 1 110px}
+  .top .search kbd{display:none}
+  .top .tbtn{padding:6px 8px}
+  .pmap{font-size:11.5px}
+}
+
+@media (max-width:1259px){
+  .gb{grid-template-columns:minmax(0,1fr)}
+  .gb-c + .gb-c{border-left:0;border-top:1px solid var(--line)}
+  .coll{grid-template-columns:minmax(0,1fr)}
+  .coll-needs{display:flex;flex-wrap:wrap;gap:6px}
+  .coll-needs button{border-color:var(--line-2);padding:5px 10px;font-size:13px}
+}
+
+.coll-sel{display:none}
+@media (max-width:760px){
+  .coll-needs{display:none}
+  .coll-sel{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2)}
+  .coll-sel select{flex:1;min-width:0;font:500 14px var(--f-sans);color:var(--ink);background:var(--bg);border:1px solid var(--line-2);border-radius:8px;padding:8px 10px}
+  .tbl thead{display:none}
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:auto}
+  .tbl tr{padding:9px 14px;border-bottom:1px solid var(--line)}
+  .tbl tr:last-child{border-bottom:0}
+  .tbl td{border:0;padding:1px 0;min-width:0}
+  .tbl td:first-child{margin-bottom:2px}
+  .tbl td:not(:first-child)::before{content:attr(data-l) " ";font:600 10px/1.3 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-right:4px}
+  .tbl tbody tr:hover td{background:none}
+  .cfg-res td:nth-child(2){min-width:0}
+}
+
+.dg{font-family:var(--f-sans);overflow:visible}
+.dg text{fill:var(--ink)}
+.dg .t-b{font-weight:600}
+.dg .t-l{fill:var(--ink-2)}
+.dg .t-s{fill:var(--ink-3)}
+.dg .t-m{font-family:var(--f-mono)}
+.dg .tn-m{fill:var(--ink-3)}
+.dg .tk{fill:var(--k)}
+.dg .k-n{--k:var(--ink-3);--kf:var(--bg)}
+.dg .k-b{--k:var(--rose);--kf:var(--rose-soft)}
+.dg .k-g{--k:var(--teal);--kf:var(--teal-soft)}
+.dg .k-w{--k:var(--amber);--kf:var(--amber-soft)}
+.dg .k-a{--k:var(--violet);--kf:var(--violet-soft)}
+.dg .k-s{--k:var(--sky);--kf:var(--sky-soft)}
+.dg .k-m{--k:var(--line-2);--kf:var(--surface-2)}
+.dg .nd{fill:var(--kf);stroke:var(--k);stroke-width:1.3}
+.dg .nd.dash{stroke-dasharray:5 4}
+.dg .nd-l{fill:none;stroke:var(--k);stroke-width:1.2}
+.dg .eg{fill:none;stroke:var(--k);stroke-width:1.5}
+.dg .eg.k-n{stroke:var(--ink-3)}
+.dg .eg.dash{stroke-dasharray:5 4}
+.dg .ah{fill:var(--k)}
+.dg .lbg{fill:var(--surface);opacity:.95}
+.dg .ll{stroke:var(--line-2);stroke-width:1;stroke-dasharray:3 4}
+.dg .grid{stroke:var(--line);stroke-width:1}
+.dg .axis{stroke:var(--line-2);stroke-width:1}
+.dg .grpbox{fill:none;stroke:var(--k);stroke-width:1.2;stroke-dasharray:6 4}
+.dg .grpfill{fill:var(--kf);opacity:.45}
+.dg .nt{fill:var(--kf);stroke:var(--k);stroke-width:1}
+.dg .dv{stroke:var(--k);stroke-width:1;stroke-dasharray:2 4}
+.dg .pillbg{fill:var(--surface);stroke:var(--k);stroke-width:1}
+.dg .bdg{fill:var(--k)}
+.dg .bdgt{fill:var(--bg);font-weight:700}
+.dg .xm-c{fill:var(--kf);stroke:var(--k);stroke-width:1.4}
+.dg .xm-l{stroke:var(--k);stroke-width:1.8;stroke-linecap:round}
+.dg .bar{fill:var(--kf);stroke:var(--k);stroke-width:1.2}
+.dg .bar.wait{stroke-dasharray:4 3;fill-opacity:.55}
+.dg .mk{stroke:var(--k);stroke-width:1.2;stroke-dasharray:4 3}
+.dg .pt{fill:var(--k);stroke:var(--bg);stroke-width:2}
+.dg .ln-s{fill:none;stroke:var(--k);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.dg .ln-s.dash{stroke-dasharray:6 4}
+.dg .ar{fill:var(--k);opacity:.12}
+
+
+/* ---------- Docker & Kubernetes widgets ---------- */
+.coll-out .ty-2{border-top:1px solid var(--line)}
+.roll-key{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;font-size:12.5px;color:var(--ink-3)}
+.roll{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.roll-row{display:grid;grid-template-columns:4.2rem minmax(0,1fr) auto;gap:6px 10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:7px 12px;background:var(--bg)}
+.roll-row .ix{font:600 11px var(--f-mono);color:var(--ink-3)}
+.roll-row .av{font:500 11.5px var(--f-mono);color:var(--teal);white-space:nowrap}
+.roll-row .av.low{color:var(--rose)}
+.pods{display:flex;flex-wrap:wrap;gap:5px;min-width:0}
+.pod{display:inline-block;font:600 11.5px/1.5 var(--f-mono);border:1.5px solid var(--k);background:var(--kf);border-radius:7px;padding:1px 7px;color:var(--ink);white-space:nowrap}
+.p-old{--k:var(--sky);--kf:var(--sky-soft)}
+.p-term{--k:var(--rose);--kf:var(--rose-soft);border-style:dashed;text-decoration:line-through;text-decoration-color:var(--rose)}
+.p-pend{--k:var(--amber);--kf:var(--amber-soft);border-style:dashed}
+.p-new{--k:var(--teal);--kf:var(--teal-soft)}
+.qos-res td:first-child{width:12rem}
+@media (max-width:760px){
+  .roll-row{grid-template-columns:3.6rem minmax(0,1fr)}
+  .roll-row .av{grid-column:2}
+  .qos-res td:first-child{width:auto}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side" aria-label="Contents">
+    <div class="side-brand">Docker &amp; Kubernetes Cheatsheet</div>
+    <p class="side-meta" id="side-meta">&nbsp;</p>
+    <div id="nav-top">
+      <button class="nav-i nav-top" type="button" data-to="intro"><span class="c">MAP</span><span class="n">ship.sh, annotated</span></button>
+      <button class="nav-i nav-top" type="button" data-to="finder"><span class="c">FIND</span><span class="n">Find by task</span></button>
+    </div>
+    <nav id="nav" aria-label="Sections"></nav>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+  <main class="main" id="top">
+    <div class="top" role="toolbar" aria-label="Page controls">
+      <button class="tbtn menu-btn" id="menu-btn" type="button" aria-controls="side" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span class="lbl">Contents</span>
+      </button>
+      <label class="search" for="dks-q">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="dks-q" type="search" placeholder="Search commands, objects, errors — “CrashLoopBackOff”, “subPath”, “137”" autocomplete="off" spellcheck="false">
+        <span class="hits" id="hits" hidden></span>
+        <kbd aria-hidden="true">/</kbd>
+      </label>
+      <button class="tbtn" id="wrap-btn" type="button" aria-pressed="false" title="Wrap long code lines">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 3.5h11M1.5 7h8.5a2 2 0 0 1 0 4H7m0 0 1.6-1.6M7 11l1.6 1.6M1.5 10.5h3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Wrap</span>
+      </button>
+      <button class="tbtn" id="collapse-all" type="button" aria-pressed="false">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl" id="collapse-lbl">Collapse all</span>
+      </button>
+      <button class="tbtn icon theme-btn" id="theme-btn" type="button" aria-label="Switch light / dark theme" title="Switch light / dark theme">
+        <svg class="sun" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg class="moon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 10.4A5.6 5.6 0 0 1 5.6 2.8a5.6 5.6 0 1 0 7.6 7.6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow" id="eyebrow">Cheatsheet</p>
+      <h1>Docker &amp; Kubernetes Cheatsheet</h1>
+      <p class="lede">Copy-paste Docker, Compose, kubectl and manifest patterns for shipping <b>.NET 10</b> services to <b>AKS</b>, with a version badge on anything newer than you might expect. Start from the <code>ship.sh</code> below — each tagged line opens the section that explains it — or pick a task.</p>
+      <div class="now" role="list" aria-label="Release status, October 2026">
+        <div class="now-i now-g" role="listitem"><b>Kubernetes 1.37</b>Current release since August 26, 2026. The project patches the three newest minor versions.</div>
+        <div class="now-i now-b" role="listitem"><b>Ingress NGINX</b>Retired in March 2026: no more releases or security fixes. Move to Gateway API or another controller.</div>
+        <div class="now-i now-a" role="listitem"><b>Gateway API v1.6</b>Released in August 2026; TCPRoute and UDPRoute joined the Standard channel.</div>
+      </div>
+    </header>
+
+    <section class="intro" id="intro" aria-label="ship.sh map and how to read the cards">
+      <div class="panel">
+        <h2>ship.sh, annotated</h2>
+        <div class="pmap" id="pmap"></div>
+        <div class="pmap-cap"><span>Tagged lines jump to their section.</span><span id="pmap-copy"></span></div>
+      </div>
+      <div class="panel">
+        <h2>How to read a card</h2>
+        <ul class="howto">
+          <li><span class="k">Badges</span><span class="vkey">
+            <span class="vk"><span class="ver v-next">K8s 1.37 · beta</span>beta: on by default, details can still change</span>
+            <span class="vk"><span class="ver v-new">K8s 1.36</span>stable within the last year: 1.35 or later, or .NET 10</span>
+            <span class="vk"><span class="ver">K8s 1.25</span>older: available on every supported version</span></span></li>
+          <li><span class="k">Search</span><span>Press <kbd>/</kbd> and type a command, an object or an error: “CrashLoopBackOff”, “subPath”, “137”.</span></li>
+          <li><span class="k">Code</span><span><span style="color:var(--rose)">✗</span> and <span style="color:var(--teal)">✓</span> lines mark the culprit and the cure. Every block has Copy; <b>Wrap</b> folds long lines on small screens.</span></li>
+          <li><span class="k">Try it</span><span>Some diagrams flip between two states, and the Docker-to-Kubernetes, rollout and resources widgets react to your choices.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="finder" id="finder" aria-labelledby="finder-h">
+      <div class="sec-h"><span class="code">FIND</span><h2 id="finder-h">Find by task</h2><span class="ct" id="finder-ct"></span></div>
+      <p class="sec-blurb">Start from what you are trying to do. Each chip jumps to a card.</p>
+      <div class="fd" id="fd"></div>
+    </section>
+
+    <div id="secs"></div>
+    <div class="empty" id="empty" hidden>No card matches that search. Try a command (“rollout undo”), an object (“HTTPRoute”) or an exit code (“137”).</div>
+
+    <footer class="foot">
+      <p>The Docker &amp; Kubernetes Cheatsheet: <span id="foot-count"></span>. Written for Kubernetes 1.37, Docker Engine with BuildKit and Compose v2, .NET 10 images and AKS; items marked beta are on by default but can still change. Releases and retirements checked in October 2026 against the Kubernetes blog: <a href="https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/" target="_blank" rel="noopener">v1.37 release</a>, <a href="https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/" target="_blank" rel="noopener">Ingress NGINX retirement</a>, <a href="https://kubernetes.io/blog/2026/08/03/gateway-api-v1-6-release/" target="_blank" rel="noopener">Gateway API v1.6</a>, <a href="https://kubernetes.io/blog/2026/03/20/ingress2gateway-1-0-release/" target="_blank" rel="noopener">Ingress2Gateway 1.0</a>, <a href="https://kubernetes.io/blog/2026/09/02/kubernetes-v1-37-hpa-scale-to-zero-beta/" target="_blank" rel="noopener">HPA scale to zero</a>, <a href="https://kubernetes.io/blog/2026/04/23/kubernetes-v1-36-userns-ga/" target="_blank" rel="noopener">user namespaces GA</a> and <a href="https://kubernetes.io/blog/2025/12/19/kubernetes-v1-35-in-place-pod-resize-ga/" target="_blank" rel="noopener">in-place Pod resize GA</a>.</p>
+      <p>Companions in this library: the <a href="dotnet-cheatsheet.html">.NET Cheatsheet</a> for the app side of containers (DEP: Aspire, container defaults, health endpoints) and the <a href="system-design-cheatsheet.html">System Design Cheatsheet</a> for the architecture around them.</p>
+    </footer>
+  </main>
+</div>
+<script>
+/* ===== Hero map, task finder, widget data ===== */
+
+/* ship.sh, line by line: [section id or '', code] */
+window.DKS_SHIP = [
+  ['', '# ship.sh: from a commit to running Pods'],
+  ['df', '# the image: multi-stage build, chiseled runtime, non-root'],
+  ['img', 'docker build -t myacr.azurecr.io/shop-api:1.4.3 .'],
+  ['run', 'docker run --rm -p 8080:8080 myacr.azurecr.io/shop-api:1.4.3'],
+  ['cmp', 'docker compose up -d --build                # api + postgres + rabbitmq'],
+  ['vol', 'docker compose down -v                      # and wipe the local volumes'],
+  ['', ''],
+  ['aks', 'az acr login -n myacr'],
+  ['img', 'docker push myacr.azurecr.io/shop-api:1.4.3'],
+  ['aks', 'az aks get-credentials -g rg-shop -n aks-prod'],
+  ['ctl', 'kubectl config use-context aks-prod'],
+  ['ctl', 'kubectl config set-context --current --namespace=shop'],
+  ['', ''],
+  ['k8s', '# apply stores desired state; controllers make it real'],
+  ['cfg', 'kubectl apply -f k8s/secret-provider.yaml    # Key Vault, not plain Secrets'],
+  ['helm', 'kubectl apply -k k8s/overlays/prod          # Deployment, Service, HTTPRoute'],
+  ['wl', 'kubectl rollout status deploy/shop-api'],
+  ['net', 'kubectl get svc,httproute'],
+  ['res', 'kubectl top pods -l app=shop-api'],
+  ['dbg', 'kubectl logs -f deploy/shop-api'],
+  ['sec', 'kubectl auth can-i delete pods               # what may this identity do?'],
+  ['', ''],
+  ['wl', 'kubectl rollout undo deploy/shop-api         # if the new version misbehaves']
+];
+
+/* "I want to..." rows: [task, hint, [card ids]] */
+window.DKS_FINDER = [
+  ['Make an image smaller and faster to build', 'layer order, multi-stage, cache mounts', ['df-order', 'df-dotnet', 'img-cache', 'df-ignore']],
+  ['Build for x64 nodes on an ARM laptop', 'buildx, platforms, exec format error', ['img-buildx', 'img-inspect']],
+  ['Run the app and its dependencies locally', 'Compose, health checks, watch', ['cmp-file', 'cmp-wait', 'cmp-watch', 'cmp-cmds']],
+  ['Shut down without dropping requests', 'PID 1, SIGTERM, preStop', ['df-signal', 'df-stop', 'wl-stop', 'wl-deploy']],
+  ['Turn a `docker run` into Kubernetes YAML', 'ports, env, volumes, limits', ['k8s-translate', 'k8s-objects', 'ctl-gen']],
+  ['Deploy without downtime', 'rolling updates, probes, disruption budgets', ['wl-roll', 'wl-rollout', 'res-probe-yaml', 'wl-pdb']],
+  ['Expose an API to the internet', 'Service, Gateway API, Ingress', ['net-svc', 'net-gw', 'net-ing', 'net-path']],
+  ['Give a Pod settings and secrets', 'ConfigMap, Secret, Key Vault', ['cfg-cm', 'cfg-use', 'cfg-secret', 'cfg-update']],
+  ['Call Azure without storing secrets', 'Workload Identity', ['aks-wi', 'aks-wi-yaml', 'cfg-secret']],
+  ['Keep data across restarts', 'PVCs, storage classes, StatefulSets', ['cfg-pvc', 'cfg-sc', 'wl-sts', 'vol-types']],
+  ['Size CPU and memory', 'requests, limits, QoS, the .NET GC', ['res-qos', 'res-rl', 'res-dotnet', 'res-quota']],
+  ['Stop a slow starter from being killed', 'startup, liveness and readiness probes', ['res-start', 'res-probes', 'res-probe-yaml', 'res-live']],
+  ['Scale with load', 'HPA, KEDA, cluster autoscaler', ['res-hpa', 'res-zero', 'aks-ops']],
+  ['Find out why a Pod is not running', 'status, events, logs', ['dbg-tree', 'dbg-status', 'dbg-cmds', 'dbg-events']],
+  ['Debug a container without a shell', 'ephemeral containers, netshoot', ['dbg-debug', 'dbg-net', 'run-oneoff']],
+  ['Run a job once or on a schedule', 'Jobs, CronJobs, migrations, sidecars', ['wl-job', 'wl-sidecar']],
+  ['Lock down a workload', 'securityContext, Pod Security, RBAC, NetworkPolicy', ['sec-ctx', 'sec-psa', 'sec-rbac', 'net-pol']],
+  ['Promote a release across environments', 'Helm values, Kustomize overlays', ['helm-pick', 'helm-values', 'kus-layout', 'helm-cmds']],
+  ['Work with AKS and ACR', 'credentials, image pulls, node pools, upgrades', ['aks-connect', 'aks-acr', 'aks-ops', 'aks-checklist']],
+  ['Free up disk space', 'images, volumes, build cache', ['vol-clean', 'img-inspect']],
+  ['Understand what `kubectl apply` does', 'API server, controllers, scheduler', ['k8s-arch', 'k8s-apply', 'k8s-objs']]
+];
+
+/* Docker -> Kubernetes translator: { need, k8, dk, dl, y, why } */
+window.DKS_MAP = [
+  { need: 'Publish a port', k8: 'Service, plus an HTTPRoute for outside traffic', dl: 'bash', dk: `
+docker run -d --name api -p 8080:8080 shop-api:1.4.3`, y: `
+apiVersion: v1
+kind: Service
+metadata: { name: shop-api }
+spec:
+  selector: { app: shop-api }
+  ports:
+    - port: 80            # what callers use: http://shop-api
+      targetPort: 8080    # the containerPort`,
+    why: 'A Service is reachable only inside the cluster. Traffic from the internet needs a Gateway route, an Ingress or `type: LoadBalancer` (NET).' },
+
+  { need: 'Set environment variables', k8: '`env`, and a ConfigMap for the rest', dl: 'bash', dk: `
+docker run -e ASPNETCORE_ENVIRONMENT=Production \\
+  -e Features__NewCheckout=true shop-api:1.4.3`, y: `
+containers:
+  - name: api
+    image: myacr.azurecr.io/shop-api:1.4.3
+    env:
+      - { name: ASPNETCORE_ENVIRONMENT, value: Production }
+    envFrom:
+      - configMapRef: { name: api-config }   # Features__NewCheckout: "true", ...`,
+    why: 'Anyone who can read the manifest sees `env` values. Credentials belong in a Secret or, better, Key Vault.' },
+
+  { need: 'Pass a secret', k8: 'Secret, read with `secretKeyRef`', dl: 'bash', dk: `
+docker run --env-file prod.env shop-api:1.4.3   # prod.env stays out of Git`, y: `
+env:
+  - name: ConnectionStrings__Db
+    valueFrom:
+      secretKeyRef: { name: db, key: connection-string }`,
+    why: 'A Secret is base64, not encrypted. On AKS, keep the value in Key Vault and mount it with the CSI driver (CFG).' },
+
+  { need: 'Keep data across restarts', k8: 'PersistentVolumeClaim', dl: 'bash', dk: `
+docker run -d -v pgdata:/var/lib/postgresql/data postgres:16`, y: `
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: pgdata }
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: managed-csi
+  resources: { requests: { storage: 20Gi } }
+---
+# in the Pod template
+volumes:
+  - name: data
+    persistentVolumeClaim: { claimName: pgdata }
+containers:
+  - name: postgres
+    volumeMounts: [{ name: data, mountPath: /var/lib/postgresql/data }]`,
+    why: 'An Azure Disk attaches to one node at a time, so two replicas cannot share a `ReadWriteOnce` claim. A StatefulSet gives each Pod its own.' },
+
+  { need: 'Mount a config file', k8: 'ConfigMap, mounted as a volume', dl: 'bash', dk: `
+docker run -v "$PWD/appsettings.Production.json":/app/config/appsettings.json:ro shop-api:1.4.3`, y: `
+volumes:
+  - name: settings
+    configMap: { name: api-settings }      # key: appsettings.json
+containers:
+  - name: api
+    volumeMounts:
+      - { name: settings, mountPath: /app/config, readOnly: true }`,
+    why: 'Never mount over `/app`: it hides the published files. Mount a subfolder and load it with `AddJsonFile("config/appsettings.json", optional: true, reloadOnChange: true)`.' },
+
+  { need: 'Limit CPU and memory', k8: '`resources.requests` and `resources.limits`', dl: 'bash', dk: `
+docker run --cpus 1 --memory 512m shop-api:1.4.3`, y: `
+resources:
+  requests: { cpu: 250m, memory: 256Mi }   # what the scheduler reserves
+  limits: { memory: 512Mi }                # OOMKilled above this`,
+    why: 'Docker has no requests. The scheduler places Pods by requests only, so a Pod without them can land on a node that is already full (RES).' },
+
+  { need: 'Restart it when it crashes', k8: 'Deployment', dl: 'bash', dk: `
+docker run -d --restart unless-stopped shop-api:1.4.3`, y: `
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: shop-api }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: shop-api } }
+  template:
+    metadata: { labels: { app: shop-api } }
+    spec:
+      containers:
+        - { name: api, image: myacr.azurecr.io/shop-api:1.4.3 }
+      # restartPolicy: Always is the only option in a Deployment`,
+    why: 'A container that keeps crashing waits longer before each restart, up to five minutes: that waiting state is `CrashLoopBackOff`.' },
+
+  { need: 'Check its health', k8: 'Liveness and readiness probes', dl: 'yaml', dk: `
+healthcheck:
+  test: ["CMD", "curl", "-fsS", "http://localhost:8080/health/live"]
+  interval: 10s
+  retries: 3`, y: `
+livenessProbe:
+  httpGet: { path: /health/live, port: 8080 }
+readinessProbe:
+  httpGet: { path: /health/ready, port: 8080 }`,
+    why: 'Kubernetes ignores the image `HEALTHCHECK`. Readiness controls traffic; liveness restarts the container.' },
+
+  { need: 'Run several copies', k8: '`replicas`, behind a Service', dl: 'bash', dk: `
+docker compose up -d --scale api=3`, y: `
+spec:
+  replicas: 3          # or let an HPA set it (RES)`,
+    why: 'With a fixed host port, `--scale` fails with "port is already allocated". A Service load-balances across the Pods for you.' },
+
+  { need: 'Start after the database', k8: 'No equivalent: retries, or an init container', dl: 'yaml', dk: `
+depends_on:
+  db: { condition: service_healthy }`, y: `
+initContainers:
+  - name: wait-for-db
+    image: postgres:16
+    command: ["sh", "-c", "until pg_isready -h postgres -U app; do sleep 2; done"]`,
+    why: 'An init container helps only at startup. The database can restart later, so the app must retry its connections anyway.' },
+
+  { need: 'Override the command', k8: '`command` and `args`', dl: 'bash', dk: `
+docker run --entrypoint dotnet shop-api:1.4.3 Shop.Api.dll --migrate`, y: `
+containers:
+  - name: migrate
+    image: myacr.azurecr.io/shop-api:1.4.3
+    command: ["dotnet"]                    # replaces ENTRYPOINT
+    args: ["Shop.Api.dll", "--migrate"]    # replaces CMD`,
+    why: 'Set only `args` to keep the image ENTRYPOINT and change its arguments.' },
+
+  { need: 'Reach another container by name', k8: 'Service DNS name', dl: 'yaml', dk: `
+services:
+  api:
+    environment:
+      ConnectionStrings__Db: Host=db;Database=app;Username=app
+  db:
+    image: postgres:16`, y: `
+env:
+  - name: ConnectionStrings__Db
+    value: Host=postgres.data.svc.cluster.local;Database=app;Username=app
+# in the same namespace, Host=postgres is enough`,
+    why: 'The short Service name resolves inside its own namespace. From another namespace use `name.namespace`, or the full `.svc.cluster.local` name.' }
+];
+
+/* ===== Docker: IMG, DF, RUN, VOL, CMP ===== */
+window.DKS = window.DKS || [];
+
+window.DKS.push({
+  id: 'img', code: 'IMG', grp: 'Docker', name: 'Images and builds',
+  blurb: 'An image is a stack of read-only layers addressed by a digest; a tag is a movable name for one. Build with BuildKit, push an immutable tag, deploy that tag or its digest.',
+  blocks: [
+    { k: 'snip', id: 'img-build', t: 'Build, tag, push', lang: 'bash', code: `
+docker build -t shop-api:dev .                              # ./Dockerfile, context = .
+docker build -t shop-api:dev -f src/Shop.Api/Dockerfile .   # Dockerfile elsewhere, same context
+docker build --target build -t shop-api:build .             # stop at a named stage
+docker build --build-arg VERSION=1.4.2 -t shop-api:1.4.2 .
+docker build --pull --no-cache -t shop-api:1.4.2 .          # fresh base image, no cached layers
+docker build --progress=plain -t shop-api:1.4.2 .           # every step and its output, for CI logs
+
+docker tag shop-api:1.4.2 myacr.azurecr.io/shop-api:1.4.2
+docker push myacr.azurecr.io/shop-api:1.4.2`,
+      note: 'The final argument is the build context: everything in it, minus `.dockerignore`, is sent to the builder, and `COPY` can only see files inside it.' },
+
+    { k: 'table', id: 'img-tags', t: 'Tags, digests and what to deploy', cols: ['Reference', 'Example', 'Use it for'], rows: [
+      ['Mutable tag', '`shop-api:latest`, `shop-api:main`', 'local work only: the same name can point at a different image tomorrow'],
+      ['Immutable tag', '`shop-api:1.4.2`, `shop-api:sha-3f9c2e1`', 'deployments: one tag, one build, never pushed twice'],
+      ['Digest', '`shop-api@sha256:4a1c…`', 'pinning exactly; it is what Kubernetes records as the image it ran'],
+      ['Base image tag', '`aspnet:10.0`', 'security patches arrive when you rebuild; pin a digest if builds must be reproducible']
+    ], note: 'ACR can enforce immutability: `az acr repository update -n myacr --image shop-api:1.4.2 --write-enabled false` locks a released tag.' },
+
+    { k: 'snip', id: 'img-buildx', t: 'Multi-architecture builds with buildx', v: 'BuildKit', lang: 'bash', code: `
+docker buildx create --name multi --use                      # a builder that can cross-build
+docker buildx build --platform linux/amd64,linux/arm64 \\
+  -t myacr.azurecr.io/shop-api:1.4.2 --push .                # one tag, an index with both images
+docker buildx imagetools inspect myacr.azurecr.io/shop-api:1.4.2   # platforms inside the tag
+docker build --platform linux/amd64 -t shop-api:1.4.2 .      # Apple-silicon laptop, x64 nodes`,
+      note: 'BuildKit has been the default builder since Docker Engine 23.0. An arm64 image on x64 AKS nodes fails at start with `exec format error`.' },
+
+    { k: 'snip', id: 'img-cache', t: 'Cache mounts and secret mounts', v: 'BuildKit', lang: 'docker', code: `
+# syntax=docker/dockerfile:1
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY nuget.config Directory.Packages.props ./
+COPY src/Shop.Api/Shop.Api.csproj src/Shop.Api/
+
+# cache mount: packages survive between builds but never become part of a layer
+# secret mount: the feed token exists during this RUN only, not in the image or its history
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \\
+    --mount=type=secret,id=feed,env=FEED_TOKEN \\
+    dotnet restore src/Shop.Api/Shop.Api.csproj
+
+COPY . .
+# the packages live in the cache mount, so this RUN must mount it too
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \\
+    dotnet publish src/Shop.Api -c Release -o /app --no-restore`,
+      note: 'Build with `docker build --secret id=feed,env=FEED_TOKEN .` and reference `%FEED_TOKEN%` as the password in `nuget.config`.' },
+
+    { k: 'call', kind: 'trap', text: 'A cache mount is not in any layer. Every later `RUN` that needs those packages (build, test, publish) must mount the same cache, or `--no-restore` fails with missing packages.' },
+
+    { k: 'snip', id: 'img-inspect', t: 'Look inside an image', lang: 'bash', code: `
+docker image ls                                        # REPOSITORY, TAG, IMAGE ID, SIZE
+docker history shop-api:1.4.2                          # size added by each instruction
+docker image inspect shop-api:1.4.2 \\
+  --format '{{.Config.User}} {{.Config.Entrypoint}} {{.Config.ExposedPorts}}'
+docker run --rm -it --entrypoint sh shop-api:1.4.2     # look around (not on chiseled images)
+docker scout cves shop-api:1.4.2                       # known vulnerabilities, per layer
+docker save -o shop-api.tar shop-api:1.4.2             # move an image without a registry
+docker load -i shop-api.tar` },
+
+    { k: 'snip', id: 'img-registry', t: 'Registries and logins', lang: 'bash', code: `
+az acr login -n myacr                                  # ACR, using your Azure CLI identity
+echo "$GHCR_TOKEN" | docker login ghcr.io -u <github-user> --password-stdin
+docker login                                           # Docker Hub
+docker logout myacr.azurecr.io
+cat ~/.docker/config.json                              # which registries you are logged in to`,
+      note: 'Docker Hub rate-limits anonymous pulls. Clusters and CI should pull base images through ACR or log in.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'df', code: 'DF', grp: 'Docker', name: 'Dockerfile',
+  blurb: 'Order instructions from least to most often changed so the layer cache survives most builds. Build in the SDK image, ship the runtime image, run as non-root.',
+  blocks: [
+    { k: 'snip', id: 'df-dotnet', t: 'Multi-stage .NET Dockerfile', v: '.NET 10', lang: 'docker', code: `
+# syntax=docker/dockerfile:1
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG VERSION=0.0.0-local
+WORKDIR /src
+
+# 1. restore: reused until a project or package file changes
+COPY Directory.Build.props Directory.Packages.props nuget.config ./
+COPY src/Shop.Api/Shop.Api.csproj src/Shop.Api/
+COPY src/Shop.Core/Shop.Core.csproj src/Shop.Core/
+RUN dotnet restore src/Shop.Api/Shop.Api.csproj
+
+# 2. build and publish
+COPY . .
+RUN dotnet publish src/Shop.Api -c Release -o /app --no-restore -p:Version=$VERSION
+
+# 3. runtime: no SDK, no shell, runs as the non-root app user (UID 1654)
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled AS final
+WORKDIR /app
+COPY --from=build /app .
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Shop.Api.dll"]`,
+      note: 'Chiseled images already run as `app`. On the regular `aspnet:10.0` image, add `USER $APP_UID` before `ENTRYPOINT`.' },
+
+    { k: 'table', id: 'df-ins', t: 'Instructions at a glance', first: 'mono', cols: ['Instruction', 'Does', 'Watch out'], rows: [
+      ['FROM img AS name', 'base image; starts a stage', 'pin a version tag such as `aspnet:10.0`, never `latest`'],
+      ['WORKDIR /app', 'sets and creates the working directory', 'use it instead of `RUN cd …`'],
+      ['COPY src dst', 'copies from the build context, or `--from=<stage>`', 'sees only the context, which `.dockerignore` trims'],
+      ['ADD', 'COPY plus URL download and tar extraction', 'prefer COPY unless you need the extraction'],
+      ['RUN cmd', 'runs at build time; each RUN adds a layer', 'chain `apt-get update && apt-get install` in one RUN'],
+      ['ARG name=x', 'build-time variable, set with `--build-arg`', 'visible in `docker history`: never for secrets'],
+      ['ENV key=x', 'variable at build time and at run time', 'baked into the image configuration'],
+      ['EXPOSE 8080', 'documents the port', 'publishes nothing: `-p` or a Service does'],
+      ['USER $APP_UID', 'user for later steps and at run time', 'a numeric ID lets Kubernetes verify `runAsNonRoot`'],
+      ['ENTRYPOINT [..]', 'the fixed executable', 'exec form, so the app is PID 1 and receives SIGTERM'],
+      ['CMD [..]', 'default arguments, or the default command', 'replaced by whatever follows the image name in `docker run`'],
+      ['HEALTHCHECK', 'command Docker runs to mark the container healthy', 'Kubernetes ignores it and uses probes (RES)'],
+      ['LABEL k=v', 'metadata, such as `org.opencontainers.image.source`', 'GHCR uses that label to link the image to its repository']
+    ] },
+
+    { k: 'gb', id: 'df-order', t: 'Order layers for the cache', lang: 'docker', bad: `
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+# ✗ any source edit invalidates this layer and every layer below
+COPY . .
+# ✗ so every build downloads every package again
+RUN dotnet restore src/Shop.Api/Shop.Api.csproj
+RUN dotnet publish src/Shop.Api -c Release -o /app`, good: `
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+# ✓ copy only what restore needs
+COPY Directory.Packages.props nuget.config ./
+COPY src/Shop.Api/Shop.Api.csproj src/Shop.Api/
+COPY src/Shop.Core/Shop.Core.csproj src/Shop.Core/
+# ✓ cached until one of those files changes
+RUN dotnet restore src/Shop.Api/Shop.Api.csproj
+COPY . .
+RUN dotnet publish src/Shop.Api -c Release -o /app --no-restore`,
+      badNote: 'A layer is reused only when its instruction and every file it copies are unchanged, so one edited `.cs` file reruns the restore.',
+      goodNote: 'Restore reruns only when a project or package file changes. Exclude `bin/` and `obj/` in `.dockerignore`, or `COPY . .` overwrites the restored assets.' },
+
+    { k: 'gb', id: 'df-signal', t: 'Exec form, so the app receives SIGTERM', lang: 'docker', bad: `
+# ✗ shell form: runs under /bin/sh -c
+ENTRYPOINT dotnet Shop.Api.dll`, good: `
+# ✓ exec form: dotnet is PID 1 and receives the signal
+ENTRYPOINT ["dotnet", "Shop.Api.dll"]`,
+      badNote: 'Docker documents that the shell form does not pass signals and ignores `CMD` and `docker run` arguments. Chiseled images have no shell, so it fails outright.',
+      goodNote: 'The host sees SIGTERM, stops accepting requests, finishes in-flight work and exits 0 inside the grace period.' },
+
+    { k: 'dg', id: 'df-stop', t: 'What `docker stop` and Kubernetes do to PID 1', seg: ['Signal lost', 'Exec form'],
+      capB: '**SIGTERM goes to PID 1.** If PID 1 is a shell that does not forward it, the app keeps running until SIGKILL at the end of the grace period: exit code 137.',
+      capF: '**The app is PID 1:** it receives SIGTERM, drains in-flight requests and exits 0 well inside the grace period.',
+      b: { type: 'seq', w: 680, minw: 520,
+        actors: [{ l: 'docker stop or kubelet', k: 'a' }, '/bin/sh (PID 1)', 'dotnet Shop.Api'],
+        steps: [
+          { f: 0, t: 1, l: 'SIGTERM' },
+          { self: 1, l: 'not forwarded', k: 'w' },
+          { note: 'requests keep arriving; nothing drains', at: [1, 2], k: 'w' },
+          { div: 'grace period ends: 10 s in Docker, 30 s in Kubernetes', k: 'b' },
+          { f: 0, t: 2, l: 'SIGKILL', k: 'b' },
+          { note: 'killed mid-request: exit 137', at: 2, k: 'b' }
+        ] },
+      f: { type: 'seq', w: 680, minw: 520,
+        actors: [{ l: 'docker stop or kubelet', k: 'a' }, 'dotnet Shop.Api (PID 1)'],
+        steps: [
+          { f: 0, t: 1, l: 'SIGTERM' },
+          { self: 1, l: 'ApplicationStopping: stop accepting, finish in-flight work', k: 'g' },
+          { f: 1, t: 0, l: 'exit code 0', k: 'g', d: true }
+        ] } },
+
+    { k: 'table', id: 'df-cmd', t: '`CMD` vs `ENTRYPOINT`', cols: ['Dockerfile', '`docker run img`', '`docker run img --migrate`'], rows: [
+      ['`CMD ["dotnet","Shop.Api.dll"]`', '`dotnet Shop.Api.dll`', 'runs `--migrate` as the command: exit 127'],
+      ['`ENTRYPOINT ["dotnet","Shop.Api.dll"]`', '`dotnet Shop.Api.dll`', '`dotnet Shop.Api.dll --migrate`'],
+      ['both, with `CMD ["--urls","http://+:8080"]`', '`dotnet Shop.Api.dll --urls http://+:8080`', '`dotnet Shop.Api.dll --migrate`']
+    ], note: 'In a Kubernetes container, `command` replaces ENTRYPOINT and `args` replaces CMD.' },
+
+    { k: 'snip', id: 'df-ignore', t: '`.dockerignore`', lang: 'text', half: true, code: `
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/node_modules/
+**/*.user
+**/.env
+**/secrets.json
+.git
+**/Dockerfile*
+**/compose*.yaml
+**/charts/`,
+      note: 'A smaller context builds faster and keeps local secrets and `obj/` folders out of the image.' },
+
+    { k: 'snip', id: 'df-health', t: 'A health check on an image with a shell', lang: 'docker', half: true, code: `
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+WORKDIR /app
+COPY --from=build /app .
+# curl is not in the aspnet image
+RUN apt-get update \\
+ && apt-get install -y --no-install-recommends curl \\
+ && rm -rf /var/lib/apt/lists/*
+USER $APP_UID
+HEALTHCHECK --interval=30s --timeout=3s \\
+  CMD curl -fsS http://localhost:8080/health/live || exit 1
+ENTRYPOINT ["dotnet", "Shop.Api.dll"]`,
+      note: 'Docker and Compose use `HEALTHCHECK`; Kubernetes never does.' },
+
+    { k: 'call', kind: 'tip', text: 'Need nothing beyond the app itself? `dotnet publish -t:PublishContainer` builds the same layered, non-root image without a Dockerfile (.NET Cheatsheet, DEP).' }
+  ]
+});
+
+window.DKS.push({
+  id: 'run', code: 'RUN', grp: 'Docker', name: 'Containers',
+  blurb: '`docker run` creates and starts a container. Most debugging is `logs`, `exec` and `inspect`; most surprises are PID 1, signals and exit codes.',
+  blocks: [
+    { k: 'table', id: 'run-flags', t: '`docker run` flags', first: 'mono', cols: ['Flag', 'Does', 'Example'], rows: [
+      ['-d', 'detached, in the background', '`-d`'],
+      ['-it', 'interactive with a terminal, for shells', '`-it ubuntu bash`'],
+      ['--name', 'a fixed container name', '`--name api`'],
+      ['--rm', 'deletes the container when it exits', '`--rm`'],
+      ['-p host:ctr', 'publishes a port', '`-p 8080:8080`, `-p 127.0.0.1:5432:5432`'],
+      ['-e, --env-file', 'environment variables', '`-e ASPNETCORE_ENVIRONMENT=Development`'],
+      ['-v, --mount', 'volume or bind mount', '`-v pgdata:/var/lib/postgresql/data`'],
+      ['--network', 'attaches to a network', '`--network shop-net`'],
+      ['--restart', '`no`, `on-failure[:n]`, `unless-stopped`, `always`', '`--restart unless-stopped`'],
+      ['-u', 'runs as a user', '`-u 1654`'],
+      ['--entrypoint', 'replaces ENTRYPOINT', '`--entrypoint sh`'],
+      ['--memory, --cpus', 'resource limits', '`--memory 512m --cpus 1.5`'],
+      ['--init', 'tini as PID 1: forwards signals, reaps zombies', '`--init`'],
+      ['--read-only', 'read-only root filesystem', '`--read-only --tmpfs /tmp`']
+    ] },
+
+    { k: 'snip', id: 'run-life', t: 'Run, list, stop, remove', lang: 'bash', code: `
+docker run -d --name api -p 8080:8080 -e ASPNETCORE_ENVIRONMENT=Development shop-api:1.4.2
+docker ps                          # running containers
+docker ps -a                       # stopped ones too
+docker ps -q                       # IDs only, for piping
+
+docker stop api                    # SIGTERM, then SIGKILL after 10 s
+docker stop -t 30 api              # a longer grace period
+docker start api
+docker restart api
+docker kill api                    # SIGKILL now
+docker rm api                      # remove a stopped container
+docker rm -f api                   # stop and remove` },
+
+    { k: 'snip', id: 'run-debug', t: 'Look inside a running container', lang: 'bash', code: `
+docker logs -f --tail 100 api                # stdout and stderr: where .NET console logs go
+docker logs --since 10m --timestamps api
+docker exec -it api sh                       # bash if the image has it; chiseled has neither
+docker exec api printenv | sort              # the configuration that actually arrived
+docker inspect -f '{{.State.ExitCode}} {{.State.OOMKilled}}' api
+docker inspect -f '{{json .NetworkSettings.Networks}}' api
+docker cp api:/app/logs ./logs               # copy out; swap the arguments to copy in
+docker stats --no-stream                     # CPU, memory and I/O per container
+docker events --since 10m                    # die, oom and health_status events` },
+
+    { k: 'table', id: 'run-exit', t: 'Exit codes', cols: ['Code', 'Usually means', 'Look at'], rows: [
+      ['0', 'clean exit', 'fine for a job; for an API, check that `ENTRYPOINT` starts the host'],
+      ['1', 'unhandled exception', '`docker logs` or `kubectl logs --previous`'],
+      ['125', '`docker run` itself failed', 'the flags, not the app'],
+      ['126', 'command not executable', 'file permissions, wrong architecture'],
+      ['127', 'command not found', '`ENTRYPOINT`, `CMD`, or `command` and `args` in Kubernetes'],
+      ['137', 'SIGKILL: OOM-killed, or killed after the grace period', '`OOMKilled` in `inspect` or `describe`; memory limit; signal handling'],
+      ['139', 'segmentation fault', 'native dependencies, wrong base image'],
+      ['143', 'SIGTERM, not handled as a clean exit', 'shutdown code paths']
+    ] },
+
+    { k: 'snip', id: 'run-limits', t: 'Limits and restart policies', lang: 'bash', code: `
+docker run -d --name api --memory 512m --cpus 1.5 shop-api:1.4.2
+docker run -d --restart unless-stopped shop-api:1.4.2   # survives daemon restarts unless you stopped it
+docker run -d --restart on-failure:5 shop-api:1.4.2     # up to 5 retries on a non-zero exit
+docker update --memory 1g --memory-swap 1g api          # change limits on a running container
+docker run --rm --init alpine sleep 100                 # tini as PID 1`,
+      note: '.NET reads the cgroup limits: the GC heap is capped at 75% of `--memory`, and `--cpus 1.5` makes `Environment.ProcessorCount` 2.' },
+
+    { k: 'snip', id: 'run-oneoff', t: 'Throwaway containers as tools', lang: 'bash', code: `
+docker run --rm -it mcr.microsoft.com/dotnet/sdk:10.0 bash             # a clean SDK shell
+docker run --rm -v "$PWD":/src -w /src mcr.microsoft.com/dotnet/sdk:10.0 dotnet test
+docker run --rm -it --network container:api nicolaka/netshoot          # join api's network namespace
+docker run --rm postgres:16 pg_isready -h host.docker.internal -p 5432
+docker run --rm -e PGPASSWORD=app postgres:16 psql -h host.docker.internal -U app -d app -c 'select 1'` },
+
+    { k: 'call', kind: 'trap', text: '`-p 8080:8080` listens on every host interface. On a laptop on shared Wi-Fi, publish databases on loopback only: `-p 127.0.0.1:5432:5432`. On Linux, published ports also bypass `ufw` rules.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'vol', code: 'VOL', grp: 'Docker', name: 'Volumes and networks',
+  blurb: 'Data that must survive goes in a named volume; files from your machine are bind mounts. Containers on a user-defined network find each other by name.',
+  blocks: [
+    { k: 'table', id: 'vol-types', t: 'Mount types', cols: ['Type', 'Syntax', 'Use for'], rows: [
+      ['Named volume', '`-v pgdata:/var/lib/postgresql/data`', 'databases and anything that must survive the container'],
+      ['Bind mount', '`-v "$PWD"/src:/src`', 'source code for live reload, config from your machine'],
+      ['Read-only', '`-v "$PWD"/appsettings.json:/app/config/appsettings.json:ro`', 'config the container must not change'],
+      ['tmpfs', '`--tmpfs /tmp`', 'scratch space in memory, gone when the container stops'],
+      ['Long form', '`--mount type=volume,src=pgdata,dst=/var/lib/postgresql/data`', 'scripts: explicit, and errors on typos instead of creating folders']
+    ] },
+
+    { k: 'dg', id: 'vol-net', t: 'How Compose containers find each other', cap: '**Name resolution needs a user-defined network.** Compose creates one per project (`shop_default`); with plain `docker run`, create it yourself. On the default `bridge` network, containers can reach each other only by IP.',
+      d: { type: 'flow', w: 680, cols: 3, rows: 3, ch: 84, minw: 520,
+        alt: 'Your machine reaches api through a published port; api reaches db and rabbitmq by name on the shop_default network; db stores data in the pgdata volume',
+        nodes: [
+          { id: 'you', x: 0, y: 0, l: 'Your machine', sub: 'http://localhost:8080', s: 'browser', k: 'a' },
+          { id: 'api', x: 1, y: 0, l: 'api', sub: '-p 8080:8080' },
+          { id: 'db', x: 2, y: 0, l: 'db', sub: 'Host=db, port 5432', s: 'db' },
+          { id: 'mq', x: 1, y: 1, l: 'rabbitmq', sub: 'amqp://rabbitmq:5672', s: 'queue' },
+          { id: 'vol', x: 2, y: 2, l: 'pgdata', sub: 'named volume', k: 'm' }
+        ],
+        edges: [
+          { f: 'you', t: 'api' },
+          { f: 'api', t: 'db' },
+          { f: 'api', t: 'mq' },
+          { f: 'db', t: 'vol', l: 'mounted', d: true }
+        ],
+        groups: [{ n: ['api', 'db', 'mq'], l: 'network shop_default', k: 's' }] } },
+
+    { k: 'snip', id: 'vol-cmds', t: 'Volumes', lang: 'bash', code: `
+docker volume create pgdata
+docker volume ls
+docker volume inspect pgdata                        # the host path (inside the VM on Docker Desktop)
+docker run --rm -v pgdata:/data -v "$PWD":/backup alpine \\
+  tar czf /backup/pgdata.tgz -C /data .             # back up a volume
+docker volume rm pgdata
+docker volume prune -a                              # every unused volume, named ones too`,
+      note: 'Since Engine 23, `docker volume prune` removes only anonymous volumes unless you add `-a`.' },
+
+    { k: 'snip', id: 'vol-netcmd', t: 'Networks', lang: 'bash', half: true, code: `
+docker network create shop-net
+docker run -d --name db --network shop-net postgres:16
+docker run -d --name api --network shop-net shop-api:1.4.2
+docker network ls
+docker network inspect shop-net        # members and IPs
+docker network connect shop-net api    # attach a running container
+docker network disconnect shop-net api`,
+      note: 'From a container to your machine: `host.docker.internal` on Docker Desktop; on Linux add `--add-host=host.docker.internal:host-gateway`.' },
+
+    { k: 'table', id: 'vol-drivers', t: 'Network drivers', half: true, cols: ['Driver', 'Use for'], rows: [
+      ['`bridge` (default)', 'one host; only user-defined bridges resolve container names'],
+      ['`host`', 'share the host network stack; no `-p` needed'],
+      ['`none`', 'no networking at all'],
+      ['`overlay`', 'several hosts, in Swarm']
+    ] },
+
+    { k: 'snip', id: 'vol-clean', t: 'Free disk space', lang: 'bash', code: `
+docker system df                     # space used by images, containers, volumes, build cache
+docker container prune               # stopped containers
+docker image prune                   # dangling images
+docker image prune -a                # every image no container uses
+docker builder prune                 # build cache
+docker network prune
+docker system prune -a --volumes     # all of the above, plus unused anonymous volumes` },
+
+    { k: 'call', kind: 'trap', text: 'A bind mount over a folder the image already fills hides the image files. Mounting `./src` onto `/app` replaces the published output with your source tree, and the container exits with 127 or a missing DLL.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'cmp', code: 'CMP', grp: 'Docker', name: 'Docker Compose',
+  blurb: 'One file describes the local stack, and services reach each other by service name. `docker compose`, with a space, replaced the old `docker-compose` binary.',
+  blocks: [
+    { k: 'snip', id: 'cmp-file', t: '`compose.yaml`: an API, Postgres and RabbitMQ', lang: 'yaml', code: `
+services:
+  api:
+    build: { context: ., dockerfile: src/Shop.Api/Dockerfile }
+    image: shop-api:dev
+    ports: ["8080:8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Db: Host=db;Database=app;Username=app;Password=\${DB_PASSWORD}
+      RabbitMq__Host: rabbitmq
+    depends_on:
+      db: { condition: service_healthy }
+      rabbitmq: { condition: service_started }
+
+  db:
+    image: postgres:16
+    environment: { POSTGRES_DB: app, POSTGRES_USER: app, POSTGRES_PASSWORD: \${DB_PASSWORD} }
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports: ["5672:5672", "15672:15672"]   # AMQP, management UI
+
+volumes:
+  pgdata:`,
+      note: '`__` in a variable name becomes `:` in .NET configuration, so `ConnectionStrings__Db` sets `ConnectionStrings:Db`.' },
+
+    { k: 'gb', id: 'cmp-wait', t: 'Wait for a healthy database, not a started one', lang: 'yaml', bad: `
+services:
+  api:
+    depends_on: [db]      # ✗ waits for the container, not for Postgres
+  db:
+    image: postgres:16`, good: `
+services:
+  api:
+    depends_on:
+      db: { condition: service_healthy }   # ✓ waits for pg_isready
+  db:
+    image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      retries: 10`,
+      badNote: 'Postgres needs a few seconds before it accepts connections, so the first migration or query at startup fails.',
+      goodNote: 'Still retry in the app (`EnableRetryOnFailure`): Kubernetes has no `depends_on` at all.' },
+
+    { k: 'snip', id: 'cmp-cmds', t: 'Everyday commands', lang: 'bash', code: `
+docker compose up -d                       # create and start everything
+docker compose up -d --build               # rebuild images first
+docker compose up -d api                   # one service and what it depends on
+docker compose ps
+docker compose logs -f api
+docker compose exec db psql -U app -d app
+docker compose run --rm api sh             # a one-off container from a service definition
+docker compose restart api
+docker compose stop                        # stop, keep the containers
+docker compose down                        # remove containers and the network
+docker compose down -v                     # ...and named volumes: wipes the database
+docker compose config                      # the merged, resolved file
+docker compose ls                          # every Compose project on this machine` },
+
+    { k: 'snip', id: 'cmp-env', t: 'Variables, `.env` and overrides', lang: 'yaml', code: `
+# .env, next to compose.yaml: used for \${...} substitution, not passed to containers
+DB_PASSWORD=dev-only-password
+API_TAG=dev
+
+# compose.yaml
+services:
+  api:
+    image: shop-api:\${API_TAG:-dev}                 # default when unset
+    env_file: [api.env]                             # these ARE passed into the container
+    environment:
+      ConnectionStrings__Db: Host=db;Database=app;Username=app;Password=\${DB_PASSWORD:?set DB_PASSWORD}`,
+      note: '`compose.override.yaml` is merged automatically; add more files with `-f compose.yaml -f compose.ci.yaml`, and check the result with `docker compose config`.' },
+
+    { k: 'snip', id: 'cmp-watch', t: 'Rebuild on change with `develop.watch`', v: 'Compose 2.23', lang: 'yaml', code: `
+services:
+  api:
+    build: .
+    develop:
+      watch:
+        - action: rebuild                  # source changed: rebuild the image, recreate
+          path: ./src
+          ignore: ["**/bin/", "**/obj/"]
+        - action: sync+restart             # settings changed: copy in, restart the container
+          path: ./src/Shop.Api/appsettings.json
+          target: /app/appsettings.json`,
+      note: 'Start it with `docker compose watch`.' },
+
+    { k: 'snip', id: 'cmp-profiles', t: 'Optional services with profiles', lang: 'yaml', code: `
+services:
+  api:
+    build: .
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://dashboard:18889
+  dashboard:                                   # traces, logs and metrics in a browser
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest   # a dev tool; pin it in CI
+    profiles: [tracing]                        # starts only when the profile is active
+    ports: ["18888:18888"]`,
+      note: '`docker compose --profile tracing up -d` starts it; services without `profiles` always start.' },
+
+    { k: 'call', kind: 'tip', text: '`docker compose down` keeps named volumes; `down -v` deletes them, including your local database.' },
+    { k: 'call', kind: 'trap', text: 'Quote port mappings. YAML 1.1 parsers read unquoted `xx:yy` values below 60 as base-60 numbers, which is why the Compose docs recommend strings: `"5672:5672"`.' }
+  ]
+});
+
+/* ===== Kubernetes: K8S, CTL, WL ===== */
+window.DKS = window.DKS || [];
+
+window.DKS.push({
+  id: 'k8s', code: 'K8S', grp: 'Kubernetes', name: 'Architecture and objects',
+  blurb: 'You declare desired state; controllers keep reconciling the cluster toward it. Everything goes through the API server, and only the API server touches etcd.',
+  blocks: [
+    { k: 'dg', id: 'k8s-arch', t: 'Who talks to whom', cap: '**Everything talks to the API server; only the API server touches etcd.** On AKS, Azure runs and patches the control plane; you own the node pools and what runs on them.',
+      d: { type: 'flow', w: 680, cols: 3, rows: 4, ch: 100, minw: 540,
+        alt: 'kubectl calls the API server; the scheduler, controller manager and cloud controller watch the API server; only the API server reads and writes etcd; kubelets on worker nodes watch the API server and report status',
+        nodes: [
+          { id: 'cli', x: 1, y: 0, l: 'kubectl, CI, Helm', sub: 'HTTPS, using your kubeconfig', s: 'pill', k: 'a' },
+          { id: 'sch', x: 0, y: 1, l: 'Scheduler', sub: 'watches new Pods, binds each to a node' },
+          { id: 'api', x: 1, y: 1, l: 'API server', sub: 'the only door in: auth, validation', k: 'a' },
+          { id: 'etcd', x: 2, y: 1, l: 'etcd', sub: 'all cluster state; only the API server uses it', s: 'db' },
+          { id: 'cm', x: 0, y: 2, l: 'Controller manager', sub: 'keeps actual = desired' },
+          { id: 'ccm', x: 2, y: 2, l: 'Cloud controller', sub: 'Azure load balancers, routes' },
+          { id: 'node', x: 1, y: 3, l: 'Worker nodes', sub: 'kubelet, kube-proxy, containerd, Pods', s: 'stack', k: 's' }
+        ],
+        edges: [
+          { f: 'cli', t: 'api' },
+          { f: 'sch', t: 'api' },
+          { f: 'cm', t: 'api', l: 'watch, reconcile' },
+          { f: 'ccm', t: 'api' },
+          { f: 'api', t: 'etcd' },
+          { f: 'node', t: 'api', l: 'kubelet: watch Pods, report status' }
+        ],
+        groups: [{ n: ['sch', 'api', 'etcd', 'cm', 'ccm'], l: 'control plane, run by Azure on AKS', k: 'a' }] } },
+
+    { k: 'dg', id: 'k8s-apply', t: 'What happens after `kubectl apply`', cap: '**`apply` returns as soon as the desired state is stored.** Controllers, the scheduler and the kubelet each watch the API server and do their part; `kubectl rollout status` waits for the outcome.',
+      d: { type: 'seq', w: 680, minw: 560,
+        actors: [{ l: 'kubectl', k: 'a' }, 'API server', { l: 'etcd', s: 'db' }, 'controllers', 'scheduler', 'kubelet'],
+        steps: [
+          { f: 0, t: 1, l: 'apply Deployment' },
+          { f: 1, t: 2, l: 'store' },
+          { f: 1, t: 0, l: 'created: nothing runs yet', d: true },
+          { f: 3, t: 1, l: 'watch: create ReplicaSet and 3 Pods' },
+          { f: 4, t: 1, l: 'watch: bind each Pod to a node' },
+          { f: 5, t: 1, l: 'watch: Pods bound to my node' },
+          { self: 5, l: 'pull image, start containers, run probes' },
+          { f: 5, t: 1, l: 'status: Running, Ready', k: 'g' }
+        ] } },
+
+    { k: 'dg', id: 'k8s-objects', t: 'How your app objects connect', cap: '**Labels are the glue:** the Service and the ReplicaSet both select Pods by `app: shop-api`. Delete a Pod and the ReplicaSet replaces it; change the Deployment and it rolls out a new ReplicaSet.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 5, ch: 100, minw: 560,
+        alt: 'Client to HTTPRoute to Service to Pods; HPA scales the Deployment, which creates a ReplicaSet, which creates the Pods; ConfigMap, Secret and PVC feed the Pods; the PVC binds a PersistentVolume',
+        nodes: [
+          { id: 'cl', x: 2, y: 0, l: 'Client', s: 'browser' },
+          { id: 'rt', x: 2, y: 1, l: 'HTTPRoute or Ingress', sub: 'host and path rules' },
+          { id: 'svc', x: 2, y: 2, l: 'Service', sub: 'stable name, Ready Pods only' },
+          { id: 'pods', x: 2, y: 3, l: 'Pods', sub: 'label app: shop-api', s: 'stack', k: 'a' },
+          { id: 'hpa', x: 0, y: 1, l: 'HPA', sub: 'sets replicas from load' },
+          { id: 'dep', x: 0, y: 2, l: 'Deployment', sub: 'image, replicas, strategy' },
+          { id: 'rs', x: 0, y: 3, l: 'ReplicaSet', sub: 'one per template version' },
+          { id: 'cm', x: 1, y: 4, l: 'ConfigMap', sub: 'settings' },
+          { id: 'sec', x: 2, y: 4, l: 'Secret', sub: 'credentials' },
+          { id: 'pvc', x: 3, y: 4, l: 'PVC', sub: 'claims a disk' },
+          { id: 'pv', x: 3, y: 3, l: 'PersistentVolume', sub: 'Azure Disk or Files', s: 'db' }
+        ],
+        edges: [
+          { f: 'cl', t: 'rt' }, { f: 'rt', t: 'svc' },
+          { f: 'svc', t: 'pods', l: 'by label' },
+          { f: 'hpa', t: 'dep' }, { f: 'dep', t: 'rs' },
+          { f: 'rs', t: 'pods', l: 'creates, replaces' },
+          { f: 'cm', t: 'pods', l: 'env or files' },
+          { f: 'sec', t: 'pods' },
+          { f: 'pvc', t: 'pods' },
+          { f: 'pvc', t: 'pv' }
+        ] } },
+
+    { k: 'table', id: 'k8s-objs', t: 'Core objects', cols: ['Object', 'What it does', 'Typical use'], rows: [
+      ['Pod', 'one or more containers sharing an IP and volumes; the smallest unit', 'almost never created directly'],
+      ['ReplicaSet', 'keeps N identical Pods running', 'owned by a Deployment'],
+      ['Deployment', 'image and replicas, rolling updates and rollbacks', 'stateless APIs, workers, consumers'],
+      ['StatefulSet', 'Pods with stable names (`db-0`, `db-1`) and their own volumes', 'databases, brokers'],
+      ['DaemonSet', 'one Pod on every node', 'log and metrics agents'],
+      ['Job, CronJob', 'run to completion, once or on a schedule', 'migrations, nightly reconciliation'],
+      ['Service', 'stable virtual IP and DNS name in front of Ready Pods', 'service-to-service calls'],
+      ['HTTPRoute, Ingress', 'HTTP routing by host and path into Services', 'public endpoints, TLS'],
+      ['ConfigMap', 'non-secret settings as variables or files', 'appsettings, feature flags'],
+      ['Secret', 'sensitive values, base64-encoded', 'connection strings, keys'],
+      ['PVC, PV', 'a storage request, and the disk that satisfies it', 'data that outlives Pods'],
+      ['StorageClass', 'how disks get provisioned (type, SKU)', 'named in a PVC'],
+      ['Namespace', 'scope for names, RBAC and quotas', 'one per team, app or environment'],
+      ['ServiceAccount', 'the identity of a Pod, for the API and for Azure', 'Workload Identity, least privilege'],
+      ['HPA', 'scales replicas on CPU, memory or custom metrics', 'load-driven scaling']
+    ] },
+
+    { k: 'widget', id: 'k8s-translate', t: 'Translate a Docker habit into Kubernetes', w: 'map' },
+
+    { k: 'call', kind: 'key', text: 'Keep manifests in Git and `kubectl apply` them. `kubectl edit` and `kubectl scale` change only the live object, and the next apply resets every field your manifest also sets.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'ctl', code: 'CTL', grp: 'Kubernetes', name: 'kubectl',
+  blurb: 'Check the context and namespace before anything else. Read with `get`, `describe` and `explain`; change state with `apply`.',
+  blocks: [
+    { k: 'snip', id: 'ctl-ctx', t: 'Contexts and namespaces', lang: 'bash', code: `
+kubectl config get-contexts                     # * marks the current one
+kubectl config current-context
+kubectl config use-context aks-prod
+kubectl config set-context --current --namespace=shop   # default namespace for this context
+kubectl get ns
+kubectl create ns shop
+kubectl cluster-info
+kubectl version                                 # client and server versions`,
+      note: '`kubectx` and `kubens` switch faster; `k9s` is a terminal UI over all of this.' },
+
+    { k: 'snip', id: 'ctl-read', t: 'Read the cluster', lang: 'bash', code: `
+kubectl get pods                          # current namespace
+kubectl get pods -n kube-system           # another namespace
+kubectl get pods -A                       # all namespaces
+kubectl get pods -o wide                  # plus node and Pod IP
+kubectl get pods -w                       # watch changes
+kubectl get deploy,svc,httproute,cm       # several kinds at once
+kubectl get pod shop-api-7d9f-x2x -o yaml # the full live object
+kubectl describe pod shop-api-7d9f-x2x    # details and Events: start here
+kubectl explain deployment.spec.strategy  # built-in field docs
+kubectl api-resources                     # every kind and its short name` },
+
+    { k: 'snip', id: 'ctl-fmt', t: 'Filter and format', lang: 'bash', code: `
+kubectl get pods -l app=shop-api                     # label selector
+kubectl get pods -l 'env in (dev,test)'
+kubectl get pods --show-labels
+kubectl get pods --field-selector status.phase=Running
+kubectl get pods --sort-by=.metadata.creationTimestamp
+kubectl get pods -o name                             # pod/shop-api-..., for scripts
+kubectl get pods -o jsonpath='{.items[*].metadata.name}'
+kubectl get pods -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName,IP:.status.podIP
+kubectl get secret db -o jsonpath='{.data.password}' | base64 -d` },
+
+    { k: 'table', id: 'ctl-short', t: 'Short names', first: 'mono', cols: ['Short names', 'Kinds'], rows: [
+      ['po, deploy, rs', 'pods, deployments, replicasets'],
+      ['sts, ds, cj', 'statefulsets, daemonsets, cronjobs'],
+      ['svc, ing', 'services, ingresses'],
+      ['cm, pvc, pv, sc', 'configmaps, persistentvolumeclaims, persistentvolumes, storageclasses'],
+      ['ns, no, sa', 'namespaces, nodes, serviceaccounts'],
+      ['hpa, pdb, ev', 'horizontalpodautoscalers, poddisruptionbudgets, events']
+    ] },
+
+    { k: 'snip', id: 'ctl-gen', t: 'Generate YAML instead of typing it', lang: 'bash', code: `
+kubectl create deployment shop-api --image=myacr.azurecr.io/shop-api:1.4.2 \\
+  --replicas=3 --port=8080 --dry-run=client -o yaml > deploy.yaml
+kubectl create service clusterip shop-api --tcp=80:8080 \\
+  --dry-run=client -o yaml > svc.yaml                  # selector app=shop-api
+kubectl create configmap api-config --from-literal=Logging__LogLevel__Default=Information \\
+  --dry-run=client -o yaml > cm.yaml
+kubectl create job migrate --image=myacr.azurecr.io/shop-migrator:1.4.2 --dry-run=client -o yaml
+kubectl create cronjob cleanup --image=busybox:1.36 --schedule='0 2 * * *' \\
+  --dry-run=client -o yaml -- echo done
+kubectl run tmp --image=busybox:1.36 --restart=Never --dry-run=client -o yaml   # a bare Pod` },
+
+    { k: 'snip', id: 'ctl-apply', t: 'Apply, diff, delete', lang: 'bash', code: `
+kubectl apply -f deploy.yaml                    # create or update
+kubectl apply -f k8s/                           # a whole folder
+kubectl apply -k k8s/overlays/prod              # a Kustomize overlay (HELM)
+kubectl diff -f k8s/                            # preview against the live cluster
+kubectl apply --server-side --field-manager=ci -f k8s/   # server-side apply, owned fields tracked
+kubectl delete -f k8s/
+kubectl delete pod shop-api-7d9f-x2x            # its ReplicaSet replaces it
+kubectl label pod shop-api-7d9f-x2x tier=web
+kubectl annotate deploy shop-api owner=team-shop` },
+
+    { k: 'snip', id: 'ctl-alias', t: 'Aliases and completion', lang: 'bash', code: `
+alias k=kubectl
+source <(kubectl completion bash)               # zsh: source <(kubectl completion zsh)
+complete -o default -F __start_kubectl k        # completion for the alias too
+export KUBE_EDITOR="code --wait"                # editor for kubectl edit`,
+      note: 'Since kubectl 1.34, user preferences in `~/.kube/kuberc` are beta: default flags and your own aliases, kept out of kubeconfig.' },
+
+    { k: 'call', kind: 'trap', text: '`kubectl get all` leaves out ConfigMaps, Secrets, PVCs, Ingresses and HTTPRoutes. Name the kinds you want: `kubectl get deploy,svc,ing,cm,secret,pvc`.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'wl', code: 'WL', grp: 'Kubernetes', name: 'Workloads',
+  blurb: 'A Deployment owns ReplicaSets, which own Pods. Pick the controller by how the Pods relate: interchangeable, numbered with their own disk, one per node, or run to completion.',
+  blocks: [
+    { k: 'table', id: 'wl-pick', t: 'Which workload controller', cols: ['Controller', 'Pods are', 'Use for'], rows: [
+      ['Deployment', 'interchangeable, random names, nothing stored locally', 'APIs, workers, queue consumers'],
+      ['StatefulSet', 'numbered (`db-0`, `db-1`), stable DNS, a PVC each, ordered start', 'databases, brokers, anything with a leader'],
+      ['DaemonSet', 'one per node, added as nodes join', 'log shippers, node agents, CSI drivers'],
+      ['Job', 'run to completion, retried on failure', 'migrations, one-off imports'],
+      ['CronJob', 'a Job on a schedule', 'nightly reconciliation, cleanup']
+    ] },
+
+    { k: 'snip', id: 'wl-deploy', t: 'A production-shaped Deployment', lang: 'yaml', code: `
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: shop-api, labels: { app: shop-api } }
+spec:
+  replicas: 3
+  selector: { matchLabels: { app: shop-api } }      # immutable; must match the template labels
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
+  template:
+    metadata: { labels: { app: shop-api } }
+    spec:
+      serviceAccountName: shop-api
+      terminationGracePeriodSeconds: 30               # covers preStop plus shutdown
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone    # spread across availability zones
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: { matchLabels: { app: shop-api } }
+      containers:
+        - name: api
+          image: myacr.azurecr.io/shop-api:1.4.2       # immutable tag
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom: [{ configMapRef: { name: api-config } }]
+          resources:
+            requests: { cpu: 250m, memory: 256Mi }
+            limits: { memory: 512Mi }
+          startupProbe: { httpGet: { path: /health/live, port: http }, periodSeconds: 2, failureThreshold: 30 }
+          livenessProbe: { httpGet: { path: /health/live, port: http } }
+          readinessProbe: { httpGet: { path: /health/ready, port: http } }
+          lifecycle:
+            preStop: { sleep: { seconds: 5 } }        # let routing catch up; needs no shell` },
+
+    { k: 'widget', id: 'wl-roll', t: 'Rolling update: what `maxSurge` and `maxUnavailable` do', w: 'roll' },
+
+    { k: 'snip', id: 'wl-rollout', t: 'Roll out, watch, roll back', lang: 'bash', code: `
+kubectl set image deploy/shop-api api=myacr.azurecr.io/shop-api:1.4.3   # container=image
+kubectl annotate deploy/shop-api kubernetes.io/change-cause="1.4.3: faster checkout"
+kubectl rollout status deploy/shop-api --timeout=5m     # non-zero exit if it stalls: use in CI
+kubectl rollout history deploy/shop-api
+kubectl rollout undo deploy/shop-api                    # the previous revision
+kubectl rollout undo deploy/shop-api --to-revision=3
+kubectl rollout restart deploy/shop-api                 # new Pods, same spec: picks up Secret changes
+kubectl rollout pause deploy/shop-api                   # batch several changes into one rollout
+kubectl rollout resume deploy/shop-api
+kubectl scale deploy/shop-api --replicas=5` },
+
+    { k: 'dg', id: 'wl-stop', t: 'Why rollouts drop requests without `preStop`', seg: ['No preStop', 'preStop sleep'],
+      capB: '**A race:** removing the Pod from the endpoints and sending SIGTERM happen in parallel, so for a moment traffic still reaches a Pod that is shutting down. Every rollout throws a few 502s.',
+      capF: '**`preStop: sleep`:** the Pod keeps serving while kube-proxy and the load balancer stop routing to it, then receives SIGTERM. The grace period covers the sleep plus shutdown.',
+      b: { type: 'seq', w: 680, minw: 560,
+        actors: [{ l: 'rollout', k: 'a' }, 'API server', 'kubelet', 'kube-proxy', { l: 'old Pod', k: 'n' }],
+        steps: [
+          { f: 0, t: 1, l: 'delete old Pod' },
+          { f: 1, t: 3, l: 'remove from endpoints' },
+          { f: 1, t: 2, l: 'Pod is terminating' },
+          { f: 2, t: 4, l: 'SIGTERM at once' },
+          { self: 4, l: 'stops accepting, exits' },
+          { note: 'kube-proxy has not caught up: requests are still routed here', at: [3, 4], k: 'b' },
+          { f: 3, t: 4, l: 'request', k: 'b', lost: true }
+        ] },
+      f: { type: 'seq', w: 680, minw: 560,
+        actors: [{ l: 'rollout', k: 'a' }, 'API server', 'kubelet', 'kube-proxy', { l: 'old Pod', k: 'n' }],
+        steps: [
+          { f: 0, t: 1, l: 'delete old Pod' },
+          { f: 1, t: 3, l: 'remove from endpoints' },
+          { f: 1, t: 2, l: 'Pod is terminating' },
+          { f: 2, t: 4, l: 'preStop: sleep 5 s' },
+          { note: 'routing stops sending new requests; in-flight ones finish', at: [3, 4], k: 'g' },
+          { f: 2, t: 4, l: 'SIGTERM' },
+          { self: 4, l: 'drain, exit 0', k: 'g' }
+        ] } },
+
+    { k: 'snip', id: 'wl-job', t: 'Job and CronJob', lang: 'yaml', code: `
+apiVersion: batch/v1
+kind: Job
+metadata: { name: migrate-1-4-3 }
+spec:
+  backoffLimit: 2                       # retries before the Job counts as failed
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 3600         # delete it an hour after it finishes
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: myacr.azurecr.io/shop-migrator:1.4.3   # an EF Core migration bundle
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata: { name: reconcile-nightly }
+spec:
+  schedule: "0 2 * * *"                 # 02:00 every day
+  timeZone: Europe/Amsterdam            # without it, the controller's zone (usually UTC)
+  concurrencyPolicy: Forbid             # skip a run while the previous one still runs
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: reconcile
+              image: myacr.azurecr.io/shop-worker:1.4.3
+              args: ["reconcile", "--date", "yesterday"]` },
+
+    { k: 'snip', id: 'wl-sts', t: 'StatefulSet: a disk per Pod', lang: 'yaml', code: `
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: { name: rabbitmq }
+spec:
+  serviceName: rabbitmq          # headless Service: rabbitmq-0.rabbitmq.shop.svc.cluster.local
+  replicas: 3
+  selector: { matchLabels: { app: rabbitmq } }
+  template:
+    metadata: { labels: { app: rabbitmq } }
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:4-management
+          volumeMounts: [{ name: data, mountPath: /var/lib/rabbitmq }]
+  volumeClaimTemplates:          # one PVC per Pod: data-rabbitmq-0, data-rabbitmq-1, ...
+    - metadata: { name: data }
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: managed-csi
+        resources: { requests: { storage: 20Gi } }`,
+      note: 'Deleting a StatefulSet keeps its PVCs, so the data survives a redeploy. For production brokers and databases, prefer an operator or a managed service.' },
+
+    { k: 'snip', id: 'wl-sidecar', t: 'Init containers and native sidecars', v: 'K8s 1.33', lang: 'yaml', code: `
+spec:
+  initContainers:
+    - name: wait-for-db                 # runs to completion before anything else starts
+      image: postgres:16
+      command: ["sh", "-c", "until pg_isready -h postgres -U app; do sleep 2; done"]
+    - name: otel-collector              # a native sidecar
+      image: otel/opentelemetry-collector-contrib:0.120.0
+      restartPolicy: Always             # starts before the app and stops after it
+  containers:
+    - name: api
+      image: myacr.azurecr.io/shop-api:1.4.3`,
+      note: 'Native sidecars no longer block a Job from completing, and they outlive the app container during shutdown so the last logs and spans get out.' },
+
+    { k: 'snip', id: 'wl-pdb', t: 'Keep enough replicas during node drains', lang: 'yaml', code: `
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: shop-api }
+spec:
+  minAvailable: 2                       # or maxUnavailable: 1
+  selector: { matchLabels: { app: shop-api } }`,
+      note: 'Node upgrades and `kubectl drain` respect PDBs; crashes and OOM kills do not. A budget that allows zero disruptions blocks AKS node upgrades.' },
+
+    { k: 'call', kind: 'trap', text: 'A Deployment selector is immutable, and two Deployments whose selectors match the same Pods fight over them. Give every app its own label value and never change `matchLabels` in place.' }
+  ]
+});
+
+/* ===== Traffic and config: NET, CFG ===== */
+window.DKS.push({
+  id: 'net', code: 'NET', grp: 'Traffic and config', name: 'Services and traffic',
+  blurb: 'A Service gives Pods a stable name and load-balances across the Ready ones. Traffic from outside arrives through a Gateway or an Ingress and is routed to a Service.',
+  blocks: [
+    { k: 'dg', id: 'net-path', t: 'From the internet to a Pod', cap: '**Only Ready Pods get traffic.** The Service routes to Pods that match its selector and pass readiness. In-cluster callers skip the gateway and use `http://shop-api`.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 96, minw: 560,
+        alt: 'Client, load balancer, Gateway with an HTTPRoute, Service, then the Ready Pods; a Pod failing readiness is excluded',
+        nodes: [
+          { id: 'c', x: 0, y: 0, l: 'Client', s: 'browser' },
+          { id: 'lb', x: 1, y: 0, l: 'Load balancer', sub: 'public IP' },
+          { id: 'gw', x: 2, y: 0, l: 'Gateway', sub: 'HTTPRoute: host and path', k: 'a' },
+          { id: 'svc', x: 3, y: 0, l: 'Service shop-api', sub: 'ClusterIP, port 80' },
+          { id: 'ok', x: 3, y: 1, l: 'Ready Pods', sub: 'targetPort 8080', s: 'stack', k: 'g' },
+          { id: 'bad', x: 2, y: 1, l: 'Pod not Ready', sub: 'readiness failing', k: 'b' }
+        ],
+        edges: [
+          { f: 'c', t: 'lb' }, { f: 'lb', t: 'gw' },
+          { f: 'gw', t: 'svc' },
+          { f: 'svc', t: 'ok', l: 'EndpointSlice' },
+          { f: 'svc', t: 'bad', l: 'excluded', x: true, d: true, na: true }
+        ] } },
+
+    { k: 'table', id: 'net-types', t: 'Service types', cols: ['Type', 'Reachable from', 'Use for'], rows: [
+      ['`ClusterIP` (default)', 'inside the cluster only', 'service-to-service calls'],
+      ['`NodePort`', 'every node on a port in 30000-32767', 'quick tests, bare metal'],
+      ['`LoadBalancer`', 'an Azure load balancer IP, public or internal', 'one Service exposed directly'],
+      ['`ExternalName`', 'a DNS CNAME to an outside host', 'aliasing an external database or API'],
+      ['Headless (`clusterIP: None`)', 'DNS returns the Pod IPs', 'StatefulSets, client-side balancing, gRPC']
+    ] },
+
+    { k: 'snip', id: 'net-svc', t: 'Service', lang: 'yaml', half: true, code: `
+apiVersion: v1
+kind: Service
+metadata: { name: shop-api }
+spec:
+  type: ClusterIP
+  selector: { app: shop-api }   # Pods with this label
+  ports:
+    - name: http
+      port: 80                  # callers: http://shop-api
+      targetPort: http          # the named containerPort (8080)`,
+      note: 'A named `targetPort` survives a port change in the Pod template.' },
+
+    { k: 'snip', id: 'net-dns', t: 'DNS names inside the cluster', lang: 'bash', half: true, code: `
+shop-api                                    # same namespace
+shop-api.payments                           # another namespace
+shop-api.payments.svc.cluster.local         # fully qualified
+rabbitmq-0.rabbitmq.shop.svc.cluster.local  # one StatefulSet Pod
+
+kubectl run tmp --rm -it --image=busybox:1.36 \\
+  --restart=Never -- nslookup shop-api.payments` },
+
+    { k: 'snip', id: 'net-gw', t: 'Gateway API: a Gateway and an HTTPRoute', v: 'Gateway API v1', lang: 'yaml', code: `
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata: { name: public, namespace: infra }      # owned by the platform team
+spec:
+  gatewayClassName: azure-alb-external             # depends on the controller you run
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.shop.example.com"
+      tls: { certificateRefs: [{ name: shop-tls }] }
+      allowedRoutes: { namespaces: { from: All } }
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata: { name: shop-api, namespace: shop }      # owned by the app team
+spec:
+  parentRefs: [{ name: public, namespace: infra }]
+  hostnames: [api.shop.example.com]
+  rules:
+    - matches: [{ path: { type: PathPrefix, value: /orders } }]
+      backendRefs: [{ name: shop-api, port: 80 }]`,
+      note: '`ingress2gateway` 1.0 (March 2026) converts existing Ingress objects into Gateway API resources.' },
+
+    { k: 'snip', id: 'net-ing', t: 'Ingress, the older API', lang: 'yaml', code: `
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: shop-api }
+spec:
+  ingressClassName: my-ingress-class     # the IngressClass of your controller
+  tls: [{ hosts: [api.shop.example.com], secretName: shop-tls }]
+  rules:
+    - host: api.shop.example.com
+      http:
+        paths:
+          - path: /orders
+            pathType: Prefix
+            backend: { service: { name: shop-api, port: { number: 80 } } }`,
+      note: 'The Ingress API is still GA, and other controllers still implement it.' },
+
+    { k: 'call', kind: 'key', text: '**Ingress NGINX was retired in March 2026:** no further releases or security fixes. Find it with `kubectl get pods -A -l app.kubernetes.io/name=ingress-nginx`, and plan a move to Gateway API or another controller.' },
+
+    { k: 'snip', id: 'net-pol', t: 'NetworkPolicy: deny by default, then allow', lang: 'yaml', code: `
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: default-deny-ingress, namespace: shop }
+spec:
+  podSelector: {}                      # every Pod in the namespace
+  policyTypes: [Ingress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: api-from-gateway, namespace: shop }
+spec:
+  podSelector: { matchLabels: { app: shop-api } }
+  ingress:
+    - from:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: infra } }
+      ports: [{ port: 8080 }]`,
+      note: 'Policies are enforced only by a network policy engine (on AKS: Cilium, Calico or Azure Network Policy Manager); without one they are accepted and silently ignored.' },
+
+    { k: 'snip', id: 'net-pf', t: 'Reach a Service from your laptop', lang: 'bash', code: `
+kubectl port-forward svc/shop-api 8080:80 -n shop           # localhost:8080 -> Service port 80
+kubectl port-forward pod/shop-api-7d9f-x2x 5005:8080        # one specific Pod
+kubectl get endpointslices -l kubernetes.io/service-name=shop-api -n shop   # Pod IPs behind it
+kubectl get svc shop-api -n shop -o jsonpath='{.spec.selector}'            # compare with Pod labels` },
+
+    { k: 'call', kind: 'trap', text: '`port` is what callers use and `targetPort` is the container port. Leave `targetPort` out and it defaults to `port`: with `port: 80`, traffic goes to port 80 in a .NET 8+ container that listens on 8080.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'cfg', code: 'CFG', grp: 'Traffic and config', name: 'Config, secrets and storage',
+  blurb: 'ConfigMaps hold settings, Secrets hold credentials, PVCs claim disks. How a Pod consumes each one decides whether a change ever reaches it.',
+  blocks: [
+    { k: 'snip', id: 'cfg-cm', t: 'ConfigMap and Secret', lang: 'yaml', code: `
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: api-config }
+data:
+  Logging__LogLevel__Default: Information
+  RabbitMq__Host: rabbitmq.messaging
+  Features__NewCheckout: "true"          # values are strings: quote booleans and numbers
+---
+apiVersion: v1
+kind: Secret
+metadata: { name: db }
+type: Opaque
+stringData:                              # plain text in, stored as base64
+  connection-string: Host=postgres;Database=app;Username=app;Password=change-me` },
+
+    { k: 'snip', id: 'cfg-use', t: 'Three ways to consume them', lang: 'yaml', code: `
+containers:
+  - name: api
+    env:
+      - name: ConnectionStrings__Db                  # one key, one variable
+        valueFrom: { secretKeyRef: { name: db, key: connection-string } }
+    envFrom:
+      - configMapRef: { name: api-config }           # every key becomes a variable
+    volumeMounts:
+      - { name: settings, mountPath: /app/config, readOnly: true }   # every key becomes a file
+volumes:
+  - name: settings
+    configMap: { name: api-settings }`,
+      note: 'Read the files with `AddJsonFile("config/appsettings.json", optional: true, reloadOnChange: true)`, and set `DOTNET_USE_POLLING_FILE_WATCHER=true`: the kubelet swaps a symlink instead of editing the file.' },
+
+    { k: 'table', id: 'cfg-update', t: 'What a running Pod sees when the ConfigMap changes', cols: ['Consumed as', 'Change reaches the Pod', 'To apply it'], rows: [
+      ['`env`, `envFrom`', 'never: variables are fixed when the container starts', '`kubectl rollout restart deploy/shop-api`'],
+      ['volume mount', 'yes, after the kubelet sync (about a minute)', 'reload in the app: `reloadOnChange`, `IOptionsMonitor`'],
+      ['volume with `subPath`', 'never', 'restart the Pod'],
+      ['`immutable: true`', 'the ConfigMap cannot change', 'create a new name and roll out']
+    ], note: 'Kustomize `configMapGenerator` and Helm checksum annotations change the Pod template whenever the config changes, so every config change rolls out by itself.' },
+
+    { k: 'gb', id: 'cfg-secret', t: 'Base64 is not encryption', lang: 'yaml', bad: `
+# k8s/secret.yaml, committed to Git
+apiVersion: v1
+kind: Secret
+metadata: { name: db }
+data:
+  password: UzNjcjN0IQ==      # ✗ base64 of "S3cr3t!"`, good: `
+# ✓ the value stays in Key Vault; the CSI driver mounts it when the Pod starts
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata: { name: shop-kv }
+spec:
+  provider: azure
+  parameters:
+    keyvaultName: kv-shop-prod
+    clientID: <workload-identity-client-id>
+    tenantId: <tenant-id>
+    objects: |
+      array:
+        - |
+          objectName: db-password
+          objectType: secret`,
+      badNote: 'Anyone who can read the repository, or run `kubectl get secret -o yaml` in the namespace, can decode it. Encryption at rest protects etcd, not your Git history.',
+      goodNote: 'Mount it with a `csi` volume (`driver: secrets-store.csi.k8s.io`, `secretProviderClass: shop-kv`). The add-on is `azure-keyvault-secrets-provider`; the identity comes from Workload Identity (AKS).' },
+
+    { k: 'snip', id: 'cfg-pvc', t: 'Claim storage on AKS', lang: 'yaml', code: `
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: uploads }
+spec:
+  accessModes: [ReadWriteMany]           # many Pods on many nodes: Azure Files
+  storageClassName: azurefile-csi
+  resources: { requests: { storage: 100Gi } }
+---
+# in the Pod template
+volumes:
+  - name: uploads
+    persistentVolumeClaim: { claimName: uploads }
+containers:
+  - name: api
+    volumeMounts: [{ name: uploads, mountPath: /app/uploads }]` },
+
+    { k: 'table', id: 'cfg-sc', t: 'AKS storage classes and access modes', cols: ['StorageClass', 'Backed by', 'Access mode', 'Use for'], rows: [
+      ['`managed-csi` (also `default`)', 'Azure Disk, Standard SSD', '`ReadWriteOnce`: one node at a time', 'one database or broker volume'],
+      ['`managed-csi-premium`', 'Azure Disk, Premium SSD', '`ReadWriteOnce`', 'I/O-heavy databases'],
+      ['`azurefile-csi`', 'Azure Files (SMB)', '`ReadWriteMany`: many nodes', 'shared uploads, many replicas'],
+      ['`azurefile-csi-premium`', 'Azure Files, premium', '`ReadWriteMany`', 'shared files with lower latency']
+    ], note: 'An Azure Disk lives in one zone; a Pod rescheduled into another zone cannot attach it unless the disk uses a ZRS SKU. `ReadWriteOncePod` (one Pod only) is GA since 1.29.' },
+
+    { k: 'call', kind: 'trap', text: '`kubectl create secret generic db --from-literal=password=...` leaves the password in your shell history. Use `--from-file`, or read it with `read -s` into a variable first.' }
+  ]
+});
+
+/* ===== Operate: RES, DBG, SEC ===== */
+window.DKS = window.DKS || [];
+
+window.DKS.push({
+  id: 'res', code: 'RES', grp: 'Operate', name: 'Resources, probes and scaling',
+  blurb: 'Requests decide where a Pod fits; limits decide when it is throttled or killed. Probes decide whether it gets traffic and whether it gets restarted.',
+  blocks: [
+    { k: 'widget', id: 'res-qos', t: 'Requests and limits: the QoS class and what .NET sees', w: 'qos' },
+
+    { k: 'table', id: 'res-rl', t: 'Requests vs limits', cols: ['', '`requests`', '`limits`'], rows: [
+      ['Used for', 'scheduling: a node must have this much unreserved', 'a hard cap at run time'],
+      ['CPU above it', 'allowed while the node has idle CPU', 'throttled (CFS quota), never killed'],
+      ['Memory above it', 'allowed, but first in line for eviction under pressure', 'OOMKilled: exit code 137'],
+      ['Units', '`250m` = a quarter of a core; `256Mi` = 256 mebibytes', 'same units; set without a request, the request defaults to the limit']
+    ] },
+
+    { k: 'table', id: 'res-probes', t: 'Probes', cols: ['Probe', 'Question it answers', 'On failure', 'Should check'], rows: [
+      ['`startupProbe`', 'has the app finished booting?', 'holds off the other probes; restarts after `failureThreshold`', 'the process is up'],
+      ['`livenessProbe`', 'is the process stuck?', 'the container is restarted', 'the process only, never dependencies'],
+      ['`readinessProbe`', 'can it take traffic right now?', 'removed from Service endpoints; no restart', 'dependencies it cannot work without']
+    ] },
+
+    { k: 'dg', id: 'res-start', t: 'A slow start with and without `startupProbe`', seg: ['Liveness only', 'With startupProbe'],
+      capB: '**Liveness only:** a 45 s boot fails three liveness checks 10 s apart and is restarted at about 30 s, every time. The Pod never comes up: CrashLoopBackOff.',
+      capF: '**startupProbe first:** liveness and readiness wait until startup passes (at 46 s here, inside its 60 s budget), then take over.',
+      b: { type: 'tl', w: 680, span: 70, unit: ' s', lw: 110, minw: 520,
+        lanes: ['App', 'livenessProbe', 'Kubelet'],
+        bars: [
+          { lane: 0, s: 0, e: 30, l: 'booting: migrations, warm-up', k: 'w', wait: true },
+          { lane: 0, s: 31, e: 61, l: 'booting again', k: 'w', wait: true },
+          { lane: 2, s: 30, e: 31, l: 'kill, restart', k: 'b' }, { lane: 2, s: 61, e: 62, l: 'kill, restart', k: 'b' }
+        ],
+        pts: [{ t: 10, lane: 1, k: 'b' }, { t: 20, lane: 1, k: 'b' }, { t: 30, lane: 1, k: 'b', l: '3rd failure' },
+              { t: 41, lane: 1, k: 'b' }, { t: 51, lane: 1, k: 'b' }, { t: 61, lane: 1, k: 'b' }],
+        marks: [{ t: 30, l: 'restart', k: 'b' }, { t: 61, l: 'restart again', k: 'b' }] },
+      f: { type: 'tl', w: 680, span: 70, unit: ' s', lw: 110, minw: 520,
+        lanes: ['App', 'startupProbe', 'liveness, readiness'],
+        bars: [
+          { lane: 0, s: 0, e: 45, l: 'booting: migrations, warm-up', k: 'w', wait: true },
+          { lane: 0, s: 45, e: 70, l: 'serving', k: 'g' },
+          { lane: 1, s: 0, e: 46, l: 'failures allowed: 30 × 2 s', k: 's', wait: true },
+          { lane: 2, s: 46, e: 70, l: 'probing every 10 s and 5 s', k: 'g' }
+        ],
+        pts: [{ t: 46, lane: 1, k: 'g', l: 'passes' }],
+        marks: [{ t: 46, l: 'startup passed', k: 'g' }] } },
+
+    { k: 'snip', id: 'res-probe-yaml', t: 'Probe settings, with the timing spelled out', lang: 'yaml', code: `
+startupProbe:                       # up to 30 x 2 s = 60 s to boot; the others wait
+  httpGet: { path: /health/live, port: 8080 }
+  periodSeconds: 2
+  failureThreshold: 30
+livenessProbe:                      # restart after 3 failures, 10 s apart
+  httpGet: { path: /health/live, port: 8080 }
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+readinessProbe:                     # out of rotation after 2 failures, back after 1 success
+  httpGet: { path: /health/ready, port: 8080 }
+  periodSeconds: 5
+  failureThreshold: 2` },
+
+    { k: 'gb', id: 'res-live', t: 'Keep dependencies out of liveness', lang: 'cs', bad: `
+builder.Services.AddHealthChecks()
+    .AddNpgSql(connectionString);                  // ✗ no tags
+
+app.MapHealthChecks("/health/live");                // ✗ liveness now checks Postgres
+app.MapHealthChecks("/health/ready");`, good: `
+builder.Services.AddHealthChecks()
+    .AddNpgSql(connectionString, tags: ["ready"]);   // ✓ tagged dependency check
+
+app.MapHealthChecks("/health/live",
+    new() { Predicate = _ => false });                // ✓ the process only
+app.MapHealthChecks("/health/ready",
+    new() { Predicate = r => r.Tags.Contains("ready") });`,
+      badNote: 'A database blip fails every liveness probe at once and Kubernetes restarts the whole fleet. Restarts cannot fix Postgres, and the reconnect storm makes it worse.',
+      goodNote: 'Readiness takes Pods out of rotation while Postgres is down and returns them when it recovers, with no restarts. `AddNpgSql` comes from `AspNetCore.HealthChecks.NpgSql`.' },
+
+    { k: 'table', id: 'res-dotnet', t: 'What the .NET runtime reads from the container', cols: ['Setting', 'Effect', 'Tip'], rows: [
+      ['memory limit', 'the GC heap hard limit defaults to 75% of it', 'leave room for native memory, thread stacks and the runtime'],
+      ['CPU limit', '`Environment.ProcessorCount` becomes the limit, rounded up', 'it sizes the thread pool and the number of GC heaps'],
+      ['no CPU limit', 'the runtime sees every core on the node', 'DATAS, on by default since .NET 9, keeps Server GC heaps in check'],
+      ['`DOTNET_GCHeapHardLimitPercent`', 'overrides the 75%', 'the value is hex: `0x50` means 80%']
+    ] },
+
+    { k: 'snip', id: 'res-hpa', t: 'HorizontalPodAutoscaler', lang: 'yaml', code: `
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: shop-api }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: shop-api }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: { type: Utilization, averageUtilization: 70 }   # % of requests.cpu
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300    # the default: 5 minutes of low load before removing Pods`,
+      note: 'Utilization is measured against `requests.cpu`, so a Deployment without CPU requests never scales on CPU. Remove `replicas` from the Deployment once an HPA owns it.' },
+
+    { k: 'snip', id: 'res-zero', t: 'Scale to zero with an HPA', v: 'K8s 1.37 · beta', lang: 'yaml', code: `
+spec:
+  minReplicas: 0                       # allowed with an Object or External metric
+  maxReplicas: 10
+  metrics:
+    - type: External
+      external:
+        metric: { name: orders-queue-length }
+        target: { type: AverageValue, averageValue: "50" }   # messages per Pod`,
+      note: 'Needs an external metrics adapter. On clusters before 1.37, KEDA (`az aks update --enable-keda`) scales Service Bus and RabbitMQ consumers to zero.' },
+
+    { k: 'snip', id: 'res-quota', t: 'Defaults and caps per namespace', lang: 'yaml', code: `
+apiVersion: v1
+kind: LimitRange
+metadata: { name: defaults, namespace: shop }
+spec:
+  limits:
+    - type: Container
+      defaultRequest: { cpu: 100m, memory: 128Mi }   # for containers that set none
+      default: { memory: 512Mi }                      # the default limit
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata: { name: shop, namespace: shop }
+spec:
+  hard:
+    requests.cpu: "8"
+    requests.memory: 16Gi
+    limits.memory: 32Gi
+    pods: "60"` },
+
+    { k: 'snip', id: 'res-resize', t: 'Resize a running Pod in place', v: 'K8s 1.35', lang: 'bash', code: `
+kubectl patch pod shop-api-7d9f-x2x --subresource resize --type merge \\
+  -p '{"spec":{"containers":[{"name":"api","resources":{"requests":{"cpu":"500m"}}}]}}'
+kubectl get pod shop-api-7d9f-x2x -o jsonpath='{.status.containerStatuses[0].resources}'`,
+      note: 'The .NET GC reads the memory limit at startup: for memory, set `resizePolicy` to `RestartContainer`, or call `GC.RefreshMemoryLimit()`. New Pods still use the Deployment template.' },
+
+    { k: 'call', kind: 'trap', text: 'A Pod with no requests is `BestEffort`: it can be scheduled onto a full node and is the first to be evicted. Every production container should set CPU and memory requests.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'dbg', code: 'DBG', grp: 'Operate', name: 'Debugging',
+  blurb: 'Debug top-down: `get` for the status, `describe` for the events, `logs --previous` for why the last container died.',
+  blocks: [
+    { k: 'dg', id: 'dbg-tree', t: 'Where to look, by status', cap: '**Read the STATUS column first:** it tells you which of four places to look. `kubectl describe pod` shows the Events behind every branch.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 3, ch: 96, minw: 560,
+        alt: 'From a Pod that is not serving: Pending leads to describe events, ImagePullBackOff to checking the tag and ACR access, CrashLoopBackOff to logs --previous, and Running but not Ready to the probe and the Service selector',
+        nodes: [
+          { id: 's', x: 1, y: 0, dx: 82, l: 'Pod is not serving', sub: 'kubectl get pods', k: 'a' },
+          { id: 'p', x: 0, y: 1, l: 'Pending', sub: 'no node fits it' },
+          { id: 'i', x: 1, y: 1, l: 'ImagePullBackOff', sub: 'cannot pull the image' },
+          { id: 'c', x: 2, y: 1, l: 'CrashLoopBackOff', sub: 'starts, exits, repeats', k: 'b' },
+          { id: 'r', x: 3, y: 1, l: 'Running, 0/1 Ready', sub: 'readiness failing', k: 'w' },
+          { id: 'p2', x: 0, y: 2, l: 'describe: Events', sub: 'requests, taints, unbound PVC', k: 'g' },
+          { id: 'i2', x: 1, y: 2, l: 'tag and access', sub: 'az aks check-acr', k: 'g' },
+          { id: 'c2', x: 2, y: 2, l: 'logs --previous', sub: 'exit 137 means OOMKilled', k: 'g' },
+          { id: 'r2', x: 3, y: 2, l: 'probe path and port', sub: 'then the Service selector', k: 'g' }
+        ],
+        edges: [
+          { f: 's', t: 'p' }, { f: 's', t: 'i' }, { f: 's', t: 'c' }, { f: 's', t: 'r' },
+          { f: 'p', t: 'p2' }, { f: 'i', t: 'i2' }, { f: 'c', t: 'c2' }, { f: 'r', t: 'r2' }
+        ] } },
+
+    { k: 'snip', id: 'dbg-cmds', t: 'The debugging loop', lang: 'bash', code: `
+kubectl get pods -n shop                              # STATUS and RESTARTS
+kubectl describe pod shop-api-7d9f-x2x -n shop        # Events at the bottom
+kubectl logs shop-api-7d9f-x2x -n shop --previous     # the container that crashed
+kubectl logs -f deploy/shop-api -n shop               # follow one Pod of the Deployment
+kubectl logs -l app=shop-api -n shop --tail=50 --prefix --max-log-requests=10
+kubectl get pod shop-api-7d9f-x2x -n shop \\
+  -o jsonpath='{.status.containerStatuses[0].lastState.terminated}'   # reason, exit code
+kubectl top pod -n shop --sort-by=memory` },
+
+    { k: 'table', id: 'dbg-status', t: 'Pod status, cause and fix', cols: ['Status', 'Usually means', 'Check or fix'], rows: [
+      ['`Pending`', 'no node fits: requests too high, taints, an unbound PVC', 'Events in `describe pod`; lower requests; check the PVC and node pools'],
+      ['`ImagePullBackOff`, `ErrImagePull`', 'wrong image or tag, or no pull access', 'the tag; `az aks check-acr`; `imagePullSecrets`'],
+      ['`CrashLoopBackOff`', 'the container starts, exits and is restarted with growing delays', '`logs --previous`; the exit code in `describe`'],
+      ['`OOMKilled`, exit 137', 'memory limit exceeded', 'raise `limits.memory`, or find the leak'],
+      ['`CreateContainerConfigError`', 'a missing ConfigMap, Secret or key', '`describe pod` names it; create it'],
+      ['Running, `0/1` Ready', 'readiness probe failing', 'probe path and port; what the ready check depends on'],
+      ['Running, restarts climbing', 'liveness kills a slow starter, or a dependency check sits in liveness', 'add a `startupProbe`; keep liveness to the process'],
+      ['`Completed`', 'the process exited 0: right for a Job, wrong for an API', '`ENTRYPOINT`, `command`, `args`'],
+      ['`Evicted`', 'the node ran short of memory or disk', '`describe node`; set requests; clean up disk use'],
+      ['`Terminating` for ever', 'a finalizer, or an unreachable node', 'check finalizers; `--grace-period=0 --force` as a last resort'],
+      ['Ready, but no traffic', 'the Service selector misses the Pod labels, or a wrong `targetPort`', '`get endpointslices`; compare labels']
+    ] },
+
+    { k: 'snip', id: 'dbg-debug', t: 'Debug containers for images without a shell', v: 'K8s 1.25', lang: 'bash', code: `
+kubectl debug -it shop-api-7d9f-x2x --image=busybox:1.36 --target=api   # sees api's processes
+kubectl debug shop-api-7d9f-x2x -it --copy-to=shop-api-debug \\
+  --image=mcr.microsoft.com/dotnet/sdk:10.0 --share-processes          # a debuggable copy
+kubectl debug node/aks-nodepool1-12345678-vmss000000 -it --image=busybox:1.36   # node, host fs at /host`,
+      note: 'Ephemeral debug containers are GA since 1.25: the way into chiseled and distroless images.' },
+
+    { k: 'snip', id: 'dbg-net', t: 'Test DNS and HTTP from inside the cluster', lang: 'bash', code: `
+kubectl run tmp --rm -it -n shop --image=nicolaka/netshoot --restart=Never -- bash
+#   nslookup shop-api
+#   curl -sv http://shop-api/health/ready
+#   nc -zv postgres 5432
+kubectl get pod shop-api-7d9f-x2x -n shop -o jsonpath='{.spec.containers[0].env}'` },
+
+    { k: 'snip', id: 'dbg-events', t: 'Events', lang: 'bash', code: `
+kubectl events -n shop --for pod/shop-api-7d9f-x2x
+kubectl get events -n shop --sort-by=.lastTimestamp
+kubectl get events -A --field-selector type=Warning
+kubectl get events -n shop -w                      # watch while you reproduce` },
+
+    { k: 'call', kind: 'trap', text: 'Events are kept for one hour by default. Look at a crash soon after it happens, or send events to Container Insights or another log store.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'sec', code: 'SEC', grp: 'Operate', name: 'Security',
+  blurb: 'Run as non-root on a read-only filesystem with no extra capabilities, give each workload its own identity, and grant RBAC per namespace.',
+  blocks: [
+    { k: 'snip', id: 'sec-ctx', t: 'A hardened securityContext', lang: 'yaml', code: `
+spec:
+  securityContext:                          # Pod level
+    runAsNonRoot: true
+    seccompProfile: { type: RuntimeDefault }
+  containers:
+    - name: api
+      securityContext:                      # container level
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities: { drop: [ALL] }
+      volumeMounts: [{ name: tmp, mountPath: /tmp }]
+  volumes:
+    - { name: tmp, emptyDir: {} }           # .NET writes diagnostics sockets and temp files here`,
+      note: 'Without a writable `/tmp`, either mount an `emptyDir` there or set `DOTNET_EnableDiagnostics=0`.' },
+
+    { k: 'table', id: 'sec-psa', t: 'Pod Security Standards', cols: ['Level', 'Blocks', 'Use for'], rows: [
+      ['`privileged`', 'nothing', 'system namespaces only'],
+      ['`baseline`', 'host networking and paths, privileged containers, most added capabilities', 'a safe floor for every namespace'],
+      ['`restricted`', 'all of baseline, plus root, privilege escalation, capabilities other than `NET_BIND_SERVICE`, missing seccomp', 'application namespaces']
+    ], note: 'Enforced per namespace by label: `kubectl label ns shop pod-security.kubernetes.io/enforce=restricted`.' },
+
+    { k: 'snip', id: 'sec-rbac', t: 'RBAC: read-only access to one namespace', lang: 'yaml', code: `
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: { name: read-only, namespace: shop }
+rules:
+  - apiGroups: ["", "apps", "batch"]
+    resources: [pods, pods/log, services, deployments, replicasets, jobs, configmaps]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: { name: devs-read-only, namespace: shop }
+subjects:
+  - kind: Group
+    name: 3f2a9c1e-5b7d-4e8a-9c21-7d4e5f6a8b90    # an Entra ID group object ID on AKS
+    apiGroup: rbac.authorization.k8s.io
+roleRef: { kind: Role, name: read-only, apiGroup: rbac.authorization.k8s.io }`,
+      note: 'Secrets are left out on purpose: `get` on secrets is read access to every credential in the namespace.' },
+
+    { k: 'snip', id: 'sec-cani', t: 'Check permissions', lang: 'bash', half: true, code: `
+kubectl auth whoami
+kubectl auth can-i create deployments -n shop
+kubectl auth can-i --list -n shop
+kubectl auth can-i get secrets -n shop \\
+  --as=system:serviceaccount:shop:shop-api` },
+
+    { k: 'snip', id: 'sec-scan', t: 'Scan images before they ship', lang: 'bash', half: true, code: `
+docker scout cves myacr.azurecr.io/shop-api:1.4.3 \\
+  --only-severity critical,high
+trivy image --severity HIGH,CRITICAL --exit-code 1 \\
+  myacr.azurecr.io/shop-api:1.4.3     # fail the CI job`,
+      note: 'Chiseled and distroless bases remove most findings at the source.' },
+
+    { k: 'snip', id: 'sec-userns', t: 'User namespaces', v: 'K8s 1.36', lang: 'yaml', code: `
+spec:
+  hostUsers: false     # root inside the container maps to an unprivileged user on the node`,
+      note: 'Needs node support (a recent kernel and container runtime): check your AKS node image before relying on it.' },
+
+    { k: 'call', kind: 'trap', text: '`runAsNonRoot: true` needs a numeric user in the image. `USER app` by name makes the kubelet refuse to start the container; write `USER $APP_UID`, or set `runAsUser: 1654`.' }
+  ]
+});
+
+/* ===== Ship it: HELM, AKS ===== */
+window.DKS.push({
+  id: 'helm', code: 'HELM', grp: 'Ship it', name: 'Helm and Kustomize',
+  blurb: 'Helm packages manifests as a versioned, parameterised chart; Kustomize patches plain YAML per environment. Both should be rendered and diffed before they reach a cluster.',
+  blocks: [
+    { k: 'table', id: 'helm-pick', t: 'Helm or Kustomize', cols: ['', 'Helm', 'Kustomize'], rows: [
+      ['Model', 'Go templates filled from values files', 'plain YAML plus overlays and patches'],
+      ['Built into kubectl', 'no: the `helm` CLI', 'yes: `kubectl apply -k`'],
+      ['History and rollback', 'releases with `helm rollback`', 'Git is the history'],
+      ['Best for', 'third-party software; charts you publish for others', 'your own services across dev, test and prod']
+    ] },
+
+    { k: 'snip', id: 'helm-chart', t: 'Chart layout and a template', lang: 'yaml', code: `
+# charts/shop-api/
+#   Chart.yaml      name, version (of the chart), appVersion (of the app)
+#   values.yaml     defaults
+#   templates/      manifests written as Go templates
+
+# templates/deployment.yaml, excerpt
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      annotations:   # a config change changes the template, so it rolls out
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          resources: {{- toYaml .Values.resources | nindent 12 }}` },
+
+    { k: 'snip', id: 'helm-cmds', t: 'Helm commands', lang: 'bash', code: `
+helm create shop-api                                    # scaffold a chart
+helm lint ./charts/shop-api
+helm template shop-api ./charts/shop-api -f values.prod.yaml        # render locally
+helm upgrade --install shop-api ./charts/shop-api -n shop --create-namespace \\
+  -f values.prod.yaml --set image.tag=1.4.3 --wait --timeout 5m     # wait for Ready Pods
+helm list -n shop
+helm history shop-api -n shop
+helm rollback shop-api 3 -n shop
+helm get values shop-api -n shop                        # values of the live release
+helm uninstall shop-api -n shop
+
+helm package ./charts/shop-api                          # charts are OCI artifacts too
+helm push shop-api-0.1.0.tgz oci://myacr.azurecr.io/helm
+helm upgrade --install shop-api oci://myacr.azurecr.io/helm/shop-api --version 0.1.0 -n shop` },
+
+    { k: 'snip', id: 'helm-values', t: 'Values per environment', lang: 'yaml', half: true, code: `
+# values.yaml: defaults
+replicaCount: 2
+image: { repository: myacr.azurecr.io/shop-api, tag: "" }
+resources:
+  requests: { cpu: 100m, memory: 256Mi }
+  limits: { memory: 512Mi }
+
+# values.prod.yaml: only what differs
+replicaCount: 4
+resources:
+  requests: { cpu: 250m, memory: 512Mi }
+  limits: { memory: 1Gi }`,
+      note: 'Later `-f` files win, and `--set` wins over every file.' },
+
+    { k: 'snip', id: 'kus-layout', t: 'Kustomize: base and overlays', lang: 'yaml', half: true, code: `
+# k8s/base/kustomization.yaml
+resources: [deployment.yaml, service.yaml, httproute.yaml]
+
+# k8s/overlays/prod/kustomization.yaml
+resources: [../../base]
+namespace: shop
+images:
+  - name: myacr.azurecr.io/shop-api
+    newTag: "1.4.3"          # the line CI bumps
+replicas:
+  - { name: shop-api, count: 4 }
+configMapGenerator:
+  - name: api-config         # hashed name: changes roll out
+    envs: [config.env]
+patches:
+  - path: resources-patch.yaml` },
+
+    { k: 'snip', id: 'kus-cmds', t: 'Kustomize commands', lang: 'bash', code: `
+kubectl kustomize k8s/overlays/prod          # render to stdout
+kubectl diff -k k8s/overlays/prod            # what would change in the cluster
+kubectl apply -k k8s/overlays/prod
+cd k8s/overlays/prod && kustomize edit set image myacr.azurecr.io/shop-api:1.4.3` },
+
+    { k: 'call', kind: 'tip', text: 'Review the rendered change, not the template: `helm template ... | kubectl diff -f -` and `kubectl diff -k` show exactly what will change.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'aks', code: 'AKS', grp: 'Ship it', name: 'AKS and ACR',
+  blurb: 'Azure runs the control plane; you own node pools, upgrades, identity and what runs on the nodes. ACR keeps images and Helm charts next to the cluster.',
+  blocks: [
+    { k: 'snip', id: 'aks-connect', t: 'Connect to a cluster', lang: 'bash', code: `
+az login
+az account set --subscription "<subscription name or id>"
+az aks get-credentials -g rg-shop -n aks-prod          # merges into ~/.kube/config
+kubelogin convert-kubeconfig -l azurecli               # clusters with Entra ID authentication
+kubectl get nodes -o wide
+az aks show -g rg-shop -n aks-prod --query "{version:kubernetesVersion, state:powerState.code}"` },
+
+    { k: 'snip', id: 'aks-acr', t: 'ACR: build, inspect, attach', lang: 'bash', code: `
+az acr login -n myacr                                      # docker login with your Azure identity
+az acr build -r myacr -t shop-api:1.4.3 .                  # build in Azure, no local Docker needed
+az acr repository list -n myacr -o table
+az acr repository show-tags -n myacr --repository shop-api --orderby time_desc -o table
+az acr repository update -n myacr --image shop-api:1.4.3 --write-enabled false   # lock a release
+az aks update -g rg-shop -n aks-prod --attach-acr myacr    # let the nodes pull from ACR
+az aks check-acr -g rg-shop -n aks-prod --acr myacr.azurecr.io   # debug pull failures` },
+
+    { k: 'snip', id: 'aks-wi', t: 'Workload Identity: Azure access without secrets', lang: 'bash', code: `
+az aks update -g rg-shop -n aks-prod --enable-oidc-issuer --enable-workload-identity
+
+az identity create -g rg-shop -n id-shop-api
+az role assignment create --assignee <identity-client-id> \\
+  --role "Key Vault Secrets User" --scope <key-vault-resource-id>
+
+az identity federated-credential create -g rg-shop --identity-name id-shop-api --name shop-api \\
+  --issuer "$(az aks show -g rg-shop -n aks-prod --query oidcIssuerProfile.issuerUrl -o tsv)" \\
+  --subject system:serviceaccount:shop:shop-api \\
+  --audience api://AzureADTokenExchange`,
+      note: 'The federated credential trusts tokens issued to one service account in one namespace; nothing secret is stored anywhere.' },
+
+    { k: 'snip', id: 'aks-wi-yaml', t: 'Workload Identity: the Kubernetes side', lang: 'yaml', code: `
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: shop-api
+  namespace: shop
+  annotations:
+    azure.workload.identity/client-id: <identity-client-id>
+---
+# in the Deployment's Pod template
+metadata:
+  labels:
+    app: shop-api
+    azure.workload.identity/use: "true"     # the webhook injects the token and variables
+spec:
+  serviceAccountName: shop-api`,
+      note: '`DefaultAzureCredential` picks up the injected token, for Key Vault, Service Bus, Storage and Azure SQL alike.' },
+
+    { k: 'snip', id: 'aks-ops', t: 'Node pools, autoscaling, upgrades', lang: 'bash', code: `
+az aks nodepool list -g rg-shop --cluster-name aks-prod -o table
+az aks nodepool update -g rg-shop --cluster-name aks-prod -n nodepool1 \\
+  --enable-cluster-autoscaler --min-count 2 --max-count 6
+az aks nodepool add -g rg-shop --cluster-name aks-prod -n spot --priority Spot \\
+  --eviction-policy Delete --spot-max-price -1 \\
+  --enable-cluster-autoscaler --min-count 0 --max-count 5     # cheap capacity for batch work
+az aks get-upgrades -g rg-shop -n aks-prod -o table
+az aks upgrade -g rg-shop -n aks-prod --kubernetes-version <version>   # control plane, then nodes
+az aks nodepool upgrade -g rg-shop --cluster-name aks-prod -n nodepool1 --node-image-only
+az aks stop -g rg-shop -n aks-dev                            # pause a dev cluster
+az aks start -g rg-shop -n aks-dev`,
+      note: 'Spot nodes carry the taint `kubernetes.azure.com/scalesetpriority=spot:NoSchedule`, so only Pods that tolerate it land there.' },
+
+    { k: 'table', id: 'aks-checklist', t: 'Production checklist', cols: ['Area', 'Do'], rows: [
+      ['Availability', 'nodes across 3 zones; topology spread; a PDB per workload'],
+      ['Scaling', 'cluster autoscaler on node pools, HPA or KEDA on workloads'],
+      ['Identity', 'Entra ID with Kubernetes RBAC; Workload Identity for apps; local accounts disabled'],
+      ['Network', 'private cluster or authorized IP ranges for the API server; a network policy engine'],
+      ['Upgrades', 'an auto-upgrade channel plus a planned maintenance window'],
+      ['Images', 'ACR attached; tags locked after release; scanning in CI'],
+      ['Observability', 'Container Insights or managed Prometheus; alerts on restarts, OOM kills and Pending Pods']
+    ] },
+
+    { k: 'call', kind: 'trap', text: '`az aks get-credentials --admin` returns the cluster-admin certificate, which bypasses Entra ID and RBAC entirely. Disable local accounts in production so it cannot be used.' }
+  ]
+});
+
+</script>
+<script>
+/* ===== Diagram renderer: data spec -> inline SVG (seq | flow | tl | chart) ===== */
+window.DG = (function () {
+  'use strict';
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var r = function (n) { return Math.round(n * 10) / 10; };
+  var CWF = { sans: 0.555, bold: 0.6, mono: 0.62 };
+  function tw(s, fs, f) { return String(s).length * fs * (CWF[f || 'sans']); }
+  function wrap(text, maxW, fs, f) {
+    var out = [];
+    String(text == null ? '' : text).split('\n').forEach(function (par) {
+      var words = par.split(/\s+/).filter(Boolean), line = '';
+      if (!words.length) { out.push(''); return; }
+      words.forEach(function (w) {
+        var c = line ? line + ' ' + w : w;
+        if (!line || tw(c, fs, f) <= maxW) line = c; else { out.push(line); line = w; }
+      });
+      out.push(line);
+    });
+    return out;
+  }
+  function kc(k) { return 'k-' + (k || 'n'); }
+  function maxw(lines, fs, f) { var m = 0; lines.forEach(function (l) { m = Math.max(m, tw(l, fs, f)); }); return m; }
+  /* multi-line text, vertically centred on cy */
+  function T(lines, x, cy, fs, cls, anchor, lh) {
+    lh = lh || 1.28; anchor = anchor || 'middle';
+    var h = lines.length * fs * lh, s = '';
+    lines.forEach(function (ln, i) {
+      var y = cy - h / 2 + fs * lh * (i + 0.5) + fs * 0.35;
+      s += '<text x="' + r(x) + '" y="' + r(y) + '" text-anchor="' + anchor + '" class="' + (cls || '') + '" style="font-size:' + fs + 'px">' + esc(ln) + '</text>';
+    });
+    return s;
+  }
+  function AH(x, y, ang, k, size) {
+    size = size || 7.5; var a = Math.PI / 7.2;
+    return '<path class="ah ' + kc(k) + '" d="M' + r(x) + ' ' + r(y) + 'L' + r(x - size * Math.cos(ang - a)) + ' ' + r(y - size * Math.sin(ang - a)) +
+      'L' + r(x - size * Math.cos(ang + a)) + ' ' + r(y - size * Math.sin(ang + a)) + 'Z"/>';
+  }
+  function XM(x, y, k) {
+    var d = 3.4;
+    return '<circle class="xm-c ' + kc(k || 'b') + '" cx="' + r(x) + '" cy="' + r(y) + '" r="7.5"/>' +
+      '<path class="xm-l ' + kc(k || 'b') + '" d="M' + r(x - d) + ' ' + r(y - d) + 'L' + r(x + d) + ' ' + r(y + d) + 'M' + r(x + d) + ' ' + r(y - d) + 'L' + r(x - d) + ' ' + r(y + d) + '"/>';
+  }
+  /* label with a background plate so lines/lifelines don't cut through it */
+  function LBL(text, x, y, fs, k, maxW, f) {
+    var lines = wrap(text, maxW || 140, fs, f), w = maxw(lines, fs, f) + 10, h = lines.length * fs * 1.25 + 6;
+    var cls = 't-l' + (k && k !== 'n' ? ' tk ' + kc(k) : '') + (f === 'mono' ? ' t-m' : '');
+    return '<rect class="lbg" x="' + r(x - w / 2) + '" y="' + r(y - h / 2) + '" width="' + r(w) + '" height="' + r(h) + '" rx="4"/>' + T(lines, x, y, fs, cls, 'middle', 1.25);
+  }
+  function SHAPE(sh, cx, cy, w, h, k) {
+    var x = cx - w / 2, y = cy - h / 2, c = 'nd ' + kc(k), s = '', i;
+    switch (sh) {
+      case 'db': {
+        var ry = Math.min(7, h / 5);
+        return '<path class="' + c + '" d="M' + r(x) + ' ' + r(y + ry) + 'A' + r(w / 2) + ' ' + ry + ' 0 0 1 ' + r(x + w) + ' ' + r(y + ry) + 'V' + r(y + h - ry) +
+          'A' + r(w / 2) + ' ' + ry + ' 0 0 1 ' + r(x) + ' ' + r(y + h - ry) + 'Z"/><path class="nd-l ' + kc(k) + '" d="M' + r(x) + ' ' + r(y + ry) + 'A' + r(w / 2) + ' ' + ry + ' 0 0 0 ' + r(x + w) + ' ' + r(y + ry) + '"/>';
+      }
+      case 'queue':
+        s = '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="6"/>';
+        for (i = 0; i < 3; i++) { var lx = x + w - 9 - i * 6; s += '<line class="nd-l ' + kc(k) + '" x1="' + r(lx) + '" y1="' + r(y + 7) + '" x2="' + r(lx) + '" y2="' + r(y + h - 7) + '"/>'; }
+        return s;
+      case 'pill': case 'actor': case 'chip':
+        return '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="' + r(h / 2) + '"/>';
+      case 'ext':
+        return '<rect class="' + c + ' dash" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>';
+      case 'browser':
+        s = '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="7"/>' +
+          '<line class="nd-l ' + kc(k) + '" x1="' + r(x) + '" y1="' + r(y + 12) + '" x2="' + r(x + w) + '" y2="' + r(y + 12) + '"/>';
+        for (i = 0; i < 3; i++) s += '<circle class="nd ' + kc(k) + '" cx="' + r(x + 8 + i * 6) + '" cy="' + r(y + 6) + '" r="1.7"/>';
+        return s;
+      case 'doc':
+        return '<path class="' + c + '" d="M' + r(x) + ' ' + r(y) + 'H' + r(x + w - 11) + 'L' + r(x + w) + ' ' + r(y + 11) + 'V' + r(y + h) + 'H' + r(x) + 'Z"/>' +
+          '<path class="nd-l ' + kc(k) + '" d="M' + r(x + w - 11) + ' ' + r(y) + 'V' + r(y + 11) + 'H' + r(x + w) + '"/>';
+      case 'stack':
+        return '<rect class="' + c + '" x="' + r(x + 8) + '" y="' + r(y - 8) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>' +
+          '<rect class="' + c + '" x="' + r(x + 4) + '" y="' + r(y - 4) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>' +
+          '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>';
+      case 'note': return '';
+      default:
+        return '<rect class="' + c + '" x="' + r(x) + '" y="' + r(y) + '" width="' + r(w) + '" height="' + r(h) + '" rx="8"/>';
+    }
+  }
+  function svg(W, H, body, spec) {
+    var minw = Math.min(W, spec.minw || 540);
+    return '<svg class="dg" viewBox="0 0 ' + r(W) + ' ' + r(H) + '" width="' + r(W) + '" height="' + r(H) + '" style="min-width:' + minw + 'px;max-width:' + r(W * 1.18) + 'px" role="img"' +
+      (spec.alt ? ' aria-label="' + esc(spec.alt) + '"' : '') + '>' + body + '</svg>';
+  }
+
+  /* ---------- sequence diagram ---------- */
+  function seq(s) {
+    var W = s.w || 680, pad = 8, A = s.actors.map(function (a) { return typeof a === 'string' ? { l: a } : a; }), n = A.length;
+    var colW = (W - 2 * pad) / n, X = function (i) { return pad + colW * (i + 0.5); };
+    var afs = 12, lfs = 11, abW = Math.min(colW - 14, 152);
+    var aL = A.map(function (a) { return wrap(a.l, abW - (a.s === 'queue' ? 34 : 16), afs, 'bold'); });
+    var maxL = Math.max.apply(null, aL.map(function (l) { return l.length; }));
+    var hasDb = A.some(function (a) { return a.s === 'db'; });
+    var hasBr = A.some(function (a) { return a.s === 'browser'; });
+    var aH = Math.max(34, 14 + maxL * afs * 1.28) + (hasDb || hasBr ? 8 : 0), top = 6, y = top + aH + 16, body = '';
+    s.steps.forEach(function (st) {
+      if (st.gap) { y += st.gap; return; }
+      if (st.div != null) {
+        y += 8;
+        var dw = tw(st.div, lfs) + 18;
+        body += '<line class="dv ' + kc(st.k) + '" x1="' + pad + '" y1="' + r(y) + '" x2="' + r(W - pad) + '" y2="' + r(y) + '"/>' +
+          '<rect class="pillbg ' + kc(st.k) + '" x="' + r(W / 2 - dw / 2) + '" y="' + r(y - 10) + '" width="' + r(dw) + '" height="20" rx="10"/>' +
+          T([st.div], W / 2, y, lfs, 't-l' + (st.k ? ' tk ' + kc(st.k) : ''));
+        y += 22; return;
+      }
+      if (st.note != null) {
+        var at = Array.isArray(st.at) ? st.at : [st.at, st.at];
+        var x1 = Math.max(3, X(Math.min.apply(null, at)) - colW * 0.46), x2 = Math.min(W - 3, X(Math.max.apply(null, at)) + colW * 0.46);
+        var nl = wrap(st.note, x2 - x1 - 14, lfs), nh = nl.length * lfs * 1.3 + 10;
+        body += '<rect class="nt ' + kc(st.k) + '" x="' + r(x1) + '" y="' + r(y) + '" width="' + r(x2 - x1) + '" height="' + r(nh) + '" rx="6"/>' +
+          T(nl, (x1 + x2) / 2, y + nh / 2, lfs, '', 'middle', 1.3);
+        y += nh + 10; return;
+      }
+      if (st.self != null) {
+        var sx = X(st.self), right = st.self < n - 1, dx = right ? 20 : -20;
+        var sl = wrap(st.l, colW * 0.62, lfs, st.mono ? 'mono' : 'sans'), sh = Math.max(20, sl.length * lfs * 1.25 + 4);
+        body += '<path class="eg ' + kc(st.k) + '" d="M' + r(sx) + ' ' + r(y) + 'h' + dx + 'v' + r(sh) + 'h' + (-dx + (right ? 3 : -3)) + '"/>' + AH(sx + (right ? 1 : -1), y + sh, right ? Math.PI : 0, st.k, 6.5);
+        var tx = right ? sx + dx + 6 : sx + dx - 6;
+        body += T(sl, tx, y + sh / 2, lfs, 't-l' + (st.k && st.k !== 'n' ? ' tk ' + kc(st.k) : '') + (st.mono ? ' t-m' : ''), right ? 'start' : 'end', 1.25);
+        y += sh + 12; return;
+      }
+      var fx = X(st.f), txx = X(st.t), dir = txx >= fx ? 1 : -1, span = Math.abs(txx - fx);
+      var f = st.mono ? 'mono' : 'sans';
+      var ml = st.l ? wrap(st.l, Math.max(span - 16, 96), lfs, f) : [];
+      var lh = lfs * 1.25, lbH = ml.length * lh, cyL = y + lbH / 2;
+      y += lbH + 5;
+      var xe = st.lost ? fx + (txx - fx) * 0.56 : txx - dir * 2;
+      body += '<line class="eg ' + kc(st.k) + (st.d ? ' dash' : '') + '" x1="' + r(fx) + '" y1="' + r(y) + '" x2="' + r(xe) + '" y2="' + r(y) + '"/>';
+      body += st.lost ? XM(xe, y, st.k) : AH(txx - dir, y, dir > 0 ? 0 : Math.PI, st.k);
+      if (ml.length) {
+        var mid = st.lost ? (fx + xe) / 2 : (fx + txx) / 2, mw = maxw(ml, lfs, f) + 8;
+        body += '<rect class="lbg" x="' + r(mid - mw / 2) + '" y="' + r(cyL - lbH / 2 - 1) + '" width="' + r(mw) + '" height="' + r(lbH + 2) + '" rx="3"/>';
+        body += T(ml, mid, cyL, lfs, 't-l' + (st.k && st.k !== 'n' ? ' tk ' + kc(st.k) : '') + (st.mono ? ' t-m' : ''), 'middle', 1.25);
+      }
+      y += 15;
+    });
+    var H = y + 6, head = '', ll = '';
+    A.forEach(function (a, i) {
+      ll += '<line class="ll" x1="' + r(X(i)) + '" y1="' + r(top + aH) + '" x2="' + r(X(i)) + '" y2="' + r(H - 3) + '"/>';
+      head += SHAPE(a.s || 'box', X(i), top + aH / 2, abW, aH, a.k) + T(aL[i], X(i) - (a.s === 'queue' ? 9 : 0), top + aH / 2 + (a.s === 'db' ? 4 : a.s === 'browser' ? 5 : 0), afs, 't-b' + (a.k === 'm' ? ' tn-m' : ''));
+    });
+    return svg(W, H, ll + head + body, s);
+  }
+
+  /* ---------- box & arrow flow ---------- */
+  function border(nd, tx, ty) {
+    var dx = tx - nd.cx, dy = ty - nd.cy, hw = nd.w / 2 + 4, hh = nd.h / 2 + 4;
+    if (!dx && !dy) return [nd.cx, nd.cy];
+    var t = Math.min(dx ? hw / Math.abs(dx) : Infinity, dy ? hh / Math.abs(dy) : Infinity);
+    return [nd.cx + dx * t, nd.cy + dy * t];
+  }
+  function flow(s) {
+    var W = s.w || 680, nodes = s.nodes, edges = s.edges || [], groups = s.groups || [];
+    var cols = s.cols || Math.max.apply(null, nodes.map(function (n) { return n.x; })) + 1;
+    var rows = s.rows || Math.max.apply(null, nodes.map(function (n) { return n.y; })) + 1;
+    var padX = 10, padT = groups.length ? 26 : 12, padB = groups.length ? 18 : 12, cw = (W - 2 * padX) / cols, ch = s.ch || 86, N = {};
+    nodes.forEach(function (n) {
+      var sh = n.s || 'box', fs = n.fs || (sh === 'chip' ? 11 : 12);
+      var w = n.w || Math.min(cw - 22, sh === 'chip' ? 124 : 170);
+      var tW = w - (sh === 'queue' ? 34 : 16);
+      var lines = wrap(n.l, tW, fs, sh === 'note' ? 'sans' : 'bold');
+      var sub = n.sub ? wrap(n.sub, tW, 10.5, 'sans') : [];
+      var extra = sh === 'db' ? 9 : sh === 'browser' ? 11 : 0;
+      var h = n.h || (sh === 'chip' ? Math.max(24, lines.length * fs * 1.25 + 8) : Math.max(38, 14 + lines.length * fs * 1.28 + (sub.length ? 3 + sub.length * 10.5 * 1.25 : 0) + extra));
+      if (n.badge && !n.h) h += 8;
+      N[n.id] = { n: n, sh: sh, fs: fs, w: w, h: h, lines: lines, sub: sub, cx: padX + cw * (n.x + 0.5) + (n.dx || 0), cy: padT + ch * (n.y + 0.5) + (n.dy || 0) };
+    });
+    var g = '', e = '', nd = '', lb = '';
+    groups.forEach(function (gr) {
+      var ns = gr.n.map(function (id) { if (!N[id]) throw new Error('group node ' + id); return N[id]; });
+      var x1 = Math.min.apply(null, ns.map(function (q) { return q.cx - q.w / 2; })) - 12, x2 = Math.max.apply(null, ns.map(function (q) { return q.cx + q.w / 2; })) + 12;
+      var y1 = Math.min.apply(null, ns.map(function (q) { return q.cy - q.h / 2 - (q.sh === 'stack' ? 8 : 0); })) - 21, y2 = Math.max.apply(null, ns.map(function (q) { return q.cy + q.h / 2; })) + 11;
+      g += '<rect class="grpfill ' + kc(gr.k) + '" x="' + r(x1) + '" y="' + r(y1) + '" width="' + r(x2 - x1) + '" height="' + r(y2 - y1) + '" rx="11"/>' +
+        '<rect class="grpbox ' + kc(gr.k) + '" x="' + r(x1) + '" y="' + r(y1) + '" width="' + r(x2 - x1) + '" height="' + r(y2 - y1) + '" rx="11"/>' +
+        '<text class="tk ' + kc(gr.k) + '" x="' + r(x1 + 9) + '" y="' + r(y1 + 13) + '" style="font-size:9.5px;font-weight:700;letter-spacing:.08em">' + esc(String(gr.l).toUpperCase()) + '</text>';
+    });
+    edges.forEach(function (ed) {
+      var a = N[ed.f], b = N[ed.t];
+      if (!a || !b) throw new Error('edge ' + ed.f + '->' + ed.t);
+      var dx = b.cx - a.cx, dy = b.cy - a.cy, len = Math.hypot(dx, dy) || 1, cv = ed.c || 0;
+      var mx = (a.cx + b.cx) / 2, my = (a.cy + b.cy) / 2, qx = mx - dy / len * cv, qy = my + dx / len * cv;
+      var p1 = border(a, cv ? qx : b.cx, cv ? qy : b.cy), p2 = border(b, cv ? qx : a.cx, cv ? qy : a.cy), d, lx, ly, ang, angS;
+      if (cv) {
+        d = 'M' + r(p1[0]) + ' ' + r(p1[1]) + 'Q' + r(qx) + ' ' + r(qy) + ' ' + r(p2[0]) + ' ' + r(p2[1]);
+        lx = 0.25 * p1[0] + 0.5 * qx + 0.25 * p2[0]; ly = 0.25 * p1[1] + 0.5 * qy + 0.25 * p2[1];
+        ang = Math.atan2(p2[1] - qy, p2[0] - qx); angS = Math.atan2(p1[1] - qy, p1[0] - qx);
+      } else {
+        d = 'M' + r(p1[0]) + ' ' + r(p1[1]) + 'L' + r(p2[0]) + ' ' + r(p2[1]);
+        lx = (p1[0] + p2[0]) / 2; ly = (p1[1] + p2[1]) / 2; ang = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]); angS = ang + Math.PI;
+      }
+      if (ed.lt != null) { lx = p1[0] + (p2[0] - p1[0]) * ed.lt; ly = p1[1] + (p2[1] - p1[1]) * ed.lt; }
+      e += '<path class="eg ' + kc(ed.k) + (ed.d ? ' dash' : '') + '" d="' + d + '"/>';
+      if (!ed.na) e += AH(p2[0], p2[1], ang, ed.k);
+      if (ed.both) e += AH(p1[0], p1[1], angS, ed.k);
+      if (ed.l) lb += LBL((ed.x ? '✕ ' : '') + ed.l, lx + (ed.lx || 0), ly + (ed.ly || 0), 10.5, ed.x && !ed.k ? 'b' : ed.k, ed.lw || Math.max(84, Math.min(150, len * 0.72)), ed.mono ? 'mono' : 'sans');
+    });
+    nodes.forEach(function (n) {
+      var q = N[n.id], k = n.k, off = (q.sh === 'db' ? 4 : q.sh === 'browser' ? 6 : 0) + (n.badge ? 4 : 0), cxT = q.cx - (q.sh === 'queue' ? 9 : 0);
+      nd += SHAPE(q.sh, q.cx, q.cy, q.w, q.h, k);
+      var mh = q.lines.length * q.fs * 1.28, shh = q.sub.length ? 3 + q.sub.length * 10.5 * 1.25 : 0, top = q.cy + off - (mh + shh) / 2;
+      var cls = q.sh === 'note' ? 't-l' + (k && k !== 'n' ? ' tk ' + kc(k) : '') : 't-b' + (k === 'm' ? ' tn-m' : '');
+      nd += T(q.lines, cxT, top + mh / 2, q.fs, cls + (n.mono ? ' t-m' : ''));
+      if (q.sub.length) nd += T(q.sub, cxT, top + mh + 3 + (shh - 3) / 2, 10.5, 't-s' + (n.submono ? ' t-m' : ''), 'middle', 1.25);
+      if (n.badge) {
+        var bw = tw(n.badge, 10, 'bold') + 12, bx = q.cx + q.w / 2 - bw / 2 - 4, by = q.cy - q.h / 2;
+        nd += '<rect class="bdg ' + kc(n.bk || k || 'b') + '" x="' + r(bx - bw / 2) + '" y="' + r(by - 9) + '" width="' + r(bw) + '" height="18" rx="9"/>' + T([n.badge], bx, by, 10, 'bdgt');
+      }
+    });
+    var H = padT + rows * ch + padB + (s.hb || 0);
+    return svg(W, H, g + e + nd + lb, s);
+  }
+
+  /* ---------- timeline / gantt ---------- */
+  function niceTicks(span) {
+    var steps = [0.5, 1, 2, 2.5, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000], st = steps[steps.length - 1], out = [], i;
+    for (i = 0; i < steps.length; i++) if (span / steps[i] <= 8) { st = steps[i]; break; }
+    for (i = 0; i <= span + 1e-9; i += st) out.push(Math.round(i * 100) / 100);
+    return out;
+  }
+  function tl(s) {
+    var W = s.w || 680, LW = s.lw || 108, R = 14, span = s.span, rowH = s.rh || 32, bh = Math.min(20, rowH - 9);
+    var marks = s.marks || [], mrows = marks.length ? Math.max.apply(null, marks.map(function (m) { return m.row || 0; })) + 1 : 0;
+    var top = 8 + mrows * 15 + 18, lanes = s.lanes, px = function (t) { return LW + (W - LW - R) * t / span; }, Y = function (i) { return top + rowH * i; };
+    var bottom = top + rowH * lanes.length, H = bottom + 10, o = '', lb = '';
+    var ticks = s.ticks || niceTicks(span);
+    ticks.forEach(function (t) {
+      o += '<line class="grid" x1="' + r(px(t)) + '" y1="' + r(top - 3) + '" x2="' + r(px(t)) + '" y2="' + r(bottom) + '"/>';
+      var lbl = t + (s.unit || ''), lw2 = tw(lbl, 10) / 2, tx = px(t), anc = 'middle';
+      if (tx + lw2 > W - 2) { anc = 'end'; tx = W - 2; }
+      o += '<text class="t-s" x="' + r(tx) + '" y="' + r(top - 7) + '" text-anchor="' + anc + '" style="font-size:10px">' + esc(lbl) + '</text>';
+    });
+    lanes.forEach(function (ln, i) {
+      o += T(wrap(ln, LW - 14, 11, 'sans'), LW - 8, Y(i) + rowH / 2, 11, 't-l', 'end', 1.2);
+      o += '<line class="axis" x1="' + LW + '" y1="' + r(Y(i) + rowH) + '" x2="' + r(W - R) + '" y2="' + r(Y(i) + rowH) + '"/>';
+    });
+    (s.bars || []).forEach(function (b) {
+      var x1 = px(b.s), x2 = px(b.e), w = Math.max(2, x2 - x1), yb = Y(b.lane) + (rowH - bh) / 2, fs = 10.5;
+      o += '<rect class="bar ' + kc(b.k) + (b.wait ? ' wait' : '') + '" x="' + r(x1) + '" y="' + r(yb) + '" width="' + r(w) + '" height="' + bh + '" rx="4"/>';
+      if (b.l) {
+        var t = tw(b.l, fs), cy = yb + bh / 2;
+        if (t <= w - 8) lb += T([b.l], x1 + w / 2, cy, fs, 't-l');
+        else if (x2 + 6 + t <= W - R + 2) lb += T([b.l], x2 + 5, cy, fs, 't-l', 'start');
+        else if (x1 - 6 - t >= LW) lb += T([b.l], x1 - 5, cy, fs, 't-l', 'end');
+        else { var cut = Math.max(3, Math.floor((w - 8) / (fs * CWF.sans)) - 1); lb += T([b.l.slice(0, cut) + '…'], x1 + w / 2, cy, fs, 't-l'); }
+      }
+    });
+    (s.arrows || []).forEach(function (a) {
+      var x1 = px(a.a[1]), y1 = Y(a.a[0]) + rowH / 2, x2 = px(a.b[1]), y2 = Y(a.b[0]) + rowH / 2, ang = Math.atan2(y2 - y1, x2 - x1);
+      o += '<path class="eg ' + kc(a.k) + (a.d ? ' dash' : '') + '" d="M' + r(x1) + ' ' + r(y1) + 'L' + r(x2) + ' ' + r(y2) + '"/>' + AH(x2, y2, ang, a.k, 6.5);
+    });
+    (s.pts || []).forEach(function (p) {
+      var x = px(p.t), y = Y(p.lane) + rowH / 2;
+      lb += '<circle class="pt ' + kc(p.k) + '" cx="' + r(x) + '" cy="' + r(y) + '" r="5"/>';
+      if (p.l) {
+        var t = tw(p.l, 10), anchor = 'start', lx = x + 8;
+        if (lx + t > W - R) { anchor = 'end'; lx = x - 8; }
+        lb += T([p.l], lx, y + (p.up ? -9 : 0), 10, 't-l' + (p.k && p.k !== 'n' ? ' tk ' + kc(p.k) : ''), anchor);
+      }
+    });
+    marks.forEach(function (m) {
+      var x = px(m.t), ly = 8 + (m.row || 0) * 15 + 7, t = tw(m.l, 10), lx = Math.max(LW + t / 2 - 40, Math.min(W - R - t / 2, x));
+      o += '<line class="mk ' + kc(m.k) + '" x1="' + r(x) + '" y1="' + r(ly + 6) + '" x2="' + r(x) + '" y2="' + r(bottom) + '"/>';
+      lb += T([m.l], lx, ly, 10, 't-l tk ' + kc(m.k || 'n'));
+    });
+    return svg(W, H, o + lb, s);
+  }
+
+  /* ---------- line chart ---------- */
+  function chart(s) {
+    var W = s.w || 680, H = s.h || 200, L = s.ml || 50, R = 16, series = s.series, Tp = 26, B = 24;
+    var n = s.x.length, px = function (i) { return L + (W - L - R) * i / (n - 1); };
+    var ymin = s.ymin || 0, ymax = s.ymax, py = function (v) { return Tp + (H - Tp - B) * (1 - (v - ymin) / (ymax - ymin)); };
+    var yt = s.yt || [0, 1, 2, 3, 4].map(function (i) { return ymin + (ymax - ymin) * i / 4; }), o = '', lb = '';
+    yt.forEach(function (v) {
+      o += '<line class="grid" x1="' + L + '" y1="' + r(py(v)) + '" x2="' + r(W - R) + '" y2="' + r(py(v)) + '"/>';
+      o += '<text class="t-s" x="' + (L - 7) + '" y="' + r(py(v) + 3.5) + '" text-anchor="end" style="font-size:10px">' + esc(v + (s.yu || '')) + '</text>';
+    });
+    var every = n > 12 ? Math.ceil(n / 8) : 1;
+    s.x.forEach(function (x, i) { if (i % every === 0 || i === n - 1) o += '<text class="t-s" x="' + r(px(i)) + '" y="' + (H - 7) + '" text-anchor="middle" style="font-size:10px">' + esc(x) + '</text>'; });
+    o += '<line class="axis" x1="' + L + '" y1="' + r(py(ymin)) + '" x2="' + r(W - R) + '" y2="' + r(py(ymin)) + '"/>';
+    (s.bands || []).forEach(function (b) {
+      o += '<line class="mk ' + kc(b.k) + '" x1="' + L + '" y1="' + r(py(b.y)) + '" x2="' + r(W - R) + '" y2="' + r(py(b.y)) + '"/>';
+      lb += b.left ? T([b.l], L + 6, py(b.y) - 8, 10, 't-l tk ' + kc(b.k), 'start') : T([b.l], W - R - 2, py(b.y) - 8, 10, 't-l tk ' + kc(b.k), 'end');
+    });
+    (s.vmarks || []).forEach(function (m) {
+      var x = px(m.x), right = x > W * 0.62;
+      o += '<line class="mk ' + kc(m.k) + '" x1="' + r(x) + '" y1="' + Tp + '" x2="' + r(x) + '" y2="' + r(py(ymin)) + '"/>';
+      lb += T(wrap(m.l, 150, 10), right ? x - 6 : x + 6, Tp + 12 + (m.dy || 0), 10, 't-l tk ' + kc(m.k), right ? 'end' : 'start', 1.2);
+    });
+    series.forEach(function (se) {
+      var pts = se.v.map(function (v, i) { return [px(i), py(v)]; });
+      var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + r(p[0]) + ' ' + r(p[1]); }).join('');
+      if (se.area) o += '<path class="ar ' + kc(se.k) + '" d="' + d + 'L' + r(pts[pts.length - 1][0]) + ' ' + r(py(ymin)) + 'L' + r(pts[0][0]) + ' ' + r(py(ymin)) + 'Z"/>';
+      o += '<path class="ln-s ' + kc(se.k) + (se.d ? ' dash' : '') + '" d="' + d + '"/>';
+      var last = pts[pts.length - 1];
+      lb += '<circle class="pt ' + kc(se.k) + '" cx="' + r(last[0]) + '" cy="' + r(last[1]) + '" r="4.5"/>';
+    });
+    var lx = L;
+    series.forEach(function (se) {
+      lb += '<rect class="bar ' + kc(se.k) + '" x="' + r(lx) + '" y="7" width="14" height="8" rx="2"/>' + T([se.l], lx + 19, 11, 10.5, 't-l', 'start');
+      lx += 30 + tw(se.l, 10.5);
+    });
+    return svg(W, H, o + lb, s);
+  }
+
+  var R_ = { seq: seq, flow: flow, tl: tl, chart: chart };
+  function render(spec) {
+    try {
+      if (!spec || !R_[spec.type]) throw new Error('unknown diagram type ' + (spec && spec.type));
+      return R_[spec.type](spec);
+    } catch (err) {
+      if (window.console) console.error('Diagram failed', err, spec);
+      return '<div class="dg-err">Diagram failed to render: ' + esc(err.message) + '</div>';
+    }
+  }
+  return { render: render, esc: esc, wrap: wrap };
+})();
+
+
+</script>
+<script>
+/* ===== Page builder: sections, cards, widgets, nav, search, theme ===== */
+(function () {
+  'use strict';
+  var SECS = window.DKS || [], esc = DG.esc;
+  var GROUPS = ['Docker', 'Kubernetes', 'Traffic and config', 'Operate', 'Ship it'];
+  var LANG = { cs: 'C#', bash: 'Shell', json: 'JSON', xml: 'XML', sql: 'SQL', yaml: 'YAML', docker: 'Dockerfile', js: 'JavaScript', proto: 'Protobuf', text: 'Text' };
+  var $ = function (s, el) { return (el || document).querySelector(s); };
+  var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
+  var COPY = {};
+
+  /* inline markup: `code`, **bold**, *italic* — never inside code spans */
+  function inl(s) {
+    return String(s == null ? '' : s).split('`').map(function (part, i) {
+      if (i % 2) return '<code>' + esc(part) + '</code>';
+      return esc(part).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+        .replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,;:!?]|$)/g, '$1<i>$2</i>');
+    }).join('');
+  }
+  function plain(s) { return String(s || '').replace(/`/g, '').replace(/\*\*/g, ''); }
+
+  /* ---- tiny syntax highlighter ---- */
+  var KW = {
+    cs: 'abstract as async await base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for foreach goto if implicit in init int interface internal is lock long namespace new null object operator out override params private protected public readonly record ref required return sbyte sealed short sizeof stackalloc static string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using var virtual void volatile when where while with yield get set value nameof extension field union closed global partial and or not file scoped dynamic',
+    sql: 'select from where and or not insert into values update set delete merge join inner left right outer cross apply on group by order having as with begin commit rollback transaction create table index primary key unique alter add drop column exec declare top offset fetch next rows only is null in exists case when then else end output inserted deleted type bigint int decimal varchar nvarchar count sum',
+    bash: 'if then fi for do done in export until while', json: 'true false null', xml: '', text: '',
+    yaml: 'true false null', docker: 'FROM AS WORKDIR COPY ADD RUN USER EXPOSE ENTRYPOINT ARG ENV CMD HEALTHCHECK LABEL VOLUME SHELL STOPSIGNAL ONBUILD',
+    js: 'import export from const let var function return if else for of in new await async default true false null undefined typeof',
+    proto: 'syntax option service rpc returns stream message string int32 int64 uint32 uint64 bool bytes double float repeated map oneof enum import package reserved'
+  };
+  var KWS = {}; Object.keys(KW).forEach(function (k) { KWS[k] = {}; KW[k].split(' ').forEach(function (w) { if (w) KWS[k][w] = 1; }); });
+  function hlLine(src, lang) {
+    if (lang === 'text') return esc(src);
+    var com = lang === 'sql' ? '--[^\\n]*' : (lang === 'bash' || lang === 'yaml' || lang === 'docker') ? '#[^\\n]*' : lang === 'xml' ? '<!--[\\s\\S]*?-->' : lang === 'json' ? '(?!)' : '\\/\\/[^\\n]*|\\/\\*[\\s\\S]*?\\*\\/';
+    var re = new RegExp('(' + com + ')|(@?\\$*"(?:[^"\\\\\\n]|\\\\.)*"|\'(?:[^\'\\\\\\n]|\\\\.)*\')|(\\b\\d[\\d_]*(?:\\.\\d+)?(?:[mMdDfFL])?\\b)|(\\[[A-Z][A-Za-z]*(?=[\\(\\],]))|([A-Za-z_][\\w]*)', 'g');
+    var out = '', last = 0, m, kws = KWS[lang] || {}, ci = lang === 'sql';
+    if (lang === 'bash' || lang === 'xml' || lang === 'yaml' || lang === 'docker') re = new RegExp('(' + com + ')|("(?:[^"\\\\\\n]|\\\\.)*")|(\\b\\d[\\d_.]*\\b)|(\\[(?!))|([A-Za-z_][\\w]*)', 'g');
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(last, m.index)); last = re.lastIndex;
+      var t = m[0];
+      if (m[1]) out += '<span class="tk-com">' + esc(t) + '</span>';
+      else if (m[2]) out += '<span class="tk-str">' + esc(t) + '</span>';
+      else if (m[3]) out += '<span class="tk-num">' + esc(t) + '</span>';
+      else if (m[4]) out += '[<span class="tk-at">' + esc(t.slice(1)) + '</span>';
+      else {
+        var key = ci ? t.toLowerCase() : t;
+        if (kws[key]) out += '<span class="tk-kw">' + esc(t) + '</span>';
+        else if (lang === 'cs' && src.charAt(last) === '(' && !/\bnew\s*$/.test(src.slice(0, m.index))) out += '<span class="tk-fn">' + esc(t) + '</span>';
+        else if ((lang === 'cs' || lang === 'xml') && /^[A-Z]/.test(t)) out += '<span class="tk-type">' + esc(t) + '</span>';
+        else if (lang === 'yaml' && src.charAt(last) === ':') out += '<span class="tk-fn">' + esc(t) + '</span>';
+        else if (lang === 'bash' && /^(docker|kubectl|helm|az|kubelogin|kustomize|trivy|curl|dotnet|export|grep|alias|source|complete|echo|cat|cd)$/.test(t) && /^\s*$/.test(src.slice(0, m.index))) out += '<span class="tk-fn">' + esc(t) + '</span>';
+        else out += esc(t);
+      }
+    }
+    return out + esc(src.slice(last));
+  }
+  function trimCode(code) { return String(code || '').replace(/^\n+|\s+$/g, ''); }
+  function hl(code, lang) {
+    return trimCode(code).split('\n').map(function (line) {
+      var cls = line.indexOf('✗') > -1 ? ' ln-b' : line.indexOf('✓') > -1 ? ' ln-g' : '';
+      return '<span class="ln' + cls + '">' + (hlLine(line, lang) || ' ') + '</span>';
+    }).join('');
+  }
+  function codeBox(code, lang) { return '<pre class="src"><code>' + hl(code, lang) + '</code></pre>'; }
+  function cpBtn(key, text, label) { COPY[key] = trimCode(text); return '<button class="cp" type="button" data-copy="' + esc(key) + '"' + (label ? ' aria-label="' + esc(label) + '"' : '') + '>Copy</button>'; }
+  function verCls(v) { return /beta|alpha|preview/i.test(v) ? ' v-next' : /K8s 1\.3[5-9]|\.NET 10/.test(v) ? ' v-new' : ''; }
+  function note(s) { return s ? '<p class="note">' + inl(s) + '</p>' : ''; }
+  function head(b, tools) {
+    return '<header class="blk-h"><h3>' + inl(b.t) + '</h3><span class="tools">' +
+      (b.v ? '<span class="ver' + verCls(b.v) + '" title="Version that introduced it">' + esc(b.v) + '</span>' : '') + (tools || '') + '</span></header>';
+  }
+
+  /* ---- blocks ---- */
+  var IDX = {}, TOTAL = 0, CARDS = 0;
+  SECS.forEach(function (s) {
+    var n = 0;
+    s.blocks.forEach(function (b) {
+      b.sec = s; TOTAL++;
+      if (b.k === 'call') { b.id = b.id || ('call-' + s.id + '-' + (++n)); } else CARDS++;
+      if (IDX[b.id]) console.error('Duplicate block id', b.id);
+      IDX[b.id] = b;
+    });
+  });
+  function blockHTML(b) {
+    var h = '', cls = 'blk' + (b.half ? ' half' : ''), attrs = '';
+    switch (b.k) {
+      case 'snip': {
+        var lg = b.lang && b.lang !== 'cs' ? '<span class="lang">' + esc(LANG[b.lang] || b.lang) + '</span>' : '';
+        h = head(b, lg + cpBtn(b.id + ':code', b.code, 'Copy code: ' + plain(b.t))) + codeBox(b.code, b.lang || 'cs') + note(b.note);
+        break;
+      }
+      case 'gb': {
+        var lang = b.lang || 'cs';
+        h = head(b) + '<div class="gb">' +
+          '<div class="gb-c gb-b"><div class="gb-h"><span class="verdict">✗ Avoid</span>' + cpBtn(b.id + ':bad', b.bad, 'Copy the version to avoid') + '</div>' + codeBox(b.bad, lang) + note(b.badNote) + '</div>' +
+          '<div class="gb-c gb-g"><div class="gb-h"><span class="verdict">✓ Prefer</span>' + cpBtn(b.id + ':good', b.good, 'Copy the preferred version') + '</div>' + codeBox(b.good, lang) + note(b.goodNote) + '</div></div>';
+        break;
+      }
+      case 'table':
+        h = head(b) + '<div class="tbl-wrap"><table class="tbl' + (b.first === 'mono' ? ' mono1' : '') + '"><thead><tr>' +
+          b.cols.map(function (c) { return '<th scope="col">' + inl(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+          b.rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return '<td data-l="' + esc(plain(b.cols[i])) + '">' + inl(c) + '</td>'; }).join('') + '</tr>'; }).join('') +
+          '</tbody></table></div>' + note(b.note);
+        break;
+      case 'dg':
+        if (b.seg) {
+          attrs = ' data-state="b"';
+          h = head(b, '<span class="seg" role="group" aria-label="Diagram state"><button type="button" data-s="b" aria-pressed="true">' + esc(b.seg[0]) + '</button><button type="button" data-s="f" aria-pressed="false">' + esc(b.seg[1]) + '</button></span>') +
+            '<figure class="dgf"><div class="dgf-top"><figcaption><span class="st-b">' + inl(b.capB) + '</span><span class="st-f">' + inl(b.capF) + '</span></figcaption></div>' +
+            '<div class="dg-scroll"><div class="st-b">' + DG.render(Object.assign({ alt: plain(b.seg[0] + ': ' + b.capB) }, b.b)) + '</div><div class="st-f">' + DG.render(Object.assign({ alt: plain(b.seg[1] + ': ' + b.capF) }, b.f)) + '</div></div></figure>';
+        } else {
+          h = head(b) + '<figure class="dgf"><div class="dgf-top"><figcaption>' + inl(b.cap) + '</figcaption></div><div class="dg-scroll">' + DG.render(Object.assign({ alt: plain(b.cap) }, b.d)) + '</div></figure>';
+        }
+        break;
+      case 'widget':
+        h = head(b) + '<div class="wdg" data-w="' + b.w + '"></div>';
+        break;
+      case 'call':
+        var KL = { trap: 'Trap', tip: 'Tip', key: 'Key point' };
+        return '<p class="call call-' + b.kind + '" id="c-' + b.id + '" data-id="' + b.id + '"><b class="kl">' + KL[b.kind] + '</b>' + inl(b.text) + '</p>';
+    }
+    return '<article class="' + cls + '" id="c-' + b.id + '" data-id="' + b.id + '"' + attrs + '>' + h + '</article>';
+  }
+
+  /* ---- sections + nav ---- */
+  var chev = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var sh = '', nav = '';
+  GROUPS.forEach(function (g) {
+    var secs = SECS.filter(function (s) { return s.grp === g; });
+    if (!secs.length) return;
+    nav += '<div class="nav-g" data-g="' + esc(g) + '"><button class="nav-gh" type="button" aria-expanded="true">' + esc(g) + '<span class="chev">' + chev + '</span></button><ul class="nav-list">';
+    secs.forEach(function (s) {
+      var n = s.blocks.filter(function (b) { return b.k !== 'call'; }).length;
+      sh += '<section class="sec" id="s-' + s.id + '" data-s="' + s.id + '" aria-labelledby="h-' + s.id + '"><div class="sec-h"><span class="code">' + s.code + '</span><h2 id="h-' + s.id + '">' + esc(s.name) + '</h2>' +
+        '<span class="ct">' + n + ' cards</span><button class="sec-tg" type="button" aria-expanded="true" aria-controls="b-' + s.id + '" aria-label="Collapse ' + esc(s.name) + '">' + chev + '</button></div>' +
+        '<p class="sec-blurb">' + inl(s.blurb) + '</p><div class="blks" id="b-' + s.id + '">' + s.blocks.map(blockHTML).join('') + '</div></section>';
+      nav += '<li><button class="nav-i" type="button" data-to="s-' + s.id + '"><span class="c">' + s.code + '</span><span class="n">' + esc(s.name) + '</span><span class="ct">' + n + '</span></button></li>';
+    });
+    nav += '</ul></div>';
+  });
+  $('#secs').innerHTML = sh;
+  $('#nav').innerHTML = nav;
+  $('#side-meta').textContent = CARDS + ' cards · ' + SECS.length + ' sections';
+  $('#eyebrow').textContent = 'Cheatsheet · ' + CARDS + ' cards · ' + SECS.length + ' sections';
+  $('#foot-count').textContent = CARDS + ' cards across ' + SECS.length + ' sections';
+
+  /* ---- ship.sh map ---- */
+  var SEC = {}; SECS.forEach(function (s) { SEC[s.id] = s; });
+  var prog = window.DKS_SHIP || [];
+  $('#pmap').innerHTML = prog.map(function (p) {
+    var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], 'bash') : ' ') + '</code>';
+    if (!s) return '<div class="pl"><span class="pg"></span>' + code + '</div>';
+    return '<div class="pl to" data-to="s-' + s.id + '" data-s="' + s.id + '" title="' + esc(s.name) + '"><button class="pg" type="button" data-to="s-' + s.id + '" aria-label="' + esc(s.name) + '">' + s.code + '</button>' + code + '</div>';
+  }).join('');
+  $('#pmap-copy').outerHTML = cpBtn('prog', prog.map(function (p) { return p[1]; }).join('\n'), 'Copy ship.sh');
+  $('#pmap').addEventListener('mouseover', function (e) {
+    var l = e.target.closest('.pl.to'), s = l && l.getAttribute('data-s');
+    $$('.pl.hot', this).forEach(function (x) { if (x.getAttribute('data-s') !== s) x.classList.remove('hot'); });
+    if (s) $$('.pl[data-s="' + s + '"]', this).forEach(function (x) { x.classList.add('hot'); });
+  });
+  $('#pmap').addEventListener('mouseleave', function () { $$('.pl.hot', this).forEach(function (x) { x.classList.remove('hot'); }); });
+
+  /* ---- task finder ---- */
+  $('#fd').innerHTML = (window.DKS_FINDER || []).map(function (row) {
+    return '<div class="fd-row"><div class="fd-sym">' + inl(row[0]) + '<small>' + inl(row[1]) + '</small></div><div class="fd-chips">' +
+      row[2].filter(function (id) { if (!IDX[id]) console.error('Finder id missing', id); return IDX[id]; }).map(function (id) {
+        var b = IDX[id]; return '<button class="chipbtn" type="button" data-to="c-' + id + '"><span class="c">' + b.sec.code + '</span>' + esc(plain(b.t)) + '</button>';
+      }).join('') + '</div></div>';
+  }).join('');
+  $('#finder-ct').textContent = (window.DKS_FINDER || []).length + ' tasks';
+
+  /* ======================= widgets ======================= */
+  function segHTML(key, opts, cur, label) {
+    return '<span class="seg" role="group" aria-label="' + esc(label) + '" data-k="' + key + '">' + opts.map(function (o) {
+      return '<button type="button" data-v="' + esc(o) + '" aria-pressed="' + (o === cur) + '">' + esc(o) + '</button>';
+    }).join('') + '</span>';
+  }
+  function bindSeg(root, onPick) {
+    root.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg[data-k] button'); if (!b || !root.contains(b)) return;
+      var seg = b.parentNode;
+      $$('button', seg).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      onPick(seg.getAttribute('data-k'), b.getAttribute('data-v'));
+    });
+  }
+
+  /* Docker -> Kubernetes translator */
+  function mapWidget(el) {
+    var C = window.DKS_MAP, cur = 0;
+    el.innerHTML = '<div class="coll"><div class="coll-needs" role="group" aria-label="What you do in Docker">' + C.map(function (c, i) {
+      return '<button type="button" data-i="' + i + '" aria-pressed="' + (i === 0) + '">' + esc(c.need) + '</button>';
+    }).join('') + '</div><label class="coll-sel"><span>In Docker I</span><select aria-label="What you do in Docker">' + C.map(function (c, i) {
+      return '<option value="' + i + '">' + esc(c.need) + '</option>';
+    }).join('') + '</select></label><div class="coll-out" aria-live="polite"></div></div>';
+    function render() {
+      var c = C[cur];
+      $('.coll-out', el).innerHTML =
+        '<div class="ty"><span>Docker</span><small>' + (c.dl === 'yaml' ? 'compose.yaml' : 'docker CLI') + '</small><span style="margin-left:auto">' + cpBtn('map:dk:' + cur, c.dk, 'Copy the Docker version') + '</span></div>' +
+        codeBox(c.dk, c.dl || 'bash') +
+        '<div class="ty ty-2"><span>Kubernetes</span><small>' + inl(c.k8) + '</small><span style="margin-left:auto">' + cpBtn('map:k8:' + cur, c.y, 'Copy the Kubernetes version') + '</span></div>' +
+        codeBox(c.y, 'yaml') + '<p><b>Watch out:</b> ' + inl(c.why) + '</p>';
+    }
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('.coll-needs button'); if (!b) return;
+      pick(+b.getAttribute('data-i'));
+    });
+    $('select', el).addEventListener('change', function () { pick(+this.value); });
+    function pick(i) {
+      cur = i; $('select', el).value = String(i);
+      $$('.coll-needs button', el).forEach(function (x) { x.setAttribute('aria-pressed', String(+x.getAttribute('data-i') === i)); });
+      render();
+    }
+    render();
+  }
+
+  /* Rolling update simulator */
+  function rollWidget(el) {
+    var ST = ['25% / 25%', '1 / 0', '0 / 1', 'Recreate'], st = { r: '4', s: ST[0] };
+    el.innerHTML =
+      '<div class="wdg-row"><span class="wdg-lbl">Replicas</span>' + segHTML('r', ['2', '4', '6'], st.r, 'Replicas') + '</div>' +
+      '<div class="wdg-row"><span class="wdg-lbl">maxSurge / maxUnavailable</span>' + segHTML('s', ST, st.s, 'Rollout strategy') + '</div>' +
+      '<div class="roll-key" aria-hidden="true"><span><span class="pod p-old">v1</span> running</span><span><span class="pod p-term">v1</span> terminating</span>' +
+      '<span><span class="pod p-pend">v2</span> starting</span><span><span class="pod p-new">v2</span> Ready</span></div>' +
+      '<ol class="roll" aria-live="polite"></ol><div class="verdict-line"></div><div class="wdg-code"></div>';
+    function plan(R, mode) {
+      var s = 0, u = 0, rows = [{ t: 'Before', old: R, term: 0, pend: 0, ready: 0 }];
+      if (mode === 'Recreate') {
+        rows.push({ t: 'Step 1', old: 0, term: R, pend: 0, ready: 0 });
+        rows.push({ t: 'Step 2', old: 0, term: 0, pend: R, ready: 0 });
+        rows.push({ t: 'Step 3', old: 0, term: 0, pend: 0, ready: R });
+        return { rows: rows };
+      }
+      if (mode === ST[0]) { s = Math.ceil(R * 0.25); u = Math.floor(R * 0.25); }
+      else if (mode === '1 / 0') { s = 1; u = 0; }
+      else { s = 0; u = 1; }
+      var old = R, pend = 0, ready = 0, i = 0;
+      while ((old > 0 || ready < R) && i < 30) {
+        i++;
+        ready += pend; pend = 0;                                          /* last step's new Pods pass readiness */
+        var down = Math.min(old, Math.max(0, old + ready - (R - u)));     /* keep at least R - maxUnavailable Ready */
+        old -= down;
+        pend = Math.min(R - ready, Math.max(0, R + s - (old + ready)));   /* stay within R + maxSurge Pods */
+        rows.push({ t: 'Step ' + i, old: old, term: down, pend: pend, ready: ready });
+      }
+      return { rows: rows, s: s, u: u };
+    }
+    function chips(n, cls, label) { var h = ''; for (var i = 0; i < n; i++) h += '<span class="pod ' + cls + '">' + label + '</span>'; return h; }
+    function render() {
+      var R = +st.r, p = plan(R, st.s), minReady = R, maxPods = R;
+      $('.roll', el).innerHTML = p.rows.map(function (x) {
+        var av = x.old + x.ready;
+        minReady = Math.min(minReady, av); maxPods = Math.max(maxPods, x.old + x.pend + x.ready);
+        return '<li class="roll-row"><span class="ix">' + x.t + '</span><span class="pods">' +
+          chips(x.old, 'p-old', 'v1') + chips(x.term, 'p-term', 'v1') + chips(x.ready, 'p-new', 'v2') + chips(x.pend, 'p-pend', 'v2') +
+          '</span><span class="av' + (av < R ? ' low' : '') + '">' + av + ' of ' + R + ' Ready</span></li>';
+      }).join('');
+      var steps = p.rows.length - 1, vl = $('.verdict-line', el), v;
+      if (st.s === 'Recreate') v = ['bad', '<b>Downtime:</b> every v1 Pod stops before any v2 Pod starts, so for a while nothing is Ready. Use it only when two versions must never run side by side.'];
+      else if (minReady === R) v = ['ok', '<b>No dip in capacity:</b> Ready never drops below ' + R + ', and the cluster must fit ' + maxPods + ' Pods during the rollout. ' + steps + ' steps.'];
+      else if (maxPods === R) v = ['warn', '<b>No extra room needed, but capacity dips:</b> as few as ' + minReady + ' of ' + R + ' Pods are Ready at a time, so they must carry the full load. ' + steps + ' steps.'];
+      else v = ['ok', '<b>Fastest, with a small dip:</b> up to ' + maxPods + ' Pods at once and as few as ' + minReady + ' Ready; done in ' + steps + ' steps.'];
+      if (st.s === ST[0]) v[1] += ' This is the default: for ' + R + ' replicas, 25% gives maxSurge ' + p.s + ' (rounded up) and maxUnavailable ' + p.u + ' (rounded down).';
+      vl.className = 'verdict-line ' + v[0]; vl.innerHTML = v[1];
+      $('.wdg-code', el).textContent = st.s === 'Recreate' ? 'strategy:\n  type: Recreate' :
+        'strategy:\n  type: RollingUpdate\n  rollingUpdate:\n    maxSurge: ' + (st.s === ST[0] ? '25%' : p.s) + '\n    maxUnavailable: ' + (st.s === ST[0] ? '25%' : p.u);
+    }
+    bindSeg(el, function (k, v) { st[k] = v; render(); });
+    render();
+  }
+
+  /* Requests, limits and QoS */
+  function qosWidget(el) {
+    var st = { cr: '250m', cl: 'none', mr: '256Mi', ml: '512Mi' };
+    var MI = { '256Mi': 256, '512Mi': 512, '1Gi': 1024 }, CPU = { '250m': 0.25, '500m': 0.5, '1': 1, '2': 2 };
+    el.innerHTML =
+      '<div class="wdg-row"><span class="wdg-lbl">CPU request</span>' + segHTML('cr', ['none', '250m', '500m'], st.cr, 'CPU request') + '</div>' +
+      '<div class="wdg-row"><span class="wdg-lbl">CPU limit</span>' + segHTML('cl', ['none', '500m', '1', '2'], st.cl, 'CPU limit') + '</div>' +
+      '<div class="wdg-row"><span class="wdg-lbl">Memory request</span>' + segHTML('mr', ['none', '256Mi', '512Mi'], st.mr, 'Memory request') + '</div>' +
+      '<div class="wdg-row"><span class="wdg-lbl">Memory limit</span>' + segHTML('ml', ['none', '512Mi', '1Gi'], st.ml, 'Memory limit') + '</div>' +
+      '<div class="tbl-wrap"><table class="tbl qos-res"><tbody></tbody></table></div><div class="verdict-line"></div><div class="wdg-code"></div>';
+    function cores(c) { return c === '500m' ? '500m (half a core)' : c + (c === '1' ? ' core' : ' cores'); }
+    function render() {
+      var cr = st.cr !== 'none' ? st.cr : st.cl !== 'none' ? st.cl : null;   /* a request left out defaults to the limit */
+      var mr = st.mr !== 'none' ? st.mr : st.ml !== 'none' ? st.ml : null;
+      var copied = (st.cr === 'none' && st.cl !== 'none') || (st.mr === 'none' && st.ml !== 'none');
+      var qos = !cr && !mr ? 'BestEffort' : st.cl !== 'none' && st.ml !== 'none' && cr === st.cl && mr === st.ml ? 'Guaranteed' : 'Burstable';
+      var rows = [
+        ['QoS class', '<b>' + qos + '</b>: ' + (qos === 'BestEffort' ? 'evicted first' : qos === 'Guaranteed' ? 'evicted last' : 'evicted after BestEffort Pods')],
+        ['Scheduler reserves', (cr ? esc(cr) + ' CPU' : 'no CPU') + ', ' + (mr ? esc(mr) + ' memory' : 'no memory') + (copied ? ' (a missing request copies the limit)' : '')],
+        ['Above the CPU limit', st.cl !== 'none' ? 'throttled at ' + cores(st.cl) : 'no cap: it can use idle CPU on the node'],
+        ['Above the memory limit', st.ml !== 'none' ? 'OOMKilled at ' + st.ml + ' (exit code 137)' : 'no cap: grows until the node runs short, then evicted'],
+        ['.NET GC heap limit', st.ml !== 'none' ? Math.round(MI[st.ml] * 0.75) + ' MiB, 75% of ' + st.ml : 'none from the container: sized against the node'],
+        ['<code>Environment.ProcessorCount</code>', st.cl !== 'none' ? Math.ceil(CPU[st.cl]) + ' (the limit, rounded up)' : 'every core on the node'],
+        ['HPA on CPU %', cr ? 'works: utilization is measured against ' + esc(cr) : 'cannot work: there is no CPU request']
+      ];
+      $('tbody', el).innerHTML = rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td data-l="">' + r[1] + '</td></tr>'; }).join('');
+      var vl = $('.verdict-line', el), v;
+      if (qos === 'BestEffort') v = ['bad', '<b>BestEffort:</b> no requests, so the scheduler can put it on a full node and the kubelet evicts it first under pressure. Never for production.'];
+      else if (st.cl === '500m') v = ['warn', '<b>A 500m CPU limit:</b> .NET sees 1 processor, so a small thread pool and a single GC heap, and startup bursts get throttled. Prefer a CPU request without a CPU limit, or a limit of at least 1.'];
+      else if (st.ml === 'none') v = ['warn', '<b>No memory limit:</b> a leak grows until the node runs short, then the kubelet evicts Pods. The GC also has no container limit to size its heap against.'];
+      else if (qos === 'Guaranteed') v = ['ok', '<b>Guaranteed:</b> evicted last and fully predictable, but every replica reserves its whole limit even when idle.'];
+      else if (st.cl === 'none') v = ['ok', '<b>The common production shape:</b> requests for scheduling, a memory limit as the safety net, and no CPU limit, so no throttling.'];
+      else v = ['ok', '<b>Burstable:</b> it can use more than it requested, up to the limits, and is evicted after BestEffort Pods under memory pressure.'];
+      vl.className = 'verdict-line ' + v[0]; vl.innerHTML = v[1];
+      var rq = [], lm = [];
+      if (st.cr !== 'none') rq.push('cpu: ' + st.cr);
+      if (st.mr !== 'none') rq.push('memory: ' + st.mr);
+      if (st.cl !== 'none') lm.push('cpu: ' + st.cl);
+      if (st.ml !== 'none') lm.push('memory: ' + st.ml);
+      $('.wdg-code', el).textContent = !rq.length && !lm.length ? 'resources: {}          # BestEffort' :
+        'resources:' + (rq.length ? '\n  requests: { ' + rq.join(', ') + ' }' : '') + (lm.length ? '\n  limits: { ' + lm.join(', ') + ' }' : '') +
+        (copied ? '\n# a request left out defaults to its limit' : '');
+    }
+    bindSeg(el, function (k, v) { st[k] = v; render(); });
+    render();
+  }
+  var WIDGETS = { map: mapWidget, roll: rollWidget, qos: qosWidget };
+  $$('.wdg[data-w]').forEach(function (el) {
+    try { WIDGETS[el.getAttribute('data-w')](el); }
+    catch (err) { console.error('Widget failed', err); el.innerHTML = '<div class="dg-err">This widget failed to load: ' + esc(err.message) + '</div>'; }
+  });
+
+  /* ======================= interactions ======================= */
+  var side = $('#side'), scrim = $('#scrim'), mb = $('#menu-btn');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function openNav() { document.body.classList.add('nav-open'); scrim.hidden = false; mb.setAttribute('aria-expanded', 'true'); }
+  function closeNav() { document.body.classList.remove('nav-open'); scrim.hidden = true; mb.setAttribute('aria-expanded', 'false'); }
+  function setShut(sec, on) {
+    sec.classList.toggle('shut', on);
+    var t = $('.sec-tg', sec); t.setAttribute('aria-expanded', String(!on));
+    t.setAttribute('aria-label', (on ? 'Expand ' : 'Collapse ') + $('h2', sec).textContent);
+  }
+  function go(id) {
+    var el = document.getElementById(id); if (!el) return;
+    if (el.hidden && q.value) { q.value = ''; filter(); }
+    var sec = el.closest('.sec'); if (sec && sec.classList.contains('shut')) setShut(sec, false);
+    closeNav();
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    if (el.classList.contains('blk') || el.classList.contains('call')) { el.classList.add('flash'); setTimeout(function () { el.classList.remove('flash'); }, 1400); }
+  }
+  function copyText(btn, txt) {
+    var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1300); };
+    var fallback = function () {
+      try { var ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); }
+      catch (e) { btn.textContent = 'Select & copy'; }
+    };
+    try { navigator.clipboard.writeText(txt).then(done, fallback); } catch (e) { fallback(); }
+  }
+  document.addEventListener('click', function (ev) {
+    var cp = ev.target.closest('[data-copy]');
+    if (cp) { copyText(cp, COPY[cp.getAttribute('data-copy')] || ''); return; }
+    var t = ev.target.closest('[data-to]');
+    if (t) { ev.preventDefault(); go(t.getAttribute('data-to')); return; }
+    var sb = ev.target.closest('.blk[data-state] .blk-h .seg button');
+    if (sb) {
+      var card = sb.closest('.blk'), s = sb.getAttribute('data-s');
+      card.setAttribute('data-state', s);
+      $$('.seg button', card).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-s') === s)); });
+      return;
+    }
+    var tg = ev.target.closest('.sec-tg');
+    if (tg) { var sec = tg.closest('.sec'); setShut(sec, !sec.classList.contains('shut')); return; }
+    var ngh = ev.target.closest('.nav-gh');
+    if (ngh) { var ng = ngh.parentNode, shut = !ng.classList.contains('shut'); ng.classList.toggle('shut', shut); ngh.setAttribute('aria-expanded', String(!shut)); }
+  });
+  var allShut = false;
+  $('#collapse-all').addEventListener('click', function () {
+    allShut = !allShut;
+    $$('.sec').forEach(function (s) { setShut(s, allShut); });
+    this.setAttribute('aria-pressed', String(allShut));
+    $('#collapse-lbl').textContent = allShut ? 'Expand all' : 'Collapse all';
+  });
+
+  /* theme */
+  $('#theme-btn').addEventListener('click', function () {
+    var root = document.documentElement, cur = root.getAttribute('data-theme');
+    if (!cur) cur = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('dks-theme', next); } catch (e) { }
+  });
+
+  /* wrap long lines */
+  var wrapBtn = $('#wrap-btn'), wrap = null;
+  try { wrap = localStorage.getItem('dks-wrap'); } catch (e) { }
+  wrap = wrap === null ? !!(window.matchMedia && window.matchMedia('(max-width: 760px)').matches) : wrap === '1';
+  function setWrap(on) { wrap = on; document.body.classList.toggle('wrap', on); wrapBtn.setAttribute('aria-pressed', String(on)); }
+  setWrap(wrap);
+  wrapBtn.addEventListener('click', function () { setWrap(!wrap); try { localStorage.setItem('dks-wrap', wrap ? '1' : '0'); } catch (e) { } });
+
+  /* mobile nav */
+  mb.addEventListener('click', function () { document.body.classList.contains('nav-open') ? closeNav() : openNav(); });
+  scrim.addEventListener('click', closeNav);
+
+  /* ---- search ---- */
+  var q = $('#dks-q'), hits = $('#hits'), timer;
+  if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) q.placeholder = 'Search the cheatsheet';
+  var blocks = $$('.blks > [data-id]'), TEXT = {};
+  function btext(b) {
+    var parts = [b.sec.code, b.sec.name, b.t, b.v, b.code, b.bad, b.good, b.note, b.badNote, b.goodNote, b.cap, b.capB, b.capF, b.text, b.kw];
+    if (b.rows) parts.push(b.cols.join(' '), b.rows.map(function (r) { return r.join(' '); }).join(' '));
+    if (b.w === 'map') parts.push(window.DKS_MAP.map(function (c) { return c.need + ' ' + c.k8 + ' ' + c.dk + ' ' + c.y + ' ' + c.why; }).join(' '));
+    if (b.w === 'roll') parts.push('maxSurge maxUnavailable RollingUpdate Recreate rollout strategy replicas');
+    if (b.w === 'qos') parts.push('requests limits QoS Guaranteed Burstable BestEffort OOMKilled throttled GC heap ProcessorCount cpu memory');
+    return parts.filter(Boolean).join(' ').toLowerCase();
+  }
+  blocks.forEach(function (el) { var id = el.getAttribute('data-id'); TEXT[id] = btext(IDX[id]); });
+  function filter() {
+    var terms = q.value.toLowerCase().trim().split(/\s+/).filter(Boolean), n = 0, active = terms.length > 0;
+    blocks.forEach(function (el) {
+      var ok = !active || terms.every(function (t) { return TEXT[el.getAttribute('data-id')].indexOf(t) > -1; });
+      el.hidden = !ok; if (ok && active && !el.classList.contains('call')) n++;
+    });
+    $$('.sec').forEach(function (s) {
+      var vis = $$('.blks > [data-id]', s).some(function (b) { return !b.hidden; });
+      s.hidden = !vis;
+      var ni = $('.nav-i[data-to="' + s.id + '"]'); if (ni) ni.parentNode.hidden = !vis;
+    });
+    $$('.nav-g').forEach(function (g) { g.hidden = !$$('.nav-list li', g).some(function (li) { return !li.hidden; }); });
+    document.body.classList.toggle('searching', active);
+    $('.hero').hidden = active; $('.intro').hidden = active; $('#finder').hidden = active; $('#nav-top').hidden = active;
+    hits.hidden = !active; hits.textContent = n + ' / ' + CARDS;
+    $('#empty').hidden = !(active && n === 0 && !$$('.blks > .call').some(function (c) { return !c.hidden; }));
+  }
+  q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(filter, 90); });
+  q.addEventListener('keydown', function (e) { if (e.key === 'Escape') { q.value = ''; filter(); q.blur(); } });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && document.activeElement !== q && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); q.focus(); }
+    if (e.key === 'Escape') closeNav();
+  });
+
+  /* ---- scroll spy ---- */
+  var navItems = {}; $$('.nav-i[data-to]').forEach(function (b) { navItems[b.getAttribute('data-to')] = b; });
+  var current = null;
+  function mark(id) {
+    if (current === id) return; current = id;
+    $$('.nav-i.on').forEach(function (b) { b.classList.remove('on'); });
+    var b = navItems[id]; if (!b) return;
+    b.classList.add('on');
+    var sr = side.getBoundingClientRect(), br = b.getBoundingClientRect();
+    if (br.top < sr.top + 40 || br.bottom > sr.bottom - 40) side.scrollTop += br.top - sr.top - sr.height / 3;
+  }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) mark(en.target.id); });
+    }, { rootMargin: '-15% 0px -75% 0px' });
+    $$('.sec').forEach(function (s) { io.observe(s); });
+    io.observe($('#intro')); io.observe($('#finder'));
+  }
+})();
+
+</script>
+</body>
+</html>
