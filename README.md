@@ -10,10 +10,8 @@ Self-contained HTML cheat sheets. Each file is a single page with its own styles
 | [`angular-cheatsheet.html`](angular-cheatsheet.html) | Signal-first, zoneless, OnPush patterns for Angular 22.2, TypeScript 6, RxJS 7 and NgRx 22, with an annotated `order-page.ts` and change-detection, injector, flattening-operator and template-translator widgets. |
 | [`docker-kubernetes-cheatsheet.html`](docker-kubernetes-cheatsheet.html) | Docker, Compose, kubectl and manifest patterns for shipping .NET 10 services to AKS on Kubernetes 1.37, with an annotated `ship.sh` and Docker-to-Kubernetes, rollout and resources widgets. |
 | [`system-design-cheatsheet.html`](system-design-cheatsheet.html) | The components, workflows and resilience patterns of a backend system, with an annotated request trace and capacity, availability, rate-limiter and hash-ring widgets. |
-| [`system-design-interview-cheatsheet.html`](system-design-interview-cheatsheet.html) | What to reach for in a 45-minute design round: the framework, numbers to recall, building blocks and a playbook of 40+ prompts, with pacing, latency-budget, estimation, quorum, Bloom-filter and fan-out widgets. |
 | [`coding-interview-cheatsheet.html`](coding-interview-cheatsheet.html) | What to reach for in a 45-minute coding round: the method, complexity budget, the C# 14 that saves minutes, data structures and the patterns behind most problems, each with a template, classic problems and traps. |
 | [`failure-modes-and-fixes.html`](failure-modes-and-fixes.html) | Production bugs as a lookup table: symptom, broken/fixed diagram, .NET / React / Azure fix, and how to detect it. |
-| [`eighteen-shapes.html`](eighteen-shapes.html) | The eighteen underlying mechanisms behind the failure modes, with a review checklist of one question per shape. |
 
 ## Viewing
 
