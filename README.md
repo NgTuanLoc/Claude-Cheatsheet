@@ -11,6 +11,7 @@ Self-contained HTML cheat sheets. Each file is a single page with its own styles
 | [`docker-kubernetes-cheatsheet.html`](docker-kubernetes-cheatsheet.html) | Docker, Compose, kubectl and manifest patterns for shipping .NET 10 services to AKS on Kubernetes 1.37, with an annotated `ship.sh` and Docker-to-Kubernetes, rollout and resources widgets. |
 | [`system-design-cheatsheet.html`](system-design-cheatsheet.html) | The components, workflows and resilience patterns of a backend system, with an annotated request trace and capacity, availability, rate-limiter and hash-ring widgets. |
 | [`coding-interview-cheatsheet.html`](coding-interview-cheatsheet.html) | What to reach for in a 45-minute coding round: the method, complexity budget, the C# 14 that saves minutes, data structures and the patterns behind most problems, each with a template, classic problems and traps. |
+| [`english-fluency-cheatsheet.html`](english-fluency-cheatsheet.html) | Grammar, sounds and structures that turn what you understand into what you can say and write, built for Vietnamese speakers at upper-intermediate level heading for C1: each card shows a pattern, the typical mistake and the fix. |
 | [`failure-modes-and-fixes.html`](failure-modes-and-fixes.html) | Production bugs as a lookup table: symptom, broken/fixed diagram, .NET / React / Azure fix, and how to detect it. |
 
 ## Viewing
