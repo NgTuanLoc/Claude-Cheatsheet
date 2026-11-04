@@ -1,14 +1,9 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>System Design Cheatsheet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Spline+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
-<script>(function(){try{var t=localStorage.getItem('sds-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<script>(function(){document.documentElement.lang='en';try{var t=localStorage.getItem('sds-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <style>
 :root{
   color-scheme: light;
@@ -488,10 +483,19 @@ body.searching .sec.shut .blks{display:grid}
 @media (max-width:760px){.rg{grid-template-columns:minmax(0,1fr)}.rg-stats b{font-size:21px}}
 .dg .rg-new{fill:var(--bg);stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:3 2}
 .wdg .seg{flex:0 1 auto;max-width:100%}
+/* ===== November additions: hot-partition and Bloom widgets ===== */
+.hp-cap{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink-2);max-width:72ch}
+.hp-svg{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:6px 6px 0;-webkit-overflow-scrolling:touch}
+.hp-svg svg{display:block;width:100%;min-width:520px;height:auto}
+.dg .hb{fill:var(--k)}
+.dg .hb-idle{stroke:var(--line-2);stroke-width:2;stroke-linecap:round}
+.bf-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:10px}
+.bf-tile{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--surface);display:grid;gap:2px;min-width:0}
+.bf-tile b{font:600 26px/1.15 var(--f-serif);font-variant-numeric:tabular-nums;color:var(--ink)}
+.bf-tile span{font-size:12.5px;color:var(--ink-3)}
+.bf-res td:nth-child(2){font:600 13px/1.4 var(--f-mono);white-space:nowrap}
 
 </style>
-</head>
-<body>
 <div class="app">
   <aside class="side" id="side" aria-label="Contents">
     <div class="side-brand">System Design Cheatsheet</div>
@@ -510,7 +514,7 @@ body.searching .sec.shut .blks{display:grid}
       </button>
       <label class="search" for="sds-q">
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        <input id="sds-q" type="search" placeholder="Search components, patterns, numbers — “idempotency”, “p99”, “429”" autocomplete="off" spellcheck="false">
+        <input id="sds-q" type="search" placeholder="Search components, patterns, numbers — “idempotency”, “hot partition”, “acks”" autocomplete="off" spellcheck="false">
         <span class="hits" id="hits" hidden></span>
         <kbd aria-hidden="true">/</kbd>
       </label>
@@ -552,7 +556,7 @@ body.searching .sec.shut .blks{display:grid}
             <span class="vk"><span class="ver v-next">At scale</span>only when the numbers demand it</span></span></li>
           <li><span class="k">Search</span><span>Press <kbd>/</kbd> and type a component, a pattern or a number: “saga”, “jitter”, “99.9”.</span></li>
           <li><span class="k">Code</span><span><span style="color:var(--rose)">✗</span> and <span style="color:var(--teal)">✓</span> lines mark the culprit and the cure. Every block has Copy; <b>Wrap</b> folds long lines on small screens.</span></li>
-          <li><span class="k">Try it</span><span>Some diagrams flip between two designs, and the estimator, availability, rate-limiter, hash-ring and datastore widgets react to your choices.</span></li>
+          <li><span class="k">Try it</span><span>Some diagrams flip between two designs, and seven widgets react to your choices: the estimator, availability, rate limiter, hash ring, hot partitions, Bloom filter sizing and the datastore picker.</span></li>
         </ul>
       </div>
     </section>
@@ -567,7 +571,7 @@ body.searching .sec.shut .blks{display:grid}
     <div class="empty" id="empty" hidden>No card matches that search. Try a component (“load balancer”), a pattern (“outbox”) or a number (“429”).</div>
 
     <footer class="foot">
-      <p>The System Design Cheatsheet: <span id="foot-count"></span>. Throughput and latency figures are orders of magnitude for a first sketch — load-test before you commit to them. Product names, defaults and standards checked at the end of September 2026.</p>
+      <p>The System Design Cheatsheet: <span id="foot-count"></span>. Throughput and latency figures are orders of magnitude for a first sketch — load-test before you commit to them. Product names, versions and defaults checked in September 2026; the Kafka, stream-processing and hot-partition material in November 2026, against Kafka 4.4.</p>
       <p>Companions in this library: the <a href="dotnet-cheatsheet.html">.NET Cheatsheet</a> for the code behind these patterns, the <a href="sql-server-cheatsheet.html">SQL Server Cheatsheet</a> and the <a href="react-javascript-cheatsheet.html">React &amp; JavaScript Cheatsheet</a>, and <a href="failure-modes-and-fixes.html">Failure Modes &amp; Fixes</a> for the production bugs.</p>
     </footer>
   </main>
@@ -3444,6 +3448,789 @@ window.SDS.push({
   ]
 });
 
+/* ===== Components: KAFKA ===== */
+window.SDS = window.SDS || [];
+
+window.SDS.push({
+  id: 'kafka', code: 'KAFKA', grp: 'Components', name: 'Kafka in depth',
+  blurb: 'Kafka is a replicated, partitioned log: producers append, consumers read at their own pace, and records stay for the retention period. Reach for it when you need replay, many independent consumers or very high throughput; a queue is simpler for plain work distribution. Durability, ordering and duplicates come down to a few settings: acks, the in-sync replicas, offset commits and the partition key.',
+  blocks: [
+    { k: 'table', id: 'kafka-vocab', t: 'Kafka on one screen', cols: ['Term', 'What it is', 'Why it matters'], rows: [
+      ['Topic, partition', 'a named log split into N partitions, each an ordered, append-only sequence', 'the partition is the unit of ordering, parallelism and placement'],
+      ['Offset', 'a record’s position within its partition', 'a consumer group keeps one committed offset per partition: its bookmark'],
+      ['Leader, follower', 'each partition has replicas on different brokers; the leader takes the writes and the followers copy them', 'when a broker dies, a follower takes over its partitions'],
+      ['ISR (in-sync replicas)', 'the replicas that are caught up with the leader', '`acks=all` waits for every ISR member; `min.insync.replicas` sets the floor'],
+      ['High watermark', 'the last offset that every in-sync replica has', 'consumers only read up to it, so they never see a record that could still be lost'],
+      ['Controller quorum (KRaft)', 'a Raft group of controllers that owns the cluster metadata and elects partition leaders', 'Kafka 4.0 removed ZooKeeper; the metadata quorum is part of Kafka itself'],
+      ['Consumer group', 'consumers sharing a `group.id`; each partition is assigned to exactly one member', 'consumers beyond the partition count sit idle; every group reads its own copy'],
+      ['Lag', 'the log end offset minus the group’s committed offset', 'the first number to check when “events are slow”'],
+      ['Share group (Kafka 4.2+)', 'queue-style consumption: records are handed out one by one and acknowledged individually', 'consumers can outnumber partitions, but per-partition ordering is gone']
+    ] },
+
+    { k: 'dg', id: 'kafka-acks', t: 'acks=1 or acks=all: what happens when the leader dies', v: 'Day one', seg: ['acks=1', 'acks=all'],
+      capB: '**With acks=1,** the leader confirms as soon as the record is in its own log. If it dies before a follower has copied the record, the new leader never had it: the producer was told it succeeded, and the record is gone.',
+      capF: '**With acks=all and min.insync.replicas=2,** the leader confirms only once every in-sync replica has the record, so any of them can take over without losing it. If fewer than two replicas are in sync, writes fail with `NotEnoughReplicas` instead of quietly risking data.',
+      b: { type: 'seq', w: 700, minw: 560,
+        actors: ['Producer', { l: 'Broker 1 (leader)', k: 'a' }, 'Broker 2', 'Broker 3'],
+        steps: [
+          { f: 0, t: 1, l: 'produce offset 42, acks=1' },
+          { self: 1, l: 'append to its log' },
+          { f: 1, t: 0, l: 'ack', d: true, k: 'g' },
+          { note: 'Broker 1 crashes before either follower has fetched offset 42.', at: [1, 3], k: 'b' },
+          { div: 'the controller elects broker 2', k: 'w' },
+          { self: 2, l: 'leader now; its log ends at 41', k: 'w' },
+          { note: 'Offset 42 is lost, yet the producer saw success. When broker 1 returns, it truncates its log to match the new leader.', at: [0, 3], k: 'b' }
+        ] },
+      f: { type: 'seq', w: 700, minw: 560,
+        actors: ['Producer', { l: 'Broker 1 (leader)', k: 'a' }, 'Broker 2', 'Broker 3'],
+        steps: [
+          { f: 0, t: 1, l: 'produce offset 42, acks=all' },
+          { self: 1, l: 'append to its log' },
+          { f: 2, t: 1, l: 'fetch from 42' },
+          { f: 1, t: 2, l: 'record 42', d: true },
+          { f: 3, t: 1, l: 'fetch from 42' },
+          { f: 1, t: 3, l: 'record 42', d: true },
+          { self: 1, l: 'all in-sync replicas have 42: committed', k: 'g' },
+          { f: 1, t: 0, l: 'ack', d: true, k: 'g' },
+          { div: 'broker 1 crashes', k: 'w' },
+          { self: 2, l: 'elected leader; it has 42', k: 'g' },
+          { note: 'Replication factor 3 with min.insync.replicas=2: one broker can fail without losing an acknowledged write or stopping producers.', at: [0, 3], k: 'g' }
+        ] } },
+
+    { k: 'table', id: 'kafka-durable', t: 'Settings that decide durability', v: 'Day one', cols: ['Setting', 'Where', 'Safe value', 'Why'], rows: [
+      ['`acks`', 'producer', '`all`', 'wait for every in-sync replica, not just the leader'],
+      ['`enable.idempotence`', 'producer', '`true`', 'retries can’t duplicate or reorder records. On by default in the Java client since 3.0; **off by default in librdkafka**, the engine of the .NET, Python and Go clients'],
+      ['`max.in.flight.requests.per.connection`', 'producer', '≤ 5', 'order survives retries only up to 5 batches in flight; librdkafka caps it for you when idempotence is on'],
+      ['`delivery.timeout.ms`', 'producer', '2–5 minutes', 'long enough to ride out a leader election; after that the send fails, and your code must log, alert or retry from an outbox. librdkafka calls it `message.timeout.ms`'],
+      ['`replication.factor`', 'topic', '3', 'the broker default, `default.replication.factor`, is 1'],
+      ['`min.insync.replicas`', 'topic', '2', 'the default is 1, which turns `acks=all` into “the leader alone”'],
+      ['`unclean.leader.election.enable`', 'topic', '`false` (the default)', 'never hand leadership to a replica that is behind: that trades data for availability'],
+      ['`auto.create.topics.enable`', 'broker', '`false`', 'a typo in a topic name would create a topic with default, unsafe settings'],
+      ['`isolation.level`', 'consumer', '`read_committed` with transactions', 'skips aborted transactional writes; librdkafka defaults to it, the Java client to `read_uncommitted`']
+    ], note: 'Replication factor 3, `min.insync.replicas=2` and `acks=all` is the standard combination: one broker can be down for maintenance or failure while producers carry on and no acknowledged write is lost.' },
+
+    { k: 'snip', id: 'kafka-producer', t: 'A .NET producer with safe settings (Confluent.Kafka)', code: `
+var config = new ProducerConfig
+{
+    BootstrapServers = "broker-1:9092,broker-2:9092",
+    Acks = Acks.All,
+    EnableIdempotence = true,                    // off by default in librdkafka: turn it on
+    Partitioner = Partitioner.Murmur2Random,     // same key → same partition as Java producers
+    LingerMs = 10,                               // wait up to 10 ms to fill a batch
+    CompressionType = CompressionType.Lz4,
+    MessageTimeoutMs = 120_000,                  // after 2 minutes of retries, fail the send
+};
+using var producer = new ProducerBuilder<string, string>(config).Build();
+
+var result = await producer.ProduceAsync("orders.v1", new Message<string, string>
+{
+    Key = order.Id.ToString(),                   // ordered per order, spread across partitions
+    Value = JsonSerializer.Serialize(evt),
+    Headers = new Headers { { "traceparent", Encoding.UTF8.GetBytes(Activity.Current?.Id ?? "") } },
+}, ct);
+// result.Partition and result.Offset say where it landed; ProduceException if it never did`,
+      note: 'Each `await ProduceAsync` waits for its own acknowledgement. For throughput, start many sends and await them together, or call `Produce` with a delivery handler; call `Flush` before the process exits.' },
+
+    { k: 'snip', id: 'kafka-consumer', t: 'An at-least-once consumer loop', code: `
+public sealed class OrdersConsumer(IOrderHandler handler) : BackgroundService
+{
+    // Consume() blocks its thread, so run the loop off the host's startup path
+    protected override Task ExecuteAsync(CancellationToken ct) => Task.Run(() => LoopAsync(ct), ct);
+
+    private async Task LoopAsync(CancellationToken ct)
+    {
+        var config = new ConsumerConfig
+        {
+            BootstrapServers = "broker-1:9092,broker-2:9092",
+            GroupId = "billing",
+            AutoOffsetReset = AutoOffsetReset.Earliest,   // a brand-new group starts at the beginning
+            EnableAutoCommit = true,                     // commit stored offsets every 5 s…
+            EnableAutoOffsetStore = false,               // …but store one only after the work is done
+            PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky,
+        };
+        using var consumer = new ConsumerBuilder<string, string>(config).Build();
+        consumer.Subscribe("orders.v1");
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                var cr = consumer.Consume(ct);
+                await handler.HandleAsync(cr.Message, ct);   // idempotent: dedupe on the event ID
+                consumer.StoreOffset(cr);                   // a crash before this line → redelivered
+            }
+        }
+        catch (OperationCanceledException) { }
+        finally { consumer.Close(); }                       // commit stored offsets, leave the group cleanly
+    }
+}`,
+      note: 'A handler must finish within `max.poll.interval.ms` (5 minutes by default), or the consumer is removed from the group and its partitions move. To use the KIP-848 protocol (Kafka 4.0+ brokers, Confluent.Kafka 2.12+), set `GroupProtocol = GroupProtocol.Consumer` and drop `PartitionAssignmentStrategy`: the broker then computes the assignment.' },
+
+    { k: 'dg', id: 'kafka-rebalance', t: 'A consumer joins: eager or incremental rebalance', seg: ['Eager', 'Incremental'],
+      capB: '**Eager rebalance** (the `range` and `roundrobin` assignors, librdkafka’s default): when consumer 3 joins, every member gives up all its partitions, the group re-assigns them, and all processing stops until that is done.',
+      capF: '**Incremental rebalance** (`cooperative-sticky`, or the KIP-848 protocol): only the partition that moves stops; the others never pause. With KIP-848 the broker computes the assignment, so there is no group-wide barrier at all.',
+      b: { type: 'tl', w: 680, span: 10, unit: ' s', ticks: [0, 2, 4, 6, 8, 10], rh: 32, lanes: ['Consumer 1', 'Consumer 2', 'Consumer 3'],
+        bars: [
+          { lane: 0, s: 0, e: 3, k: 'g', l: 'P0, P1' }, { lane: 0, s: 3, e: 7, k: 'b', wait: true, l: 'stopped' }, { lane: 0, s: 7, e: 10, k: 'g', l: 'P0, P1' },
+          { lane: 1, s: 0, e: 3, k: 'g', l: 'P2, P3' }, { lane: 1, s: 3, e: 7, k: 'b', wait: true, l: 'stopped' }, { lane: 1, s: 7, e: 10, k: 'g', l: 'P2' },
+          { lane: 2, s: 3, e: 7, k: 'w', wait: true, l: 'joining' }, { lane: 2, s: 7, e: 10, k: 'g', l: 'P3' }
+        ],
+        marks: [{ t: 3, l: 'consumer 3 joins', k: 'w' }] },
+      f: { type: 'tl', w: 680, span: 10, unit: ' s', ticks: [0, 2, 4, 6, 8, 10], rh: 32, lanes: ['Consumer 1', 'Consumer 2', 'Consumer 3'],
+        bars: [
+          { lane: 0, s: 0, e: 10, k: 'g', l: 'P0, P1: never paused' },
+          { lane: 1, s: 0, e: 3, k: 'g', l: 'P2, P3' }, { lane: 1, s: 3, e: 10, k: 'g', l: 'P2 keeps running; P3 handed over' },
+          { lane: 2, s: 3, e: 4.5, k: 'w', wait: true, l: 'join' }, { lane: 2, s: 4.5, e: 10, k: 'g', l: 'P3' }
+        ],
+        marks: [{ t: 3, l: 'consumer 3 joins', k: 'w' }] } },
+
+    { k: 'table', id: 'kafka-groups', t: 'Rebalance storms: causes and fixes', cols: ['Cause', 'Symptom', 'Fix'], rows: [
+      ['Handling a batch takes longer than `max.poll.interval.ms` (5 minutes by default)', 'the member is evicted, its partitions move, and the batch is processed again elsewhere', 'keep handlers short, lower `max.poll.records`, or pause the partition and work off-thread while still polling'],
+      ['A rolling deploy restarts every pod', 'one rebalance per restart', 'static membership: a stable `group.instance.id` per pod keeps its partitions through a quick restart'],
+      ['Eager assignment', 'every rebalance stops the whole group', '`cooperative-sticky`, or `group.protocol=consumer` (KIP-848) on Kafka 4.0+'],
+      ['An autoscaler adds and removes consumers every minute', 'constant churn; lag never settles', 'scale on lag with a stabilisation window, and cap replicas at the partition count'],
+      ['Long GC pauses or network blips', 'members miss heartbeats and drop out', 'fix the pause, and leave headroom in the session timeout']
+    ], note: 'librdkafka’s default `partition.assignment.strategy` is `range,roundrobin`, an eager pair; the Java client’s default list includes `CooperativeStickyAssignor`.' },
+
+    { k: 'snip', id: 'kafka-eos', t: 'Exactly once from topic to topic (transactions)', code: `
+using var producer = new ProducerBuilder<string, string>(new ProducerConfig
+{
+    BootstrapServers = brokers,
+    TransactionalId = $"fx-enricher-{instanceId}",   // stable per instance: fences a zombie after a restart
+    EnableIdempotence = true,
+}).Build();
+using var consumer = new ConsumerBuilder<string, string>(new ConsumerConfig
+{
+    BootstrapServers = brokers,
+    GroupId = "fx-enricher",
+    EnableAutoCommit = false,                       // the transaction commits the offsets
+    IsolationLevel = IsolationLevel.ReadCommitted,
+}).Build();
+
+producer.InitTransactions(TimeSpan.FromSeconds(30));
+consumer.Subscribe("payments.v1");
+while (!ct.IsCancellationRequested)
+{
+    var cr = consumer.Consume(ct);
+    producer.BeginTransaction();
+    try
+    {
+        producer.Produce("payments.enriched.v1", Enrich(cr.Message));
+        producer.SendOffsetsToTransaction(
+            [new TopicPartitionOffset(cr.TopicPartition, cr.Offset + 1)],
+            consumer.ConsumerGroupMetadata, TimeSpan.FromSeconds(30));
+        producer.CommitTransaction();               // output and offset: all or nothing
+    }
+    catch (KafkaException)
+    {
+        producer.AbortTransaction();                // invisible to read_committed consumers
+        // seek cr.TopicPartition back to its committed offset before retrying (omitted)
+    }
+}`,
+      note: 'Exactly-once covers Kafka to Kafka only. An email, an HTTP call or a database write inside the loop can still happen twice; use the outbox and an idempotent consumer for those. Each commit costs a round trip, so batch several records per transaction.' },
+
+    { k: 'snip', id: 'kafka-partitions', t: 'How many partitions, and which key', lang: 'text', code: `
+partitions ≥ target throughput ÷ what one consumer can process
+
+50 MB/s target, one consumer handles 6 MB/s  → 9 at least; pick 12
+consumers in one group ≤ partitions          # leave room for peak traffic and growth
+key = the entity that must stay in order     # order ID, account ID, device ID
+no key                                       # no ordering; the producer spreads batches
+same key → same partition: hash(key) % N     # murmur2 in Java; set Murmur2Random in .NET
+adding partitions later moves keys           # per-key order breaks across the change
+each partition costs files, memory, failover # don't default to hundreds per topic` },
+
+    { k: 'dg', id: 'kafka-retry', t: 'Retry without blocking the partition: retry topics and a dead-letter topic', v: 'Growth',
+      cap: '**Kafka has no broker-side delay or dead-letter queue, so retries are topics of their own.** A failing record moves aside and its partition keeps flowing; each retry topic’s consumer waits until the record is due, then runs the same handler. Invalid records skip straight to the dead-letter topic.',
+      note: '**Trade-off:** a retried record leaves its key’s order, so events for one order can be processed out of sequence. Where order matters, retry in place with backoff and let that partition wait. Share groups (Kafka 4.2+) retry records individually, and Kafka 4.4 adds a dead-letter queue for them (KIP-1191).',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 100, minw: 560,
+        alt: 'orders.v1 feeds the handler; transient failures move to orders.retry.1m, then orders.retry.10m, then the dead-letter topic; invalid records go straight there; a replay tool re-publishes fixed records',
+        nodes: [
+          { id: 'src', x: 0, y: 0, l: 'orders.v1', s: 'queue' },
+          { id: 'h', x: 1, y: 0, l: 'Handler', sub: 'success → next record', k: 'a' },
+          { id: 'r1', x: 2, y: 0, l: 'orders.retry.1m', sub: 'waits until due', s: 'queue', k: 'w' },
+          { id: 'r2', x: 3, y: 0, l: 'orders.retry.10m', sub: 'last automatic try', s: 'queue', k: 'w' },
+          { id: 'dlt', x: 3, y: 1, l: 'orders.dlt', sub: 'parked with the error', s: 'queue', k: 'b' },
+          { id: 'fix', x: 2, y: 1, l: 'Alert + replay tool', sub: 'fix the cause, re-publish' }
+        ],
+        edges: [{ f: 'src', t: 'h' }, { f: 'h', t: 'r1', l: 'transient error', k: 'w' }, { f: 'r1', t: 'r2', l: 'fails again', k: 'w' },
+          { f: 'r2', t: 'dlt', l: 'still failing', k: 'b' }, { f: 'h', t: 'dlt', l: 'invalid: no retry', k: 'b', d: true },
+          { f: 'dlt', t: 'fix' }, { f: 'fix', t: 'src', l: 're-publish', d: true }] } },
+
+    { k: 'dg', id: 'kafka-compact', t: 'Log compaction: the latest value per key',
+      cap: '**Compaction keeps at least the newest record for every key** and drops older ones, so a compacted topic works as a replayable table: changelogs, current prices, customer profiles. Offsets never change, so consumers see gaps. A record with a null value, a tombstone, deletes its key after `delete.retention.ms` (one day by default).',
+      note: '`cleanup.policy=delete`, the default, keeps everything for `retention.ms` (7 days by default); `compact,delete` keeps the latest value per key but nothing older than the retention. Tiered storage, production-ready since Kafka 3.9, moves old segments to object storage, so long retention no longer needs huge broker disks.',
+      d: { type: 'tl', w: 680, span: 7, ticks: [], rh: 34, lw: 132, lanes: ['Log, offsets 0–6', 'After compaction'],
+        bars: [
+          { lane: 0, s: 0.06, e: 0.94, k: 'm', l: 'K1=a' }, { lane: 0, s: 1.06, e: 1.94, k: 'm', l: 'K2=b' }, { lane: 0, s: 2.06, e: 2.94, k: 'm', l: 'K1=c' },
+          { lane: 0, s: 3.06, e: 3.94, k: 'g', l: 'K3=d' }, { lane: 0, s: 4.06, e: 4.94, k: 'g', l: 'K2=e' }, { lane: 0, s: 5.06, e: 5.94, k: 'b', l: 'K1=null' },
+          { lane: 0, s: 6.06, e: 6.94, k: 'g', l: 'K4=f' },
+          { lane: 1, s: 3.06, e: 3.94, k: 'g', l: 'K3=d' }, { lane: 1, s: 4.06, e: 4.94, k: 'g', l: 'K2=e' }, { lane: 1, s: 5.06, e: 5.94, k: 'b', l: 'K1=null' },
+          { lane: 1, s: 6.06, e: 6.94, k: 'g', l: 'K4=f' }
+        ] } },
+
+    { k: 'table', id: 'kafka-ops', t: 'What to watch on a cluster', cols: ['Metric', 'Alert when', 'It means'], rows: [
+      ['Consumer lag, in records and in seconds', 'growing for 10 minutes, or seconds behind exceeds the SLO', 'consumers are too slow, stuck or rebalancing, or one partition is hot'],
+      ['`UnderReplicatedPartitions`', '> 0 for a few minutes', 'a broker is down or slow; the durability margin is gone'],
+      ['`UnderMinIsrPartitionCount`', '> 0', 'producers using `acks=all` are failing on those partitions right now'],
+      ['`OfflinePartitionsCount`', '> 0', 'partitions without a leader: no reads or writes'],
+      ['`ActiveControllerCount`', 'summed over the cluster ≠ 1', 'trouble in the KRaft metadata quorum'],
+      ['Produce latency p99', 'above its budget', 'disk, network or replication pressure on a broker'],
+      ['Rebalances per hour, per group', 'rising', 'see the rebalance-storm table'],
+      ['Disk use per broker', '> 75%', 'retention is too long, or one partition is far bigger than the rest']
+    ] },
+
+    { k: 'snip', id: 'kafka-cli', t: 'Topics, lag and replays from the command line', lang: 'bash', code: `
+# a topic with safe durability settings
+kafka-topics.sh --bootstrap-server b1:9092 --create --topic orders.v1 \\
+  --partitions 12 --replication-factor 3 \\
+  --config min.insync.replicas=2 --config retention.ms=604800000
+
+# lag per partition for one consumer group
+kafka-consumer-groups.sh --bootstrap-server b1:9092 --describe --group billing
+
+# replay: move the group back to a point in time (dry run first, then execute)
+kafka-consumer-groups.sh --bootstrap-server b1:9092 --group billing --topic orders.v1 \\
+  --reset-offsets --to-datetime 2026-11-03T08:00:00.000 --dry-run
+kafka-consumer-groups.sh --bootstrap-server b1:9092 --group billing --topic orders.v1 \\
+  --reset-offsets --to-datetime 2026-11-03T08:00:00.000 --execute
+
+# partitions running below min.insync.replicas
+kafka-topics.sh --bootstrap-server b1:9092 --describe --under-min-isr-partitions`,
+      note: 'Offsets can only be reset while the group has no active members, so stop the consumers first. A replay re-delivers everything after that point, which is safe only with idempotent handlers.' },
+
+    { k: 'table', id: 'kafka-where', t: 'Where to run Kafka', cols: ['Option', 'You run', 'Notes'], rows: [
+      ['Self-managed: VMs, or Kubernetes with the Strimzi operator', 'brokers, KRaft controllers, disks, upgrades, security', 'every feature and every setting, and the full operational load'],
+      ['Confluent Cloud (on Azure, AWS or Google Cloud)', 'topics, schemas, clients', 'managed Kafka with Schema Registry, connectors and Flink'],
+      ['Amazon MSK', 'sizing and broker settings; almost nothing with MSK Serverless', 'Kafka on AWS'],
+      ['Azure Event Hubs, Kafka endpoint', 'clients, and throughput or processing units', 'the Kafka protocol on Event Hubs’ own engine, Standard tier and up. Standard: up to 32 partitions, fixed at creation, and 7 days of retention. Premium and Dedicated: up to 100 and 1,024 partitions, which can grow, and 90 days. Kafka transactions and Kafka Streams are in preview, and compression is gzip only, on Premium and Dedicated'],
+      ['Redpanda', 'brokers, or their cloud service', 'a Kafka API-compatible engine written in C++, without a JVM']
+    ], note: 'Event Hubs maps a namespace to a cluster and an event hub to a topic. Before you commit to a managed service, test the features you depend on: transactions, compaction, compression codecs, partition growth.' },
+
+    { k: 'call', kind: 'trap', text: 'Auto-commit plus a hand-off loses events. With `EnableAutoOffsetStore = true`, the default, the offset is stored as soon as `Consume` returns, so a `Task.Run` that fails later leaves nothing to redeliver. Store the offset after the work is done, or after it has been durably handed off.' },
+    { k: 'call', kind: 'trap', text: 'Java producers hash keys with murmur2; librdkafka-based clients (.NET, Python, Go) use CRC32 by default. A mixed fleet sends the same key to different partitions and breaks per-key order, so set `Partitioner = Partitioner.Murmur2Random` in .NET.' },
+    { k: 'call', kind: 'key', text: 'Order exists only within a partition. Choose the key by the entity whose events must stay in sequence, such as an order, an account or a device, and never assume order across keys or topics.' }
+  ]
+});
+
+/* ===== Reliability: HOT · Workflows: STRM ===== */
+window.SDS = window.SDS || [];
+
+window.SDS.push({
+  id: 'hot', code: 'HOT', grp: 'Reliability', name: 'Hot partitions and skew',
+  blurb: 'Hashing spreads keys, not load. When one key carries a big share of the traffic, such as a whale tenant, a viral post or today’s date, everything mapped to it saturates while the rest of the cluster idles. Find the key, then split it, cache it or give it a home of its own.',
+  blocks: [
+    { k: 'widget', id: 'hot-sim', w: 'hot', t: 'Hot partition simulator: one topic, four choices of key', kw: 'hot partition skew whale tenant salt salting partition key murmur2 consumer lag country low cardinality scatter gather busiest partition idle' },
+
+    { k: 'table', id: 'hot-where', t: 'Where hot spots form, and how to see them', cols: ['Where', 'Ceiling for one key', 'Symptom', 'How to see it'], rows: [
+      ['Kafka or Event Hubs partition', 'one consumer per group', 'one partition’s lag climbs while the others idle', 'lag and bytes in, per partition'],
+      ['Cosmos DB', '20 GB per partition key value; about 10,000 RU/s per physical partition', '429s while the total RU/s looks fine', '“Normalized RU Consumption” by partition key range'],
+      ['DynamoDB', '3,000 reads and 1,000 writes per second per partition', 'throttling below the table’s capacity', 'CloudWatch Contributor Insights: the most-accessed keys'],
+      ['Redis Cluster', 'one shard: a key never spans shards', 'one node at 100% CPU, with latency spikes on it', '`redis-cli --hotkeys` (needs an LFU eviction policy), CPU per node'],
+      ['SQL table with a sequential key', 'the last page of the index', '`PAGELATCH_EX` waits on inserts', 'wait statistics, `sys.dm_os_waiting_tasks`'],
+      ['SQL row: a counter or a balance', 'one row lock', 'blocking and deadlocks around one row', 'the blocked-process report, lock waits'],
+      ['A date in the partition key', 'today’s partition takes every write', 'one hot shard that moves at midnight', 'writes per partition over time']
+    ] },
+
+    { k: 'table', id: 'hot-fix', t: 'Causes and fixes', cols: ['Cause', 'Fix', 'What it costs'], rows: [
+      ['A low-cardinality key: country, status, type', 'key by a high-cardinality field, such as the order or user ID', 'order holds only per that ID'],
+      ['A whale tenant', 'salt its key into N sub-keys, or give it its own topic, shard or cell', 'reads for that tenant fan out over N keys; per-tenant order is lost'],
+      ['A celebrity read key: a viral post or product', 'a short in-process cache plus N copies of the key; a CDN for public data', 'seconds of staleness'],
+      ['A hot counter: likes, views, stock', 'sharded counter rows, or count in memory and flush every second', 'reads sum N rows; the total lags slightly'],
+      ['A sequential insert key: identity, timestamp', '`OPTIMIZE_FOR_SEQUENTIAL_KEY` (SQL Server 2019+), or a hash-prefixed key', 'range scans need the whole key'],
+      ['A date in the partition key', 'a composite key: (date, hash(id) % N)', 'one day’s query touches N partitions'],
+      ['One hot Kafka key', 'split the key, or pre-aggregate before producing; more partitions won’t help', 'order per the original key is lost downstream']
+    ] },
+
+    { k: 'gb', id: 'hot-salt', t: 'Salt only the keys that are hot', lang: 'cs',
+      bad: `
+await producer.ProduceAsync("orders.v1", new Message<string, string>
+{
+    Key = evt.TenantId,            // ✗ tenant-1 is 40% of traffic: one partition, one consumer
+    Value = json,
+}, ct);`,
+      badNote: 'Every event of the biggest tenant lands on the same partition. Its consumer falls behind, and adding partitions or consumers changes nothing for that key.',
+      good: `
+static readonly HashSet<string> Whales = ["tenant-1"];     // from config; review it monthly
+
+var key = Whales.Contains(evt.TenantId)
+    ? $"{evt.TenantId}#{evt.OrderId % 8}"   // ✓ 8 sub-keys; each order stays on one partition
+    : evt.TenantId;                          // ✓ everyone else keeps per-tenant order
+await producer.ProduceAsync("orders.v1",
+    new Message<string, string> { Key = key, Value = json }, ct);`,
+      goodNote: 'Bucket by an ID whose order matters, such as the order, so each order’s events stay in sequence. Readers that need the whole tenant query all 8 sub-keys and merge.' },
+
+    { k: 'dg', id: 'hot-scatter', t: 'What salting costs on the read side',
+      cap: '**Writes spread, reads gather.** Salting sends tenant-1’s writes to four shards here; a query for all of tenant-1 now asks all four and merges the answers, and the slowest shard sets the latency. Keep salting to the keys that need it.',
+      d: { type: 'flow', w: 680, cols: 3, rows: 4, ch: 66, minw: 520,
+        alt: 'A writer sends salted keys tenant-1#0 to #7 to four shards; a reader that needs all of tenant-1 queries all four shards and merges',
+        nodes: [
+          { id: 'w', x: 0, y: 1.5, l: 'Writer', sub: 'key = tenant-1#(order % 8)', k: 'a' },
+          { id: 's0', x: 1, y: 0, l: 'Shard 1', sub: '#0, #4', s: 'db' },
+          { id: 's1', x: 1, y: 1, l: 'Shard 2', sub: '#1, #5', s: 'db' },
+          { id: 's2', x: 1, y: 2, l: 'Shard 3', sub: '#2, #6', s: 'db' },
+          { id: 's3', x: 1, y: 3, l: 'Shard 4', sub: '#3, #7', s: 'db' },
+          { id: 'r', x: 2, y: 1.5, l: 'Reader', sub: 'all of tenant-1: ask 4 shards, merge', k: 's' }
+        ],
+        edges: [{ f: 'w', t: 's0', k: 'a' }, { f: 'w', t: 's1', k: 'a' }, { f: 'w', t: 's2', k: 'a' }, { f: 'w', t: 's3', k: 'a' },
+          { f: 'r', t: 's0', d: true, k: 's' }, { f: 'r', t: 's1', d: true, k: 's' }, { f: 'r', t: 's2', d: true, k: 's' }, { f: 'r', t: 's3', d: true, k: 's' }] } },
+
+    { k: 'snip', id: 'hot-counter', t: 'A sharded counter for a hot row', lang: 'sql', code: `
+-- 16 rows per post instead of one row that every writer fights over
+CREATE TABLE post_likes (
+    post_id BIGINT  NOT NULL,
+    shard   TINYINT NOT NULL,           -- 0–15, all created with the post
+    likes   BIGINT  NOT NULL DEFAULT 0,
+    PRIMARY KEY (post_id, shard)
+);
+
+-- write: the app picks a random shard (@Shard = Random.Shared.Next(16)),
+-- so concurrent likes rarely wait on the same row
+UPDATE post_likes SET likes = likes + 1
+WHERE post_id = @PostId AND shard = @Shard;
+
+-- read: add the shards up, and cache the total for a few seconds
+SELECT SUM(likes) AS likes FROM post_likes WHERE post_id = @PostId;`,
+      note: 'Pick the shard in the app, not with `NEWID()` in the `WHERE` clause: that is evaluated per row and can match none or several. When the total may lag a little, an in-memory or Redis counter flushed every second as one `likes = likes + @delta` update is cheaper still.' },
+
+    { k: 'snip', id: 'hot-cache', t: 'A hot read key: a local cache plus copies', code: `
+// 50,000 reads a second of one product would pin a single Redis shard
+private const int Copies = 8;      // product:42:c0 … c7 hash to different cluster slots
+
+public async Task<Product?> GetAsync(string id, CancellationToken ct)
+{
+    if (_local.TryGetValue(id, out Product? hit)) return hit;         // in-process, per instance
+    var copy = Random.Shared.Next(Copies);
+    var cached = await _redis.StringGetAsync($"product:{id}:c{copy}");
+    var product = cached.HasValue
+        ? JsonSerializer.Deserialize<Product>(cached.ToString())
+        : await LoadAndCacheAllCopiesAsync(id, ct);                  // database, then SET all 8 copies
+    _local.Set(id, product, TimeSpan.FromSeconds(2));                // two seconds of staleness, accepted
+    return product;
+}`,
+      note: 'On an update, delete or rewrite all copies. `HybridCache` provides the in-process layer and stampede protection; the copies are what spread one key over several shards.' },
+
+    { k: 'call', kind: 'key', text: 'One key always maps to one partition. Adding partitions, consumers or shards spreads keys, never a single key, so a hot key needs a different key, a cache or a home of its own.' },
+    { k: 'call', kind: 'trap', text: 'Salting gives up per-key order and single-partition reads. Salt only the keys that are actually hot, using a whale list or a load threshold, and bucket by the entity whose order still matters.' }
+  ]
+});
+
+window.SDS.push({
+  id: 'strm', code: 'STRM', grp: 'Workflows', name: 'Stream processing',
+  blurb: 'Turning an endless stream of events into answers while they are still fresh: counts per minute, fraud scores, live dashboards. The hard parts are time, because events arrive late and out of order, and state that must survive restarts without counting anything twice.',
+  blocks: [
+    { k: 'dg', id: 'strm-windows', t: 'Windows: tumbling, hopping and session',
+      cap: '**The same nine clicks, windowed three ways.** Tumbling windows tile time without overlap; hopping windows overlap, so one click counts in two windows; session windows follow activity per key and close after a quiet gap. The numbers are clicks per window.',
+      d: { type: 'tl', w: 680, span: 180, unit: ' s', ticks: [0, 30, 60, 90, 120, 150, 180], rh: 30, lw: 132,
+        lanes: ['Clicks', 'Tumbling 60 s', 'Hopping 60 s / 30 s', 'Hopping, next set', 'Session, 30 s gap'],
+        pts: [4, 10, 18, 44, 50, 92, 98, 140, 146].map(function (t) { return { lane: 0, t: t, k: 'a' }; }),
+        bars: [
+          { lane: 1, s: 0.6, e: 59.4, k: 'g', l: '5' }, { lane: 1, s: 60.6, e: 119.4, k: 'g', l: '2' }, { lane: 1, s: 120.6, e: 179.4, k: 'g', l: '2' },
+          { lane: 2, s: 0.6, e: 59.4, k: 's', l: '5' }, { lane: 2, s: 60.6, e: 119.4, k: 's', l: '2' }, { lane: 2, s: 120.6, e: 179.4, k: 's', l: '2' },
+          { lane: 3, s: 30.6, e: 89.4, k: 's', l: '2' }, { lane: 3, s: 90.6, e: 149.4, k: 's', l: '4' },
+          { lane: 4, s: 4, e: 80, k: 'w', l: '5' }, { lane: 4, s: 92, e: 128, k: 'w', l: '2' }, { lane: 4, s: 140, e: 176, k: 'w', l: '2' }
+        ] } },
+
+    { k: 'table', id: 'strm-time', t: 'Event time, watermarks and late data', cols: ['Concept', 'Meaning', 'Design rule'], rows: [
+      ['Event time', 'when it happened, stamped at the source', 'window and join on event time, so a replay or a backlog gives the same answer'],
+      ['Processing time', 'when your job sees the event', 'fine for monitoring the pipeline itself; wrong for business numbers'],
+      ['Watermark', 'the job’s estimate that no event older than T is still on its way', 'a window is emitted when the watermark passes its end; set the delay from the disorder you measure'],
+      ['Allowed lateness', 'how long after the watermark a window may still be corrected', 'emit an early result, then corrections; the sink must accept upserts'],
+      ['Late events', 'events that arrive after the allowed lateness', 'route them to a side output and reconcile in batch; never drop them silently'],
+      ['Idle partitions', 'a partition without traffic holds the watermark back for the whole job', 'configure an idleness timeout on the source']
+    ] },
+
+    { k: 'snip', id: 'strm-flink', t: 'Clicks per ad per minute in Flink SQL', lang: 'sql', code: `
+CREATE TABLE clicks (
+    click_id STRING,
+    ad_id    BIGINT,
+    ts       TIMESTAMP(3),
+    WATERMARK FOR ts AS ts - INTERVAL '30' SECOND        -- tolerate 30 s of disorder
+) WITH (
+    'connector' = 'kafka',
+    'topic' = 'clicks',
+    'properties.bootstrap.servers' = 'broker-1:9092',
+    'properties.group.id' = 'click-agg',
+    'scan.startup.mode' = 'group-offsets',
+    'format' = 'json'
+);
+
+-- one row per ad per minute of event time, emitted when the watermark passes
+SELECT window_start, window_end, ad_id, COUNT(*) AS clicks
+FROM TABLE(TUMBLE(TABLE clicks, DESCRIPTOR(ts), INTERVAL '1' MINUTE))
+GROUP BY window_start, window_end, ad_id;`,
+      note: 'The watermark trails the latest event time seen by 30 seconds, and each one-minute window is emitted once the watermark passes its end. Deduplicate retried clicks by `click_id` before counting.' },
+
+    { k: 'table', id: 'strm-engines', t: 'Where to run stream processing', cols: ['Engine', 'Model', 'Fits when'], rows: [
+      ['A plain consumer (`BackgroundService`)', 'your own code, one record at a time', 'stateless transforms, enrichment, simple counters; hand-rolled windows and state get hard fast'],
+      ['Kafka Streams', 'a Java library inside your service; state in RocksDB, backed up to changelog topics', 'JVM services already on Kafka; it scales with partitions (a community .NET port, Streamiz, exists)'],
+      ['Apache Flink', 'a cluster running dataflow jobs with checkpoints; SQL, Java and Python APIs', 'event-time windows, large state, exactly-once sinks, high volume'],
+      ['Spark Structured Streaming', 'micro-batches on Spark', 'teams already on Spark or Databricks, where seconds of latency are fine'],
+      ['Azure Stream Analytics', 'a managed service with a SQL-like language over Event Hubs and IoT Hub', 'Azure-native windowed aggregation without running a cluster']
+    ] },
+
+    { k: 'dg', id: 'strm-adclick', t: 'Worked example: ad click aggregation', v: 'At scale',
+      cap: '**Count clicks per ad per minute, exactly once, for billing.** Clicks are keyed by click ID, so a viral ad can’t create a hot partition; the job deduplicates, counts per ad and minute, and upserts each (ad, minute) row, so a replay overwrites instead of adding.',
+      note: '**Decisions:** event-time windows with a 30-second watermark; later clicks go to a side output and to the nightly recount from the raw files; Flink checkpoints commit Kafka offsets and state together; the sink upserts on (ad_id, minute), so replays are idempotent; billing reads only reconciled numbers.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 100, minw: 560,
+        alt: 'Clicks go from the click API to a Kafka topic keyed by click ID, then to a Flink job that writes per-minute counts to an OLAP store; raw clicks are archived to object storage for a nightly recount that corrects the store',
+        nodes: [
+          { id: 'api', x: 0, y: 0, l: 'Click API', sub: 'click ID, event time' },
+          { id: 'k', x: 1, y: 0, l: 'Kafka: clicks', sub: 'key = click ID', s: 'queue' },
+          { id: 'f', x: 2, y: 0, l: 'Flink job', sub: 'dedupe, 1-minute windows', k: 'a' },
+          { id: 'olap', x: 3, y: 0, l: 'OLAP store', sub: 'upsert (ad, minute)', s: 'db', k: 'g' },
+          { id: 'lake', x: 1, y: 1, l: 'Object storage', sub: 'raw clicks by hour', s: 'db' },
+          { id: 'batch', x: 2, y: 1, l: 'Nightly recount', sub: 'late clicks, reconciliation', k: 'm' },
+          { id: 'dash', x: 3, y: 1, l: 'Dashboards, billing' }
+        ],
+        edges: [{ f: 'api', t: 'k' }, { f: 'k', t: 'f' }, { f: 'f', t: 'olap', l: 'counts' }, { f: 'k', t: 'lake', l: 'archive', d: true },
+          { f: 'lake', t: 'batch' }, { f: 'f', t: 'batch', l: 'late clicks', d: true, k: 'w' }, { f: 'batch', t: 'olap', l: 'corrections', k: 'w' }, { f: 'olap', t: 'dash' }] } },
+
+    { k: 'table', id: 'strm-arch', t: 'Batch, streaming, lambda or kappa?', cols: ['Architecture', 'How', 'Trade-off'], rows: [
+      ['Batch', 'process yesterday’s data on a schedule', 'simple and cheap; answers are hours old'],
+      ['Streaming', 'process each event as it arrives', 'seconds-fresh; state, order and late data become your problem'],
+      ['Lambda', 'a streaming layer for fresh numbers, plus a batch layer that recomputes the truth', 'two code paths that must agree'],
+      ['Kappa', 'one streaming path; to recompute, replay the log through a new version of the job', 'needs long retention and a job that catches up fast']
+    ] },
+
+    { k: 'call', kind: 'trap', text: 'Windowing by processing time gives wrong answers after any lag or replay: a backlog from 09:00 processed at 09:30 lands in the 09:30 bucket. Window business numbers by event time, with watermarks.' }
+  ]
+});
+
+/* ===== Components: PROB · Reliability: COORD ===== */
+window.SDS = window.SDS || [];
+
+window.SDS.push({
+  id: 'prob', code: 'PROB', grp: 'Components', name: 'Sketches and probabilistic structures',
+  blurb: 'When the exact answer needs gigabytes of memory or a query across every shard, a sketch answers approximately in kilobytes: is this new, how many distinct, how often, what is the p99. Each one trades a small, known error for fixed memory, and most of them merge across shards and days.',
+  blocks: [
+    { k: 'table', id: 'prob-kinds', t: 'Which sketch answers which question', cols: ['Structure', 'Answers', 'Error', 'Memory', 'Use for'], rows: [
+      ['Bloom filter', 'is x in the set? “no” or “probably”', 'false positives only, at a rate you choose', 'about 10 bits per item at 1%', 'skipping disk or database reads for keys that don’t exist; “have we seen this URL?”'],
+      ['Cuckoo filter', 'the same, and items can be deleted', 'false positives only', 'close to a Bloom filter at low error rates', 'sets whose members come and go'],
+      ['HyperLogLog', 'how many distinct items?', 'about 0.81% (Redis)', '12 KB per counter, at any cardinality', 'unique visitors per page and day; merges across days and shards'],
+      ['Count-min sketch', 'how often has x appeared?', 'overestimates only, by at most ε of the total', 'width × depth counters', 'event frequencies, counting per key'],
+      ['Top-k', 'which items are the most frequent?', 'approximate counts', 'k entries plus a small sketch', 'trending tags, and spotting hot keys'],
+      ['t-digest', 'what is the p50, p99 or p99.9?', 'small, smallest at the tails', 'a few KB', 'latency percentiles merged across servers']
+    ] },
+
+    { k: 'widget', id: 'prob-sizer', w: 'bloom', t: 'Bloom filter sizer: memory for a target error rate', kw: 'bloom filter false positive rate bits per item hash functions memory size BF.RESERVE hyperloglog exact set fingerprints' },
+
+    { k: 'dg', id: 'prob-bloom', t: 'How a Bloom filter answers “no” and “maybe”',
+      cap: '**Each item sets k bits; a lookup checks the same k bits.** A single clear bit proves the item was never added: “sql” hits bit 9, which is 0. All bits set only means “maybe”: “saga” lands on bits that “kafka” and “redis” set, a false positive. Bits are never cleared, so items can’t be removed.',
+      d: { type: 'tl', w: 680, span: 16, ticks: [], rh: 28, lw: 170,
+        lanes: ['add “kafka” → 2, 7, 11', 'add “redis” → 4, 7, 13', 'the 16-bit array', 'look up “saga” → 2, 4, 13', 'look up “sql” → 4, 9, 13'],
+        bars: [2, 7, 11].map(function (i) { return { lane: 0, s: i + 0.1, e: i + 0.9, k: 'a', l: String(i) }; })
+          .concat([4, 7, 13].map(function (i) { return { lane: 1, s: i + 0.1, e: i + 0.9, k: 's', l: String(i) }; }))
+          .concat([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(function (i) {
+            var on = [2, 4, 7, 11, 13].indexOf(i) > -1;
+            return { lane: 2, s: i + 0.1, e: i + 0.9, k: on ? 'n' : 'm', l: on ? '1' : '0' };
+          }))
+          .concat([2, 4, 13].map(function (i) { return { lane: 3, s: i + 0.1, e: i + 0.9, k: 'w', l: '1' }; }))
+          .concat([[4, 'w', '1'], [9, 'g', '0'], [13, 'w', '1']].map(function (x) { return { lane: 4, s: x[0] + 0.1, e: x[0] + 0.9, k: x[1], l: x[2] }; })) } },
+
+    { k: 'snip', id: 'prob-redis', t: 'Sketches in Redis', lang: 'redis', code: `
+# Bloom: room for 100 million URLs at 0.1% false positives
+BF.RESERVE crawler:seen 0.001 100000000
+BF.ADD     crawler:seen "https://example.com/a"
+BF.EXISTS  crawler:seen "https://example.com/b"   # 0 = definitely not, 1 = maybe
+
+# HyperLogLog: distinct visitors per day, merged into a week (12 KB each)
+PFADD   visitors:2026-11-03 user:42 user:77
+PFCOUNT visitors:2026-11-03
+PFMERGE visitors:2026-w45 visitors:2026-11-02 visitors:2026-11-03
+
+# count-min and top-k: how often, and which items are the most frequent
+CMS.INITBYPROB clicks 0.001 0.01                  # within 0.1% of the total, 99% of the time
+CMS.INCRBY     clicks ad:7 1
+CMS.QUERY      clicks ad:7
+TOPK.RESERVE   trending 10
+TOPK.ADD       trending "#kafka" "#redis"
+TOPK.LIST      trending WITHCOUNT`,
+      note: 'Redis 8 Open Source (May 2025) includes Bloom, cuckoo, count-min, top-k and t-digest; older versions need the RedisBloom module from Redis Stack. HyperLogLog has been part of core Redis since 2.8.9.' },
+
+    { k: 'snip', id: 'prob-cs', t: 'A minimal Bloom filter in C#', code: `
+using System.IO.Hashing;                 // NuGet: System.IO.Hashing
+
+public sealed class BloomFilter
+{
+    private readonly ulong[] _bits;
+    private readonly long _m;            // number of bits
+    private readonly int _k;             // number of hash functions
+
+    public BloomFilter(long expectedItems, double falsePositiveRate)
+    {
+        _m = (long)Math.Ceiling(-expectedItems * Math.Log(falsePositiveRate) / (Math.Log(2) * Math.Log(2)));
+        _k = Math.Max(1, (int)Math.Round((double)_m / expectedItems * Math.Log(2)));
+        _bits = new ulong[(_m + 63) / 64];
+    }
+
+    public void Add(ReadOnlySpan<byte> item)
+    {
+        foreach (var i in Positions(item)) _bits[i >> 6] |= 1UL << (int)(i & 63);
+    }
+
+    public bool MightContain(ReadOnlySpan<byte> item)
+    {
+        foreach (var i in Positions(item))
+            if ((_bits[i >> 6] & (1UL << (int)(i & 63))) == 0) return false;   // definitely not
+        return true;                                                         // maybe
+    }
+
+    private long[] Positions(ReadOnlySpan<byte> item)
+    {
+        ulong h1 = XxHash64.HashToUInt64(item), h2 = XxHash64.HashToUInt64(item, seed: 0x9E3779B9);
+        var p = new long[_k];
+        for (var i = 0; i < _k; i++) p[i] = (long)((h1 + (ulong)i * h2) % (ulong)_m);   // double hashing
+        return p;
+    }
+}`,
+      note: 'Two hashes combined as h1 + i × h2 behave like k independent ones (double hashing). Size the filter for the item count you expect at the end: overfilling it raises the false-positive rate quickly.' },
+
+    { k: 'call', kind: 'key', text: 'Sketches answer approximately in small, fixed memory, and they merge across shards and time windows. Never use them where a wrong answer costs money or exposes data: permissions, balances, billing counts.' }
+  ]
+});
+
+window.SDS.push({
+  id: 'coord', code: 'COORD', grp: 'Reliability', name: 'Consensus and leader election',
+  blurb: 'Some decisions must be made by exactly one node: who leads a partition, who runs the nightly job, which nodes are in the cluster. Consensus protocols such as Raft make those decisions safely by majority vote. Use a system that already implements it, such as etcd, ZooKeeper, a cloud lease or a database lock, rather than writing your own.',
+  blocks: [
+    { k: 'dg', id: 'coord-raft', t: 'Raft: replicate by majority, elect by majority', seg: ['Replicate', 'Elect'], neutral: true,
+      capB: '**Replication:** the leader appends the command to its log and sends it to the followers. As soon as a majority (2 of 3) has it, the entry is committed: applied to the state machine and acknowledged. A follower that lags catches up later.',
+      capF: '**Election:** when heartbeats stop, the follower whose randomised timeout fires first asks for votes in a new term. Voters accept only a candidate whose log is at least as up to date as theirs, so committed entries survive. An old leader that returns sees the higher term and steps down.',
+      b: { type: 'seq', w: 700, minw: 560,
+        actors: ['Client', { l: 'Leader (term 5)', k: 'a' }, 'Follower A', 'Follower B'],
+        steps: [
+          { f: 0, t: 1, l: 'SET x = 7' },
+          { self: 1, l: 'append at index 42' },
+          { f: 1, t: 2, l: 'AppendEntries(42)' },
+          { f: 1, t: 3, l: 'AppendEntries(42)' },
+          { f: 2, t: 1, l: 'ok', d: true, k: 'g' },
+          { self: 1, l: '2 of 3 have it: commit and apply', k: 'g' },
+          { f: 1, t: 0, l: 'ok', d: true, k: 'g' },
+          { f: 3, t: 1, l: 'ok (late, still fine)', d: true }
+        ] },
+      f: { type: 'seq', w: 700, minw: 560,
+        actors: [{ l: 'Old leader (term 5)', k: 'm' }, 'Follower A', 'Follower B', 'Client'],
+        steps: [
+          { note: 'The leader crashes and its heartbeats stop.', at: [0, 0], k: 'b' },
+          { self: 1, l: 'election timeout fires (randomised)' },
+          { f: 1, t: 2, l: 'RequestVote(term 6, last index 42)' },
+          { f: 2, t: 1, l: 'vote granted', d: true, k: 'g' },
+          { self: 1, l: '2 of 3 votes: leader of term 6', k: 'g' },
+          { f: 1, t: 2, l: 'heartbeat, term 6' },
+          { f: 3, t: 1, l: 'SET y = 1' },
+          { div: 'the old leader comes back', k: 'w' },
+          { f: 0, t: 1, l: 'AppendEntries(term 5)', k: 'b' },
+          { f: 1, t: 0, l: 'rejected: term 6 > 5', d: true },
+          { self: 0, l: 'steps down to follower' }
+        ] } },
+
+    { k: 'table', id: 'coord-size', t: 'Cluster sizes and the failures they survive', cols: ['Nodes', 'Majority', 'Survives', 'Notes'], rows: [
+      ['1', '1', 'no failures', 'no fault tolerance at all'],
+      ['2', '2', 'no failures', 'worse than one: two machines that can each stop progress'],
+      ['3', '2', '1 failure', 'the usual choice, one node per zone'],
+      ['4', '3', '1 failure', 'more cost, no more tolerance'],
+      ['5', '3', '2 failures', 'survives a failure during maintenance'],
+      ['7', '4', '3 failures', 'rare; every write waits for four nodes']
+    ], note: 'Any two majorities overlap, so a partitioned minority can neither elect a leader nor commit writes, and there is never a second leader. Failover without a quorum, such as two nodes watching each other, can end with both sides accepting writes.' },
+
+    { k: 'table', id: 'coord-use', t: 'What needs consensus, and what to use', cols: ['Need', 'Use', 'Watch'], rows: [
+      ['One active instance of a job (leader election)', 'a lease: etcd, ZooKeeper, a Kubernetes Lease, an Azure blob lease, a database lock', 'a paused leader can outlive its lease, so fence what it writes'],
+      ['Cluster membership and metadata', 'already built in: Kafka (KRaft), Kubernetes (etcd), your database', 'keep the quorum on fast disks, in separate zones'],
+      ['Configuration and service discovery', 'etcd, Consul, Azure App Configuration', 'clients cache values, so plan for staleness'],
+      ['A distributed lock around a resource', 'a lease plus a fencing token that the resource checks', 'a Redis lock on its own can’t fence a paused client'],
+      ['Your business data', 'not consensus: a database with replication', 'consensus systems hold small, critical metadata, not your tables']
+    ] },
+
+    { k: 'snip', id: 'coord-lock', t: 'One active job with a database lock', lang: 'sql', code: `
+-- every instance tries; the one that gets the lock runs the job (SQL Server)
+DECLARE @got INT;
+EXEC @got = sp_getapplock
+     @Resource    = 'nightly-reconciliation',
+     @LockMode    = 'Exclusive',
+     @LockOwner   = 'Session',      -- held until released or the connection closes
+     @LockTimeout = 0;              -- don't wait: another instance is already running it
+IF @got >= 0
+BEGIN
+    -- run the job on this same connection: if it drops, the lock and the
+    -- in-flight work end together, so a stale leader can't keep writing
+    EXEC dbo.RunNightlyReconciliation;
+    EXEC sp_releaseapplock @Resource = 'nightly-reconciliation', @LockOwner = 'Session';
+END
+
+-- PostgreSQL: SELECT pg_try_advisory_lock(hashtext('nightly-reconciliation'));`,
+      note: '`sp_getapplock` returns 0 or 1 when the lock is granted and a negative number when it is not. Keep the job idempotent: a crash halfway leaves partial work for the next run.' },
+
+    { k: 'call', kind: 'key', text: 'Consensus is for small, critical decisions such as a leader, a membership list or a configuration value, not for your data path. Use a system that implements it correctly, and fence anything a stale leader might still write.' }
+  ]
+});
+
+/* ===== Additions to existing sections, finder rows, trace line, section order ===== */
+(function () {
+  var S = {};
+  window.SDS.forEach(function (s) { S[s.id] = s; });
+  function at(secId, id) {
+    var b = S[secId].blocks;
+    for (var i = 0; i < b.length; i++) if (b[i].id === id) return i;
+    throw new Error('block ' + id + ' not in ' + secId);
+  }
+  function insertAfter(secId, id, blocks) { var b = S[secId].blocks; b.splice.apply(b, [at(secId, id) + 1, 0].concat(blocks)); }
+  function insertBeforeCalls(secId, blocks) {
+    var b = S[secId].blocks, i = 0;
+    while (i < b.length && b[i].k !== 'call') i++;
+    b.splice.apply(b, [i, 0].concat(blocks));
+  }
+
+  /* ---- CONS: isolation levels and write skew ---- */
+  insertAfter('cons', 'cons-lock', [
+    { k: 'table', id: 'cons-iso', t: 'Isolation levels: what each one still lets through', cols: ['Level', 'Readers see', 'Anomalies left', 'Default in'], rows: [
+      ['Read committed', 'only committed data, re-read on every statement', 'non-repeatable reads, phantoms, lost updates, write skew', 'SQL Server (with locks); PostgreSQL, Oracle and Azure SQL Database (with row versions, RCSI)'],
+      ['Repeatable read', 'rows already read don’t change', 'phantoms in SQL Server; write skew', 'MySQL InnoDB (plain reads use a snapshot)'],
+      ['Snapshot (PostgreSQL calls it repeatable read)', 'one consistent snapshot for the whole transaction', 'write skew; a conflicting update fails and must be retried', 'opt in per database or transaction'],
+      ['Serializable', 'results equal to some serial order', 'none, at the price of blocking or serialization failures that you retry', 'opt in per transaction']
+    ], note: 'The defaults leave most anomalies in place, which is why the atomic `UPDATE … WHERE` and version-column patterns matter. Raise the level only for the few transactions that need it, and retry on conflicts.' },
+
+    { k: 'dg', id: 'cons-skew', t: 'Write skew: two doctors go off call at once',
+      cap: '**Each transaction checks the rule, then writes a different row,** so neither blocks the other, and snapshot isolation lets both commit: nobody is on call. Fix it with `SERIALIZABLE`, by locking the rows you read (`UPDLOCK` or `FOR UPDATE`), or by turning the rule into one row or constraint that both writes must touch.',
+      d: { type: 'seq', w: 680, minw: 540,
+        actors: ['Alice’s request', 'Bob’s request', { l: 'Database', s: 'db' }],
+        steps: [
+          { f: 0, t: 2, l: 'BEGIN; count doctors on call → 2' },
+          { f: 1, t: 2, l: 'BEGIN; count doctors on call → 2' },
+          { f: 0, t: 2, l: 'take Alice off call; COMMIT' },
+          { f: 1, t: 2, l: 'take Bob off call; COMMIT', k: 'b' },
+          { note: 'Both checks saw two doctors and each wrote a different row, so both commits succeed: zero doctors on call.', at: [0, 2], k: 'b' }
+        ] } }
+  ]);
+
+  /* ---- HA: cells and shuffle sharding ---- */
+  insertAfter('ha', 'ha-region', [
+    { k: 'dg', id: 'ha-cells', t: 'Cell-based architecture: limit the blast radius', v: 'At scale',
+      cap: '**Split the system into identical, independent cells,** each with its own app instances, database and queues, and pin every customer to one cell. A bad deploy, a poison request or an overloaded database then hurts one cell’s customers instead of everyone. Keep the router thin: it only looks up the cell.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 3, ch: 76, minw: 560,
+        alt: 'Customers go through a thin cell router to one of three identical cells; a control plane provisions cells and moves customers; cell 2 has a bad deploy that affects only its own customers',
+        nodes: [
+          { id: 'u', x: 0, y: 1, l: 'Customers', s: 'stack' },
+          { id: 'rt', x: 1, y: 1, l: 'Cell router', sub: 'customer → cell, cached', k: 'a' },
+          { id: 'c1', x: 2, y: 0, l: 'Cell 1', sub: 'app, database, queue', k: 'g' },
+          { id: 'c2', x: 2, y: 1, l: 'Cell 2', sub: 'bad deploy: a third of customers', k: 'b' },
+          { id: 'c3', x: 2, y: 2, l: 'Cell 3', sub: 'app, database, queue', k: 'g' },
+          { id: 'cp', x: 3, y: 1, l: 'Control plane', sub: 'create cells, move customers', k: 'm' }
+        ],
+        edges: [{ f: 'u', t: 'rt' }, { f: 'rt', t: 'c1' }, { f: 'rt', t: 'c2' }, { f: 'rt', t: 'c3' },
+          { f: 'cp', t: 'c1', d: true }, { f: 'cp', t: 'c2', d: true }, { f: 'cp', t: 'c3', d: true }] } },
+
+    { k: 'snip', id: 'ha-shuffle', t: 'Shuffle sharding: a random pair of workers per customer', lang: 'text', code: `
+8 workers; each customer gets 2 of them, chosen at random
+
+plain sharding, 4 shards of 2    → a poison customer takes out a quarter of everyone
+shuffle sharding: C(8,2) = 28    → the same customer takes out only its own pair
+another customer's pair          # same pair 1 in 28 (3.6%), one worker shared 12 in 28, none 15 in 28
+100 workers, 5 per customer      → C(100,5) ≈ 75 million combinations`,
+      note: 'Clients retry against their other worker, so sharing one worker costs capacity, not availability. Combine it with per-customer rate limits.' }
+  ]);
+
+  /* ---- REF: four more classics ---- */
+  insertBeforeCalls('ref', [
+    { k: 'dg', id: 'ref-geo', t: 'Nearby drivers: geospatial search',
+      cap: '**Hundreds of thousands of position updates a second, read as “who is within 2 km?”.** Drivers report every few seconds to an in-memory geo index sharded by area; a rider’s request searches the surrounding cells and ranks candidates by ETA. Position history streams to Kafka instead of the primary database.',
+      note: '**Decisions:** geohash cells at precision 6 (about 1.2 × 0.6 km) or H3 hexagons; search the cell and its 8 neighbours so nothing near an edge is missed; expire positions after about 30 seconds so stale drivers disappear; shard by area, and expect hot cells downtown at rush hour; reserve the chosen driver with a conditional update, like a ticket hold.',
+      d: { type: 'flow', w: 680, cols: 3, rows: 3, ch: 84, minw: 540,
+        alt: 'The driver app sends positions to a location service, which writes a Redis geo index and streams history to Kafka; the matching service searches the geo index for a rider and reserves a driver in the trips database',
+        nodes: [
+          { id: 'drv', x: 0, y: 0, l: 'Driver app', sub: 'position every 4 s', s: 'browser' },
+          { id: 'loc', x: 1, y: 0, l: 'Location service', sub: 'stateless', k: 'a' },
+          { id: 'k', x: 2, y: 0, l: 'Kafka: positions', sub: 'trip history, analytics', s: 'queue' },
+          { id: 'geo', x: 1, y: 1, l: 'Geo index', sub: 'Redis GEO, sharded by area', s: 'db', k: 'g' },
+          { id: 'rid', x: 0, y: 2, l: 'Rider app', sub: 'request a ride', s: 'browser' },
+          { id: 'match', x: 1, y: 2, l: 'Matching service', sub: 'rank by ETA', k: 's' },
+          { id: 'trip', x: 2, y: 2, l: 'Trips database', sub: 'reserve the driver', s: 'db' }
+        ],
+        edges: [{ f: 'drv', t: 'loc' }, { f: 'loc', t: 'k', l: 'history', d: true }, { f: 'loc', t: 'geo', l: 'GEOADD' },
+          { f: 'rid', t: 'match' }, { f: 'match', t: 'geo', l: 'GEOSEARCH 2 km' }, { f: 'match', t: 'trip', l: 'reserve' }] } },
+
+    { k: 'dg', id: 'ref-board', t: 'Real-time leaderboard',
+      cap: '**A sorted set does the ranking:** `ZINCRBY` on every score change, `ZREVRANK` for “my rank”, `ZREVRANGE` for the top 100, each in O(log n). The database stays the source of truth, and Redis can be rebuilt from it.',
+      note: '**Decisions:** one sorted set per board and season; break ties by folding time into the score (points × 10¹⁰ + (MAX_TS − ts)) and keep it below 2⁵³, because scores are doubles; beyond tens of millions of players, shard by score range or show exact ranks near the top and percentiles below; score events pass through a queue so the database and Redis stay in step.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 100, minw: 560,
+        alt: 'Game servers publish score events to a queue; the leaderboard service updates a Redis sorted set and the scores database; players read their rank and the top 100 from the sorted set',
+        nodes: [
+          { id: 'g', x: 0, y: 0, l: 'Game servers', sub: 'match results', s: 'stack' },
+          { id: 'q', x: 1, y: 0, l: 'Score events', s: 'queue' },
+          { id: 'svc', x: 2, y: 0, l: 'Leaderboard service', k: 'a' },
+          { id: 'z', x: 3, y: 0, l: 'Redis sorted set', sub: 'board:season-12', s: 'db', k: 'g' },
+          { id: 'db', x: 2, y: 1, l: 'Scores database', sub: 'source of truth', s: 'db' },
+          { id: 'app', x: 3, y: 1, l: 'Players', sub: 'top 100, my rank', s: 'browser' }
+        ],
+        edges: [{ f: 'g', t: 'q' }, { f: 'q', t: 'svc' }, { f: 'svc', t: 'z', l: 'ZINCRBY' }, { f: 'svc', t: 'db', l: 'upsert' }, { f: 'app', t: 'z', l: 'ZREVRANK' }] } },
+
+    { k: 'dg', id: 'ref-crawl', t: 'Web crawler',
+      cap: '**The frontier decides what to fetch next, and when.** URLs wait in per-host queues so no site is hit too often; fetchers obey robots.txt, the parser extracts links, and a Bloom filter drops URLs already seen before they reach the frontier again.',
+      note: '**Decisions:** politeness per host (one connection, a delay between requests); priority by page importance and how often it changes; content fingerprints (SimHash) catch near-duplicate pages; DNS answers and robots.txt are cached; raw pages go to object storage for re-parsing; a seen-filter for a billion URLs at 1% false positives takes about 1.2 GB.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 100, minw: 560,
+        alt: 'Seed URLs enter the URL frontier; fetchers download pages to object storage; the parser extracts links, which pass a Bloom-filter seen check before returning to the frontier',
+        nodes: [
+          { id: 'seed', x: 0, y: 0, l: 'Seed URLs' },
+          { id: 'fr', x: 1, y: 0, l: 'URL frontier', sub: 'priority, per-host queues', s: 'queue', k: 'a' },
+          { id: 'fe', x: 2, y: 0, l: 'Fetchers', sub: 'robots.txt, DNS cache', s: 'stack' },
+          { id: 'st', x: 3, y: 0, l: 'Object storage', sub: 'raw pages', s: 'db' },
+          { id: 'pa', x: 3, y: 1, l: 'Parser', sub: 'links, content hash', k: 's' },
+          { id: 'bf', x: 2, y: 1, l: 'Seen filter', sub: 'Bloom filter + URL store', s: 'db', k: 'g' }
+        ],
+        edges: [{ f: 'seed', t: 'fr' }, { f: 'fr', t: 'fe', l: 'next URL' }, { f: 'fe', t: 'st' }, { f: 'st', t: 'pa' }, { f: 'pa', t: 'bf', l: 'links' }, { f: 'bf', t: 'fr', l: 'new URLs only', k: 'g' }] } },
+
+    { k: 'dg', id: 'ref-video', t: 'Video upload and streaming',
+      cap: '**Upload once, transcode into a ladder of qualities, stream in short segments.** The player picks each segment’s bitrate from the bandwidth it measures (adaptive bitrate), so playback adapts instead of stalling. Nearly every byte served comes from the CDN.',
+      note: '**Decisions:** resumable, chunked uploads straight to object storage; transcoding as a graph of parallel jobs, each segment encoded independently; HLS or DASH segments a few seconds long; keep the original to re-encode with better codecs later; view counts and history go through a queue, never the playback path.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 100, minw: 560,
+        alt: 'A creator uploads to object storage; transcoding workers write segments and manifests that the CDN serves; the viewer’s player fetches segments from the CDN and metadata from the video service',
+        nodes: [
+          { id: 'up', x: 0, y: 0, l: 'Creator', sub: 'resumable upload', s: 'browser' },
+          { id: 'raw', x: 1, y: 0, l: 'Object storage', sub: 'original file', s: 'db' },
+          { id: 'tc', x: 2, y: 0, l: 'Transcoding workers', sub: 'split, encode 1080p to 240p', s: 'stack', k: 'a' },
+          { id: 'seg', x: 3, y: 0, l: 'Segments, manifests', sub: 'HLS / DASH', s: 'db', k: 'g' },
+          { id: 'cdn', x: 3, y: 1, l: 'CDN', sub: 'serves nearly every byte' },
+          { id: 'pl', x: 2, y: 1, l: 'Viewer’s player', sub: 'adaptive bitrate', s: 'browser' },
+          { id: 'meta', x: 1, y: 1, l: 'Video service', sub: 'metadata, status, views' }
+        ],
+        edges: [{ f: 'up', t: 'raw' }, { f: 'raw', t: 'tc', l: 'uploaded' }, { f: 'tc', t: 'seg' }, { f: 'seg', t: 'cdn' },
+          { f: 'pl', t: 'cdn', l: 'segments' }, { f: 'pl', t: 'meta', l: 'manifest URL' }, { f: 'tc', t: 'meta', d: true }] } }
+  ]);
+
+  /* ---- hero trace: the event reaches Kafka ---- */
+  var tr = window.SDS_TRACE, ti = -1;
+  tr.forEach(function (r, i) { if (/^relay /.test(r[1])) ti = i; });
+  if (ti < 0) throw new Error('trace relay line not found');
+  tr.splice(ti + 1, 0, ['kafka', 'kafka     orders.v1: key 42 → partition 4 of 12; acks=all, 3 replicas']);
+
+  /* ---- finder rows, next to related tasks ---- */
+  function finderAfter(task, rows) {
+    var f = window.SDS_FINDER, i = -1;
+    f.forEach(function (r, j) { if (r[0] === task) i = j; });
+    if (i < 0) throw new Error('finder task ' + task);
+    f.splice.apply(f, [i + 1, 0].concat(rows));
+  }
+  finderAfter('Pick a database', [['Count, deduplicate or rank at huge scale', 'Bloom filters, HyperLogLog, top-k', ['prob-sizer', 'prob-kinds', 'prob-redis', 'ref-crawl']]]);
+  finderAfter('Take more writes than one database can', [['Find and fix a hot partition or hot key', 'skew, salting, sharded counters', ['hot-sim', 'hot-where', 'hot-fix', 'hot-counter']]]);
+  finderAfter('Push live updates to users', [['Aggregate a stream in real time', 'windows, event time, watermarks', ['strm-windows', 'strm-time', 'strm-flink', 'strm-adclick']]]);
+  finderAfter('Plan for a region going down', [['Limit the blast radius of one customer or deploy', 'cells, shuffle sharding', ['ha-cells', 'ha-shuffle', 'ship-canary', 'rate-where']]]);
+  finderAfter('Generate IDs on many machines', [['Run exactly one active instance of a job', 'consensus, leases, database locks', ['coord-lock', 'coord-raft', 'coord-use', 'cons-fence']]]);
+  finderAfter('Stop overselling and double booking', [['Pick a transaction isolation level', 'anomalies, defaults, write skew', ['cons-iso', 'cons-skew', 'cons-lock', 'cons-lost']]]);
+  finderAfter('Choose sync or async communication', [
+    ['Choose a Kafka partition key and count', 'ordering, parallelism, hot keys', ['kafka-partitions', 'hot-sim', 'kafka-vocab', 'repl-key']],
+    ['Make Kafka writes durable', 'acks, in-sync replicas, idempotence', ['kafka-acks', 'kafka-durable', 'kafka-producer', 'kafka-cli']],
+    ['Consume Kafka without losing or duplicating events', 'offsets, rebalances, transactions', ['kafka-consumer', 'kafka-groups', 'kafka-eos', 'msg-inbox']],
+    ['Retry failed events without blocking a partition', 'retry topics, dead letters', ['kafka-retry', 'msg-competing', 'kafka-ops', 'res-jitter']]
+  ]);
+  finderAfter('Prepare a classic interview design', [['Prepare more interview designs', 'nearby drivers, leaderboard, crawler, video', ['ref-geo', 'ref-board', 'ref-crawl', 'ref-video']]]);
+
+  /* ---- section order within each group ---- */
+  var ORDER = ['flow', 'est', 'trade', 'edge', 'api', 'app', 'svc', 'cache', 'data', 'prob', 'repl', 'msg', 'kafka',
+    'req', 'async', 'saga', 'evt', 'strm', 'rt', 'auth', 'scale', 'hot', 'res', 'rate', 'cons', 'coord', 'ha',
+    'obs', 'sec', 'ship', 'ref'];
+  window.SDS.forEach(function (s) { if (ORDER.indexOf(s.id) < 0) throw new Error('section missing from ORDER: ' + s.id); });
+  window.SDS.sort(function (a, b) { return ORDER.indexOf(a.id) - ORDER.indexOf(b.id); });
+})();
+
 </script>
 <script>
 /* ===== Page builder: sections, cards, widgets, nav, search, theme ===== */
@@ -3964,7 +4751,143 @@ window.SDS.push({
     render();
   }
 
-  var WIDGETS = { coll: collWidget, est: estWidget, avail: availWidget, rl: rlWidget, ring: ringWidget };
+  /* Hot partition simulator */
+  function hotWidget(el) {
+    var KEYS = ['Order ID', 'Tenant ID', 'Tenant + salt', 'Country'], st = { key: 'Tenant ID', p: '6' };
+    var T = 3000, CAP = 1000, WHALE = 1200, SALT = 8, cache = {};
+    /* Kafka's Java partitioner: murmur2 over the key bytes, made positive, modulo the partition count */
+    function murmur2(s) {
+      var len = s.length, m = 0x5bd1e995, h = 0x9747b28c ^ len, n4 = len >> 2, i, k, j, t;
+      for (i = 0; i < n4; i++) {
+        j = i * 4;
+        k = (s.charCodeAt(j) & 255) | ((s.charCodeAt(j + 1) & 255) << 8) | ((s.charCodeAt(j + 2) & 255) << 16) | ((s.charCodeAt(j + 3) & 255) << 24);
+        k = Math.imul(k, m); k ^= k >>> 24; k = Math.imul(k, m);
+        h = Math.imul(h, m); h ^= k;
+      }
+      t = n4 * 4;
+      switch (len & 3) {
+        case 3: h ^= (s.charCodeAt(t + 2) & 255) << 16; /* falls through */
+        case 2: h ^= (s.charCodeAt(t + 1) & 255) << 8; /* falls through */
+        case 1: h ^= s.charCodeAt(t) & 255; h = Math.imul(h, m);
+      }
+      h ^= h >>> 13; h = Math.imul(h, m); h ^= h >>> 15;
+      return h | 0;
+    }
+    function part(key, P) { return (murmur2(key) & 0x7fffffff) % P; }
+    var POP = (function () {
+      var order = [], tenant = [['tenant-1', WHALE]], salted = [], H = 0, i;
+      for (i = 1; i <= T; i++) order.push(['order-' + (100000 + i), 1]);
+      for (i = 2; i <= 400; i++) H += 1 / Math.pow(i, 0.9);
+      for (i = 2; i <= 400; i++) tenant.push(['tenant-' + i, (T - WHALE) / Math.pow(i, 0.9) / H]);
+      for (i = 0; i < SALT; i++) salted.push(['tenant-1#' + i, WHALE / SALT]);
+      return { 'Order ID': order, 'Tenant ID': tenant, 'Tenant + salt': salted.concat(tenant.slice(1)),
+        'Country': [['VN', 1650], ['TH', 540], ['ID', 390], ['PH', 270], ['MY', 150]] };
+    })();
+    function loads(key, P) {
+      var id = key + '/' + P, l = [], i;
+      if (cache[id]) return cache[id];
+      for (i = 0; i < P; i++) l.push(0);
+      POP[key].forEach(function (k) { l[part(k[0], P)] += k[1]; });
+      return (cache[id] = l);
+    }
+    function al(rows) {
+      var w = Math.max.apply(null, rows.map(function (r) { return r[1] ? r[0].length : 0; })) + 2;
+      return rows.map(function (r) { return r[1] ? r[0] + Array(w - r[0].length + 1).join(' ') + '// ' + r[1] : r[0]; }).join('\n');
+    }
+    var CODE = {
+      'Order ID': al([['Key = evt.OrderId.ToString(),', 'ordered per order; thousands of keys']]),
+      'Tenant ID': al([['Key = evt.TenantId,', 'ordered per tenant: one tenant, one partition']]),
+      'Tenant + salt': al([['Key = Whales.Contains(evt.TenantId)', ''], ['    ? $"{evt.TenantId}#{evt.OrderId % 8}"', '8 sub-keys for the whale'], ['    : evt.TenantId,', 'everyone else unchanged']]),
+      'Country': al([['Key = evt.Country,', 'five keys can use at most five partitions']])
+    };
+    el.innerHTML = '<div class="wdg-row"><span class="wdg-lbl">Partition key</span>' + segHTML('key', KEYS, st.key, 'Partition key') + '</div>' +
+      '<div class="wdg-row"><span class="wdg-lbl">Partitions</span>' + segHTML('p', ['6', '12', '24'], st.p, 'Partitions') + '</div>' +
+      '<p class="hp-cap">3,000 events a second from 400 tenants, and tenant-1 alone sends 1,200 of them. Each partition has one consumer, which handles 1,000 events a second. Partition numbers are the ones the Java client’s murmur2 partitioner picks.</p>' +
+      '<div class="hp-svg" aria-live="polite"></div><div class="rl-stats hp-stats"></div><div class="verdict-line"></div><div class="rl-code"></div>';
+    function render() {
+      var P = +st.p, l = loads(st.key, P), mx = Math.max.apply(null, l), bi = l.indexOf(mx), over = 0, idle = 0;
+      l.forEach(function (x) { over += Math.max(0, x - CAP); if (x < 0.5) idle++; });
+      var W = 680, H = 222, L = 46, R = 14, TP = 28, B = 26, ymax = Math.ceil(Math.max(CAP * 1.25, mx * 1.12) / 500) * 500;
+      var py = function (v) { return TP + (H - TP - B) * (1 - v / ymax); }, bw = (W - L - R) / P, s = '', v;
+      for (v = 0; v <= ymax; v += 500) {
+        s += '<line class="grid" x1="' + L + '" y1="' + py(v).toFixed(1) + '" x2="' + (W - R) + '" y2="' + py(v).toFixed(1) + '"/>' +
+          '<text class="t-s" x="' + (L - 7) + '" y="' + (py(v) + 3.5).toFixed(1) + '" text-anchor="end" style="font-size:10px">' + fmtN(v) + '</text>';
+      }
+      l.forEach(function (x, i) {
+        var u = x / CAP, cx = L + bw * (i + 0.5), w = Math.min(30, bw - 6), x0 = cx - w / 2, base = py(0), y0 = py(x);
+        if (x >= 0.5) {
+          var r = Math.min(4, w / 2, base - y0), k = u > 1 ? 'b' : u > 0.8 ? 'w' : 'g', f = function (n) { return n.toFixed(1); };
+          s += '<path class="hb k-' + k + '" d="M' + f(x0) + ' ' + f(base) + 'V' + f(y0 + r) + 'Q' + f(x0) + ' ' + f(y0) + ' ' + f(x0 + r) + ' ' + f(y0) +
+            'H' + f(x0 + w - r) + 'Q' + f(x0 + w) + ' ' + f(y0) + ' ' + f(x0 + w) + ' ' + f(y0 + r) + 'V' + f(base) + 'Z">' +
+            '<title>P' + i + ': ' + Math.round(x).toLocaleString('en') + ' events a second, ' + Math.round(u * 100) + '% of one consumer</title></path>';
+          if (P <= 12 || i === bi || u > 1) s += '<text class="t-l" x="' + f(cx) + '" y="' + f(y0 - 5) + '" text-anchor="middle" style="font-size:10px">' + fmtN(x) + '</text>';
+        } else {
+          s += '<line class="hb-idle" x1="' + x0.toFixed(1) + '" y1="' + (base - 1).toFixed(1) + '" x2="' + (x0 + w).toFixed(1) + '" y2="' + (base - 1).toFixed(1) + '"><title>P' + i + ': idle</title></line>';
+        }
+        if (P <= 12 || i % 2 === 0) s += '<text class="t-s" x="' + cx.toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" style="font-size:10px">P' + i + '</text>';
+      });
+      var yc = py(CAP).toFixed(1);
+      s += '<line class="mk k-b" x1="' + L + '" y1="' + yc + '" x2="' + (W - R) + '" y2="' + yc + '"/>' +
+        '<line class="mk k-b" x1="' + L + '" y1="12" x2="' + (L + 24) + '" y2="12"/>' +
+        '<text class="t-l" x="' + (L + 30) + '" y="15.5" style="font-size:10.5px">one consumer handles 1,000 events a second</text>';
+      $('.hp-svg', el).innerHTML = '<svg class="dg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
+        esc('Events per second on each of ' + P + ' partitions with the key ' + st.key + '; the busiest, P' + bi + ', receives ' + Math.round(mx) + ' a second') + '">' + s + '</svg>';
+      var share = Math.round(mx / T * 100), wp = part('tenant-1', P), used = {};
+      for (var j = 0; j < SALT; j++) used[part('tenant-1#' + j, P)] = 1;
+      $('.hp-stats', el).innerHTML =
+        '<span class="kchip ' + (mx > CAP ? 'rej' : 'win') + '">busiest P' + bi + ': ' + fmtN(mx) + '/s, ' + share + '% of traffic</span>' +
+        '<span class="kchip">fair share ' + fmtN(T / P) + '/s</span>' +
+        (idle ? '<span class="kchip over">' + idle + ' idle partition' + (idle > 1 ? 's' : '') + '</span>' : '') +
+        '<span class="kchip ' + (over ? 'rej' : 'win') + '">' + (over ? 'lag grows ' + fmtN(over) + '/s, ' + fmtN(over * 3600) + ' an hour' : 'no lag') + '</span>';
+      var V = {
+        'Order ID': ['ok', '<b>Even spread.</b> Thousands of order IDs hash evenly: the busiest partition carries ' + share + '% of the traffic against a fair ' + Math.round(100 / P) + '%. Events stay in order per order, which is usually the order the business needs.'],
+        'Tenant ID': ['bad', '<b>One key, one partition.</b> tenant-1’s 1,200 events a second all land on P' + wp + ', more than one consumer can handle, so lag grows by ' + fmtN(over) + ' events a second. ' +
+          (P > 6 ? 'Going from 6 to ' + P + ' partitions spread the other tenants, but not tenant-1.' : 'Try 12 or 24 partitions: the other tenants spread out, tenant-1 doesn’t.')],
+        'Tenant + salt': [mx > CAP * 0.8 ? 'warn' : 'ok', '<b>The whale is split into 8 sub-keys</b> (tenant-1#0 to #7), so its 1,200 events a second spread over ' + Object.keys(used).length + ' partitions and the busiest runs at ' + Math.round(mx / CAP * 100) + '% of a consumer. The price: tenant-1’s events stay ordered per order, not per tenant, and reading all of tenant-1 means querying 8 keys.'],
+        'Country': ['bad', '<b>Five keys can use at most five partitions.</b> VN’s 55% of the traffic lands on one partition, ' + idle + ' of ' + P + ' partitions sit idle, and more partitions only add idle ones.']
+      }[st.key];
+      var vl = $('.verdict-line', el); vl.className = 'verdict-line ' + V[0]; vl.innerHTML = V[1];
+      $('.rl-code', el).innerHTML = codeBox(CODE[st.key], 'cs');
+    }
+    bindSeg(el, function (k, v) { st[k] = v; render(); });
+    render();
+  }
+
+  /* Bloom filter sizer */
+  function bloomWidget(el) {
+    var N = [['1M', 1e6], ['10M', 1e7], ['100M', 1e8], ['1B', 1e9]], PR = [['10%', 0.1], ['1%', 0.01], ['0.1%', 0.001], ['0.01%', 0.0001]];
+    var st = { n: '100M', p: '1%' };
+    function val(list, k) { for (var i = 0; i < list.length; i++) if (list[i][0] === k) return list[i][1]; }
+    function names(list) { return list.map(function (x) { return x[0]; }); }
+    el.innerHTML = '<div class="wdg-row"><span class="wdg-lbl">Items to remember</span>' + segHTML('n', names(N), st.n, 'Items to remember') + '</div>' +
+      '<div class="wdg-row"><span class="wdg-lbl">False positives allowed</span>' + segHTML('p', names(PR), st.p, 'False-positive rate') + '</div>' +
+      '<div class="bf-tiles" aria-live="polite"></div>' +
+      '<div class="tbl-wrap"><table class="tbl bf-res"><thead><tr><th scope="col">Option</th><th scope="col">Memory</th><th scope="col">What you get</th></tr></thead><tbody></tbody></table></div>' +
+      '<div class="verdict-line"></div><div class="rl-code"></div>';
+    function render() {
+      var n = val(N, st.n), p = val(PR, st.p), bpi = -Math.log(p) / (Math.LN2 * Math.LN2), k = Math.max(1, Math.round(bpi * Math.LN2)), bytes = n * bpi / 8;
+      $('.bf-tiles', el).innerHTML = [[trimNum(bpi, 1), 'bits per item'], [String(k), 'hash functions'], [fmtB(bytes), 'filter size']].map(function (t) {
+        return '<div class="bf-tile"><b>' + esc(t[0]) + '</b><span>' + esc(t[1]) + '</span></div>';
+      }).join('');
+      $('tbody', el).innerHTML = [
+        ['Bloom filter', fmtB(bytes), '“no” is always right; “maybe” is wrong for ' + st.p + ' of absent keys'],
+        ['Exact set of 64-bit hashes', 'at least ' + fmtB(n * 8), 'no false positives in practice; a hash table roughly doubles the memory'],
+        ['The keys themselves (60-byte URLs)', 'at least ' + fmtB(n * 60), 'exact, and you can list them'],
+        ['HyperLogLog', '12 KB', 'counts distinct items, but can’t answer “is x in it?”']
+      ].map(function (r) {
+        return '<tr><td data-l="Option">' + esc(r[0]) + '</td><td data-l="Memory">' + esc(r[1]) + '</td><td data-l="What you get">' + esc(r[2]) + '</td></tr>';
+      }).join('');
+      var vl = $('.verdict-line', el);
+      vl.className = 'verdict-line ' + (p >= 0.1 ? 'warn' : 'ok');
+      vl.innerHTML = '<b>' + st.p + ' false positives:</b> a lookup for a key that was never added says “maybe” about ' + fmtN(p * 1e6) + ' times per million, and each one costs a wasted read. The filter is ' +
+        trimNum(64 / bpi, 1) + '× smaller than an exact set of 64-bit hashes; each tenfold cut in false positives costs about 4.8 more bits per item.';
+      $('.rl-code', el).innerHTML = codeBox('BF.RESERVE seen:urls ' + p + ' ' + n + '\n# about ' + fmtB(bytes) + ' with ' + k + ' hash functions', 'redis');
+    }
+    bindSeg(el, function (k, v) { st[k] = v; render(); });
+    render();
+  }
+
+  var WIDGETS = { coll: collWidget, est: estWidget, avail: availWidget, rl: rlWidget, ring: ringWidget, hot: hotWidget, bloom: bloomWidget };
   $$('.wdg[data-w]').forEach(function (el) {
     try { WIDGETS[el.getAttribute('data-w')](el); }
     catch (err) { console.error('Widget failed', err); el.innerHTML = '<div class="dg-err">This widget failed to load: ' + esc(err.message) + '</div>'; }
@@ -4099,5 +5022,5 @@ window.SDS.push({
 
 
 </script>
-</body>
-</html>
+
+</body></html>
