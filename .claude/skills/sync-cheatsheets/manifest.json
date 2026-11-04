@@ -1,0 +1,20 @@
+{
+  "sheets": [
+    {"file": "dotnet-cheatsheet.html", "title": ".NET Cheatsheet", "url": "https://claude.ai/artifact/CqEj5PJa8DxQnBnQXuZLeV", "ids": ["CqEj5PJa8DxQnBnQXuZLeV", "5fd0af50-99af-4eac-b5b3-5ef64d770f6a"], "version": "1790423848-b7c1"},
+    {"file": "sql-server-cheatsheet.html", "title": "SQL Server Cheatsheet", "url": "https://claude.ai/artifact/PpXQ45edYNcuoS6uto7Pz4", "ids": ["PpXQ45edYNcuoS6uto7Pz4", "b8cbbda6-06a7-4410-8f5a-0591af328935"], "version": "1790761090-b670"},
+    {"file": "react-javascript-cheatsheet.html", "title": "React & JavaScript Cheatsheet", "url": "https://claude.ai/artifact/7QwPEiciAQLpxFbjyEXFcX", "ids": ["7QwPEiciAQLpxFbjyEXFcX", "33ee7420-ade3-4c47-b956-68cd1e156904"], "version": "1790703260-809e"},
+    {"file": "angular-cheatsheet.html", "title": "Angular Cheatsheet", "url": "https://claude.ai/artifact/GoUk6eQxVXDiJQ9V1F958G", "ids": ["GoUk6eQxVXDiJQ9V1F958G", "7ff663fd-78c5-4cb6-9953-d26c4c145655"], "version": "1791182829-49d5"},
+    {"file": "docker-kubernetes-cheatsheet.html", "title": "Docker & Kubernetes Cheatsheet", "url": "https://claude.ai/artifact/2WahWSS93pRxRWVfx4DGBz", "ids": ["2WahWSS93pRxRWVfx4DGBz", "0c3a79b1-e4ca-4c38-93ca-46fef84dba89"], "version": "1790895475-93fe"},
+    {"file": "system-design-cheatsheet.html", "title": "System Design Cheatsheet", "url": "https://claude.ai/artifact/NaX3T6fY3N5gxzofpRGtv5", "ids": ["NaX3T6fY3N5gxzofpRGtv5", "aebdf86f-f65f-430d-a17e-ea7c5ca2afea", "5acEW9RBwcsnzRRfn3Sz3U", "2515cfe1-8f30-404e-8100-a30c7c38223b"], "version": "1793722364-450b"},
+    {"file": "coding-interview-cheatsheet.html", "title": "Coding Interview Cheatsheet", "url": "https://claude.ai/artifact/96uuxd576TbW1Zduiu5Lwq", "ids": ["96uuxd576TbW1Zduiu5Lwq", "419c6fdd-c85e-4aa9-af01-64e62ba9af98"], "version": "1793804729-7a3b"},
+    {"file": "english-fluency-cheatsheet.html", "title": "English Fluency Cheatsheet", "url": "https://claude.ai/artifact/UsWhfVedF5MC3p5mwtXSr4", "ids": ["UsWhfVedF5MC3p5mwtXSr4", "e1b43c7c-4e12-4b81-b490-8a8e616fda41"], "version": "1792811412-7344"},
+    {"file": "failure-modes-and-fixes.html", "title": "Failure Modes & Fixes", "url": "https://claude.ai/artifact/4m4WnzXYpPA5bEoT18TA5J", "ids": ["4m4WnzXYpPA5bEoT18TA5J", "1e724ea7-17a0-488a-90bb-3bd58f69f93d"], "version": "1790005006-eda1"}
+  ],
+  "excluded": [
+    {"title": "Eighteen Shapes", "ids": ["F6rnzPni8CgMDpR2YiyJdK", "72315897-f921-4e5d-8267-85a80ccff78e"], "reason": "removed by the owner as a duplicate"},
+    {"title": "System Design Interview Cheatsheet", "ids": ["LZfo3L3LRtYQY9Gp6oe1G4", "9e6d57bb-907f-4adf-8720-928555d7a571"], "reason": "removed by the owner as a duplicate"},
+    {"title": "Work English Cheatsheet", "ids": ["KsiUd7a2nvU9ALNB9AhvgY", "98d93eba-3115-43d5-b260-c1b37f03da39"], "reason": "Claude Docs document, not an HTML page"},
+    {"title": "System Design Cheat Sheet", "ids": ["EdCCDn9fioM51aDakRftKh", "6e5479fc-9d1a-4afc-ae89-7aa9822b5cf8"], "reason": "Claude Docs document, not an HTML page"},
+    {"title": "Docker & Kubernetes Cheat Sheet", "ids": ["45GSxjxEUiFi87KqnYBsNZ", "18e3e936-4488-4f5f-8f43-80b45bc1a68a"], "reason": "Claude Docs document, not an HTML page"}
+  ]
+}
