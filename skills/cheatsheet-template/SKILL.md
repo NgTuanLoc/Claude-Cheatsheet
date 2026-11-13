@@ -41,7 +41,8 @@ Then read the project doc `claude/cheatsheet-library.md` (Projects tool). It lis
 artifact URL, and the rules Loc has set. If the topic already has a sheet, you are updating it (step 2b), never
 publishing a second one.
 
-If the kit cannot be fetched, say so and stop; a page improvised without it will not match the library.
+If the kit cannot be fetched, take the same files from the GitHub repo's `kit/` folder (step 6 says how to attach
+the repo). If neither works, say so and stop; a page improvised without it will not match the library.
 
 ## 2a. New sheet
 
@@ -116,8 +117,33 @@ When you update an existing sheet, also confirm that cards you did not touch are
   guidance first; the kit's page already meets the page contract, so do not restructure it.
 - New sheet: no `url`, a one-word `icon`, a one-sentence `description`. Existing sheet: pass its `url`.
 - Add or update the sheet's row in `claude/cheatsheet-library.md` (read it, change it, write the whole doc back).
-- Tell Loc in two or three sentences what the sheet covers and anything he should decide next. He prefers short,
-  direct answers with concrete evidence over long explanations.
+
+## 6. Update the GitHub repo
+
+Loc keeps a public copy of the library in https://github.com/NgTuanLoc/Claude-Cheatsheet, served at
+https://ngtuanloc.github.io/Claude-Cheatsheet/. Every sheet you publish or change goes there in the same task, so the
+site and its README never fall behind the artifacts.
+
+1. Attach the repo with push access (in this environment, the `add_repo` tool with owner `NgTuanLoc` and repo
+   `Claude-Cheatsheet`), clone it as that tool says, and register the clone. If GitHub cannot be reached, tell Loc
+   the artifact is published but the repo is not, and stop.
+2. Follow the repo's own procedure for this one sheet: `.claude/skills/sync-cheatsheets/SKILL.md`, which loads as
+   the `sync-cheatsheets` skill once the repo is registered. It rewrites claude.ai links, updates `manifest.json`,
+   adds the `index.html` card and README row for a new sheet, runs the link check, commits and pushes to `main`,
+   which redeploys the site. For a sheet you just built:
+   - Relink your local build: it is exactly what you published, without the wrapper line an Artifact `read` adds.
+   - The manifest `version` is the version id in your publish result. A new sheet's row needs both ids: the short
+     one from its URL and the long one in the header of an Artifact `read` of that URL.
+   - If the sheet's scope or versions changed, update its README row and `index.html` card to match its new lede.
+   - If the link check flags pages you did not touch, leave them alone and mention them to Loc.
+3. In the same commit, if you changed the kit, copy your `kit/` over the repo's. If the repo's
+   `skills/cheatsheet-template/SKILL.md` differs from this skill's own `SKILL.md` (in the base directory shown when
+   the skill loaded), copy this file over it.
+4. Check that the `Deploy to GitHub Pages` run for your commit succeeds
+   (`gh api 'repos/NgTuanLoc/claude-cheatsheet/actions/runs?per_page=3'`).
+
+Then tell Loc in two or three sentences what the sheet covers, with the commit link, and anything he should decide
+next. He prefers short, direct answers with concrete evidence over long explanations.
 
 ## Things that go wrong
 
