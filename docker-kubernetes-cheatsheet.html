@@ -1,9 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Docker &amp; Kubernetes Cheatsheet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,7 +62,7 @@ code,kbd,pre{font-family:var(--f-mono)}
 svg{flex:none}
 
 /* ---------- layout ---------- */
-.app{display:grid;grid-template-columns:260px minmax(0,1fr);gap:clamp(20px,3vw,44px);padding-inline:clamp(14px,2.4vw,36px);max-width:1400px;margin:0 auto}
+.app{display:grid;grid-template-columns:260px minmax(0,1fr);gap:clamp(20px,3vw,44px);padding-inline:clamp(16px,2.4vw,36px);max-width:1400px;margin:0 auto}
 .side{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;height:100dvh;overflow-y:auto;padding-block:22px 48px;padding-right:14px;border-right:1px solid var(--line);scrollbar-width:thin}
 .side-brand{font:600 1.12rem/1.15 var(--f-serif);letter-spacing:-.01em;margin:0 0 4px 6px}
 .side-meta{margin:0 0 12px 6px;font:500 11px/1.4 var(--f-mono);color:var(--ink-3)}
@@ -450,14 +445,98 @@ body.searching .sec.shut .blks{display:grid}
   .roll-row .av{grid-column:2}
   .qos-res td:first-child{width:auto}
 }
+
+/* ---------- beginner layer ---------- */
+.plain{margin:12px 0 0;padding:10px 14px 11px;border-radius:10px;background:var(--sky-soft);font-size:14.5px;line-height:1.55;color:var(--ink);max-width:80ch}
+.plain .kl{font:600 10.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;margin-right:8px;color:var(--sky)}
+.plain code{font-size:.86em;background:var(--bg);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+body.no-plain .plain,body.searching .plain{display:none}
+.xref{display:inline-flex;align-items:baseline;gap:5px;border:1px solid var(--line-2);background:var(--bg);border-radius:6px;padding:0 6px;margin:0 1px;font:600 .76em/1.55 var(--f-mono);letter-spacing:.05em;color:var(--accent);cursor:pointer;vertical-align:baseline;max-width:100%;text-align:left}
+.xref:hover{border-color:var(--accent-fill);background:var(--accent-soft)}
+.xref-c{font-family:var(--f-sans);font-weight:500;letter-spacing:0;color:var(--ink)}
+.xref-c span{font:600 .92em var(--f-mono);color:var(--accent);letter-spacing:.05em}
+.howto .xref{cursor:default}
+.howto .plain-chip{font:600 10px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--sky);background:var(--sky-soft);border-radius:5px;padding:1px 6px}
+.path-list{list-style:none;margin:6px 0 0;padding:0}
+.path-row .fd-sym{display:flex;gap:10px;align-items:flex-start}
+.path-row .fd-sym > span:last-child{min-width:0}
+.path-n{flex:none;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:600 11.5px/1 var(--f-mono)}
+.wdg-hint{font-size:12.5px;color:var(--ink-3)}
+
+/* wrapping option buttons */
+.opts{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.opts button{font:600 12.5px/1.5 var(--f-sans);border:1px solid var(--line-2);background:var(--bg);border-radius:999px;padding:4px 11px;cursor:pointer;color:var(--ink-2)}
+.opts.mono button{font:600 12px/1.5 var(--f-mono);border-radius:8px}
+.opts button:hover{color:var(--ink);border-color:var(--ink-3)}
+.opts button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent-fill);color:var(--ink)}
+
+/* manifest explainer */
+.anat{border:1px solid var(--line);border-radius:10px;background:var(--code-bg);padding:6px 0;font-size:12.6px;line-height:1.6;min-width:0}
+.al{display:grid;grid-template-columns:32px minmax(0,1fr);align-items:baseline}
+.wdg .al code{white-space:pre-wrap;overflow-wrap:anywhere;padding:0 12px 0 6px;font-size:inherit;color:var(--ink);background:none;border-radius:0}
+.al .ag{font:600 10px/1.6 var(--f-mono);color:var(--accent);text-align:right;padding-right:6px;border-right:1px solid var(--line);align-self:stretch}
+.al.to{cursor:pointer}
+.al.to:hover,.al.hot{background:var(--accent-soft)}
+.al:focus-visible{outline-offset:-2px}
+.ax{margin:3px 12px 8px 38px;padding:8px 12px 9px;border:1px solid var(--accent-fill);border-radius:8px;background:var(--bg);font:14px/1.5 var(--f-sans);color:var(--ink-2)}
+.ax b{color:var(--ink);font:600 12.5px var(--f-mono);margin-right:4px}
+
+/* label selectors */
+.lpods{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,14rem),1fr));gap:8px}
+.lp{border:1.5px solid var(--line-2);border-radius:9px;padding:7px 10px 8px;background:var(--bg);display:grid;gap:5px;min-width:0}
+.lp .pn{font:600 12px/1.4 var(--f-mono);color:var(--ink);overflow-wrap:anywhere}
+.lp .lc{display:flex;flex-wrap:wrap;gap:4px}
+.lp.hit{border-color:var(--teal);background:var(--teal-soft)}
+.lp.hit .pn{color:var(--teal)}
+.lp.miss{opacity:.5}
+.kchip.used{border-color:var(--accent-fill);color:var(--ink);background:var(--accent-soft)}
+
+/* scheduler */
+.nodes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.nd-c{border:1.5px solid var(--line-2);border-radius:10px;padding:9px 11px 10px;background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr);gap:6px;min-width:0;align-content:start}
+.nd-c h4{margin:0;font:600 12.5px/1.35 var(--f-mono);color:var(--ink);overflow-wrap:anywhere}
+.nd-c .meta{font-size:12.5px;color:var(--ink-3);line-height:1.5}
+.cpu{height:8px;border-radius:4px;background:var(--surface-2);display:flex;overflow:hidden}
+.cpu i{display:block;height:100%}
+.cpu .u{background:var(--line-2)}
+.cpu .p{background:var(--teal)}
+.nd-c .res{font-size:13px;line-height:1.4;color:var(--ink-2);overflow-wrap:anywhere}
+.nd-c.ok{border-color:var(--teal);background:var(--teal-soft)}
+.nd-c.no .res{color:var(--rose)}
+.nd-c .tag{justify-self:start;font:600 10.5px/1 var(--f-mono);letter-spacing:.04em;padding:4px 8px;border-radius:999px;background:var(--teal);color:var(--bg)}
+.evt{font:500 12.5px/1.55 var(--f-mono);background:var(--code-bg);border:1px solid var(--line);border-left:3px solid var(--rose);border-radius:8px;padding:8px 12px;color:var(--ink);overflow-wrap:anywhere}
+
+/* pod status walkthrough */
+.wt-cmd{font:600 12.5px var(--f-mono);color:var(--ink-2)}
+.wt-head,.wt-row{display:grid;grid-template-columns:minmax(0,13rem) 3.2rem minmax(0,6.6rem) minmax(0,1fr);gap:4px 12px;align-items:baseline}
+.wt-head{font:600 10px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:0 13px}
+.wt{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.wt-row{border:1px solid var(--line);border-radius:9px;padding:7px 12px;background:var(--bg)}
+.wt-st{justify-self:start;font:600 11.5px/1.5 var(--f-mono);border:1.5px solid var(--k);background:var(--kf);border-radius:7px;padding:1px 7px;color:var(--ink);overflow-wrap:anywhere;max-width:100%}
+.wt-row .rd,.wt-row .rs{font:500 12px/1.5 var(--f-mono);color:var(--ink-2)}
+.wt-row .d{font-size:13.5px;color:var(--ink-2)}
+.s-w{--k:var(--amber);--kf:var(--amber-soft)} .s-s{--k:var(--sky);--kf:var(--sky-soft)} .s-g{--k:var(--teal);--kf:var(--teal-soft)}
+.s-b{--k:var(--rose);--kf:var(--rose-soft)} .s-a{--k:var(--violet);--kf:var(--violet-soft)} .s-n{--k:var(--line-2);--kf:var(--surface-2)}
+
+@media (max-width:760px){
+  .nodes{grid-template-columns:minmax(0,1fr)}
+  .wt-head{display:none}
+  .wt-row{display:flex;flex-wrap:wrap;gap:4px 12px}
+  .wt-row .d{flex-basis:100%}
+  .wt-row .rd:empty,.wt-row .rs:empty{display:none}
+  .wt-row .rd::before{content:"READY ";font:600 9.5px var(--f-mono);letter-spacing:.06em;color:var(--ink-3)}
+  .wt-row .rs::before{content:"RESTARTS ";font:600 9.5px var(--f-mono);letter-spacing:.06em;color:var(--ink-3)}
+  .al{grid-template-columns:26px minmax(0,1fr)}
+  .ax{margin-left:12px}
+  .path-row .fd-sym{gap:8px}
+}
 </style>
-</head>
-<body>
 <div class="app">
   <aside class="side" id="side" aria-label="Contents">
     <div class="side-brand">Docker &amp; Kubernetes Cheatsheet</div>
     <p class="side-meta" id="side-meta">&nbsp;</p>
     <div id="nav-top">
+      <button class="nav-i nav-top" type="button" data-to="path"><span class="c">PATH</span><span class="n">Learning path</span></button>
       <button class="nav-i nav-top" type="button" data-to="intro"><span class="c">MAP</span><span class="n">ship.sh, annotated</span></button>
       <button class="nav-i nav-top" type="button" data-to="finder"><span class="c">FIND</span><span class="n">Find by task</span></button>
     </div>
@@ -475,6 +554,9 @@ body.searching .sec.shut .blks{display:grid}
         <span class="hits" id="hits" hidden></span>
         <kbd aria-hidden="true">/</kbd>
       </label>
+      <button class="tbtn" id="explain-btn" type="button" aria-pressed="true" title="Show or hide the plain-words summaries">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5a3.9 3.9 0 0 0-2.3 7.06c.45.33.7.8.7 1.3v.44h3.2v-.44c0-.5.25-.97.7-1.3A3.9 3.9 0 0 0 7 1.5zM5.6 12.5h2.8" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Explain</span>
+      </button>
       <button class="tbtn" id="wrap-btn" type="button" aria-pressed="false" title="Wrap long code lines">
         <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 3.5h11M1.5 7h8.5a2 2 0 0 1 0 4H7m0 0 1.6-1.6M7 11l1.6 1.6M1.5 10.5h3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Wrap</span>
       </button>
@@ -490,13 +572,19 @@ body.searching .sec.shut .blks{display:grid}
     <header class="hero">
       <p class="eyebrow" id="eyebrow">Cheatsheet</p>
       <h1>Docker &amp; Kubernetes Cheatsheet</h1>
-      <p class="lede">Copy-paste Docker, Compose, kubectl and manifest patterns for shipping <b>.NET 10</b> services to <b>AKS</b>, with a version badge on anything newer than you might expect. Start from the <code>ship.sh</code> below — each tagged line opens the section that explains it — or pick a task.</p>
-      <div class="now" role="list" aria-label="Release status, October 2026">
+      <p class="lede">Learn and look up Docker, Compose, kubectl and Kubernetes manifests for shipping <b>.NET 10</b> services to <b>AKS</b>. New to it? Follow the learning path below; every section opens with a plain-words summary. Already know it? Start from <code>ship.sh</code>, search, or pick a task.</p>
+      <div class="now" role="list" aria-label="Release status, November 2026">
         <div class="now-i now-g" role="listitem"><b>Kubernetes 1.37</b>Current release since August 26, 2026. The project patches the three newest minor versions.</div>
         <div class="now-i now-b" role="listitem"><b>Ingress NGINX</b>Retired in March 2026: no more releases or security fixes. Move to Gateway API or another controller.</div>
         <div class="now-i now-a" role="listitem"><b>Gateway API v1.6</b>Released in August 2026; TCPRoute and UDPRoute joined the Standard channel.</div>
       </div>
     </header>
+
+    <section class="finder" id="path" aria-labelledby="path-h">
+      <div class="sec-h"><span class="code">PATH</span><h2 id="path-h">Learning path</h2><span class="ct" id="path-ct"></span></div>
+      <p class="sec-blurb">New to containers? Take these stops in order; each one builds on the one before. The chips jump to the cards for that stop.</p>
+      <ol class="path-list" id="path-list"></ol>
+    </section>
 
     <section class="intro" id="intro" aria-label="ship.sh map and how to read the cards">
       <div class="panel">
@@ -507,13 +595,15 @@ body.searching .sec.shut .blks{display:grid}
       <div class="panel">
         <h2>How to read a card</h2>
         <ul class="howto">
+          <li><span class="k">New here</span><span>Follow the learning path. Each section opens with an <span class="plain-chip">In plain words</span> summary; the <b>Explain</b> button in the toolbar shows or hides them.</span></li>
           <li><span class="k">Badges</span><span class="vkey">
             <span class="vk"><span class="ver v-next">K8s 1.37 · beta</span>beta: on by default, details can still change</span>
             <span class="vk"><span class="ver v-new">K8s 1.36</span>stable within the last year: 1.35 or later, or .NET 10</span>
             <span class="vk"><span class="ver">K8s 1.25</span>older: available on every supported version</span></span></li>
           <li><span class="k">Search</span><span>Press <kbd>/</kbd> and type a command, an object or an error: “CrashLoopBackOff”, “subPath”, “137”.</span></li>
+          <li><span class="k">Links</span><span>Codes such as <span class="xref">RES</span> inside a card jump to that section.</span></li>
           <li><span class="k">Code</span><span><span style="color:var(--rose)">✗</span> and <span style="color:var(--teal)">✓</span> lines mark the culprit and the cure. Every block has Copy; <b>Wrap</b> folds long lines on small screens.</span></li>
-          <li><span class="k">Try it</span><span>Some diagrams flip between two states, and the Docker-to-Kubernetes, rollout and resources widgets react to your choices.</span></li>
+          <li><span class="k">Try it</span><span>Two-state diagrams flip with their buttons, and seven widgets react to your choices: Docker to Kubernetes, manifest lines, label selectors, Pod status, scheduling, rollouts and resources.</span></li>
         </ul>
       </div>
     </section>
@@ -528,23 +618,43 @@ body.searching .sec.shut .blks{display:grid}
     <div class="empty" id="empty" hidden>No card matches that search. Try a command (“rollout undo”), an object (“HTTPRoute”) or an exit code (“137”).</div>
 
     <footer class="foot">
-      <p>The Docker &amp; Kubernetes Cheatsheet: <span id="foot-count"></span>. Written for Kubernetes 1.37, Docker Engine with BuildKit and Compose v2, .NET 10 images and AKS; items marked beta are on by default but can still change. Releases and retirements checked in October 2026 against the Kubernetes blog: <a href="https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/" target="_blank" rel="noopener">v1.37 release</a>, <a href="https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/" target="_blank" rel="noopener">Ingress NGINX retirement</a>, <a href="https://kubernetes.io/blog/2026/08/03/gateway-api-v1-6-release/" target="_blank" rel="noopener">Gateway API v1.6</a>, <a href="https://kubernetes.io/blog/2026/03/20/ingress2gateway-1-0-release/" target="_blank" rel="noopener">Ingress2Gateway 1.0</a>, <a href="https://kubernetes.io/blog/2026/09/02/kubernetes-v1-37-hpa-scale-to-zero-beta/" target="_blank" rel="noopener">HPA scale to zero</a>, <a href="https://kubernetes.io/blog/2026/04/23/kubernetes-v1-36-userns-ga/" target="_blank" rel="noopener">user namespaces GA</a> and <a href="https://kubernetes.io/blog/2025/12/19/kubernetes-v1-35-in-place-pod-resize-ga/" target="_blank" rel="noopener">in-place Pod resize GA</a>.</p>
+      <p>The Docker &amp; Kubernetes Cheatsheet: <span id="foot-count"></span>. Written for Kubernetes 1.37, Docker Engine with BuildKit and Compose v2, .NET 10 images and AKS; items marked beta are on by default but can still change. Releases and retirements checked in November 2026 against the Kubernetes blog: <a href="https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/" target="_blank" rel="noopener">v1.37 release</a>, <a href="https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/" target="_blank" rel="noopener">Ingress NGINX retirement</a>, <a href="https://kubernetes.io/blog/2026/08/03/gateway-api-v1-6-release/" target="_blank" rel="noopener">Gateway API v1.6</a>, <a href="https://kubernetes.io/blog/2026/03/20/ingress2gateway-1-0-release/" target="_blank" rel="noopener">Ingress2Gateway 1.0</a>, <a href="https://kubernetes.io/blog/2026/09/02/kubernetes-v1-37-hpa-scale-to-zero-beta/" target="_blank" rel="noopener">HPA scale to zero</a>, <a href="https://kubernetes.io/blog/2026/04/23/kubernetes-v1-36-userns-ga/" target="_blank" rel="noopener">user namespaces GA</a> and <a href="https://kubernetes.io/blog/2025/12/19/kubernetes-v1-35-in-place-pod-resize-ga/" target="_blank" rel="noopener">in-place Pod resize GA</a>.</p>
       <p>Companions in this library: the <a href="dotnet-cheatsheet.html">.NET Cheatsheet</a> for the app side of containers (DEP: Aspire, container defaults, health endpoints) and the <a href="system-design-cheatsheet.html">System Design Cheatsheet</a> for the architecture around them.</p>
     </footer>
   </main>
 </div>
 <script>
-/* ===== Hero map, task finder, widget data ===== */
+/* ===== Top of page: section order, learning path, ship.sh map, task finder, widget data ===== */
+
+window.DKS_ORDER = ['core', 'lab', 'img', 'df', 'run', 'vol', 'cmp', 'k8s', 'ctl', 'yaml', 'wl', 'life', 'sch',
+  'net', 'cfg', 'res', 'obs', 'dbg', 'sec', 'helm', 'cicd', 'aks'];
+
+/* Learning path: [stop, what you can do afterwards, [card ids]] */
+window.DKS_PATH = [
+  ['Learn the five words', 'Image, container, Pod, node, cluster: what each one is and how they fit inside each other.', ['core-vm', 'core-flow', 'core-nest', 'core-terms']],
+  ['Build and run one container', 'Write a Dockerfile for a .NET app, build it, run it and read its logs.', ['df-dotnet', 'img-build', 'run-life', 'run-debug']],
+  ['Run the whole app locally', 'Start the API, Postgres and RabbitMQ together with Compose.', ['cmp-file', 'cmp-wait', 'cmp-cmds']],
+  ['See what Kubernetes adds', 'Desired state, controllers, and which part of the cluster does what.', ['core-loop', 'core-tools', 'k8s-arch', 'k8s-apply']],
+  ['Get a cluster to practise on', 'Create a free cluster on your laptop, then deploy, scale and roll back.', ['lab-pick', 'lab-kind', 'lab-first']],
+  ['Talk to the cluster', 'Pick the right cluster and namespace, read what runs and understand the output.', ['ctl-ctx', 'ctl-read', 'ctl-output']],
+  ['Read and write manifests', 'Know what each line of a Deployment does and how labels connect objects.', ['yaml-anatomy', 'yaml-labels', 'yaml-gotchas']],
+  ['Run your app the Kubernetes way', 'A Deployment, a Service and settings, translated from what you did in Docker.', ['k8s-translate', 'wl-deploy', 'net-svc', 'cfg-cm']],
+  ['Keep it healthy', 'Probes, requests and limits, and the stages every Pod goes through.', ['res-probes', 'res-qos', 'life-timeline', 'life-watch']],
+  ['Fix it when it breaks', 'Go from a STATUS value to the cause in a few commands.', ['dbg-tree', 'dbg-status', 'dbg-describe', 'obs-logs']],
+  ['Ship it to AKS', 'Push to ACR, deploy from a pipeline and roll out without downtime.', ['aks-connect', 'cicd-flow', 'cicd-ado', 'wl-roll']]
+];
 
 /* ship.sh, line by line: [section id or '', code] */
 window.DKS_SHIP = [
   ['', '# ship.sh: from a commit to running Pods'],
+  ['lab', '# practise first on your laptop: kind create cluster --name dev'],
   ['df', '# the image: multi-stage build, chiseled runtime, non-root'],
   ['img', 'docker build -t myacr.azurecr.io/shop-api:1.4.3 .'],
   ['run', 'docker run --rm -p 8080:8080 myacr.azurecr.io/shop-api:1.4.3'],
   ['cmp', 'docker compose up -d --build                # api + postgres + rabbitmq'],
   ['vol', 'docker compose down -v                      # and wipe the local volumes'],
   ['', ''],
+  ['cicd', '# in CI, everything below runs on each push to main'],
   ['aks', 'az acr login -n myacr'],
   ['img', 'docker push myacr.azurecr.io/shop-api:1.4.3'],
   ['aks', 'az aks get-credentials -g rg-shop -n aks-prod'],
@@ -552,11 +662,14 @@ window.DKS_SHIP = [
   ['ctl', 'kubectl config set-context --current --namespace=shop'],
   ['', ''],
   ['k8s', '# apply stores desired state; controllers make it real'],
+  ['yaml', 'kubectl apply --dry-run=server -k k8s/overlays/prod   # validate first'],
   ['cfg', 'kubectl apply -f k8s/secret-provider.yaml    # Key Vault, not plain Secrets'],
   ['helm', 'kubectl apply -k k8s/overlays/prod          # Deployment, Service, HTTPRoute'],
   ['wl', 'kubectl rollout status deploy/shop-api'],
+  ['life', 'kubectl get pods -w                         # Pending, Running, then 1/1 Ready'],
+  ['sch', 'kubectl get pods -o wide                     # which node each Pod landed on'],
   ['net', 'kubectl get svc,httproute'],
-  ['res', 'kubectl top pods -l app=shop-api'],
+  ['obs', 'kubectl top pods -l app=shop-api'],
   ['dbg', 'kubectl logs -f deploy/shop-api'],
   ['sec', 'kubectl auth can-i delete pods               # what may this identity do?'],
   ['', ''],
@@ -565,28 +678,175 @@ window.DKS_SHIP = [
 
 /* "I want to..." rows: [task, hint, [card ids]] */
 window.DKS_FINDER = [
+  ['Choose between Compose, Container Apps and AKS', 'what each one is for', ['core-when', 'core-tools']],
+  ['Practise Kubernetes on my laptop', 'kind, minikube, k3d', ['lab-pick', 'lab-kind', 'lab-first', 'lab-kind-dg']],
   ['Make an image smaller and faster to build', 'layer order, multi-stage, cache mounts', ['df-order', 'df-dotnet', 'img-cache', 'df-ignore']],
   ['Build for x64 nodes on an ARM laptop', 'buildx, platforms, exec format error', ['img-buildx', 'img-inspect']],
   ['Run the app and its dependencies locally', 'Compose, health checks, watch', ['cmp-file', 'cmp-wait', 'cmp-watch', 'cmp-cmds']],
-  ['Shut down without dropping requests', 'PID 1, SIGTERM, preStop', ['df-signal', 'df-stop', 'wl-stop', 'wl-deploy']],
+  ['Read a YAML manifest', 'fields, labels, namespaces, YAML traps', ['yaml-anatomy', 'yaml-fields', 'yaml-gotchas', 'yaml-explain']],
   ['Turn a `docker run` into Kubernetes YAML', 'ports, env, volumes, limits', ['k8s-translate', 'k8s-objects', 'ctl-gen']],
+  ['Understand a STATUS value', 'Pending, ContainerCreating, CrashLoopBackOff', ['life-watch', 'life-phases', 'ctl-output', 'dbg-status']],
+  ['Find out why a Pod is not running', 'status, events, logs', ['dbg-tree', 'dbg-describe', 'dbg-cmds', 'dbg-events']],
+  ['Debug a container without a shell', 'ephemeral containers, netshoot', ['dbg-debug', 'dbg-net', 'run-oneoff']],
+  ['Shut down without dropping requests', 'PID 1, SIGTERM, preStop', ['df-signal', 'df-stop', 'wl-stop', 'life-stop']],
   ['Deploy without downtime', 'rolling updates, probes, disruption budgets', ['wl-roll', 'wl-rollout', 'res-probe-yaml', 'wl-pdb']],
-  ['Expose an API to the internet', 'Service, Gateway API, Ingress', ['net-svc', 'net-gw', 'net-ing', 'net-path']],
+  ['Release to a few users first', 'canary, blue-green, weighted routes', ['cicd-strategies', 'cicd-canary', 'wl-roll']],
+  ['Expose an API to the internet', 'Service, Gateway API, Ingress', ['net-expose', 'net-svc', 'net-gw', 'net-path']],
+  ['Get HTTPS for a public API', 'cert-manager, Let’s Encrypt, Gateway', ['net-tls', 'net-gw', 'helm-3p']],
   ['Give a Pod settings and secrets', 'ConfigMap, Secret, Key Vault', ['cfg-cm', 'cfg-use', 'cfg-secret', 'cfg-update']],
   ['Call Azure without storing secrets', 'Workload Identity', ['aks-wi', 'aks-wi-yaml', 'cfg-secret']],
   ['Keep data across restarts', 'PVCs, storage classes, StatefulSets', ['cfg-pvc', 'cfg-sc', 'wl-sts', 'vol-types']],
   ['Size CPU and memory', 'requests, limits, QoS, the .NET GC', ['res-qos', 'res-rl', 'res-dotnet', 'res-quota']],
   ['Stop a slow starter from being killed', 'startup, liveness and readiness probes', ['res-start', 'res-probes', 'res-probe-yaml', 'res-live']],
   ['Scale with load', 'HPA, KEDA, cluster autoscaler', ['res-hpa', 'res-zero', 'aks-ops']],
-  ['Find out why a Pod is not running', 'status, events, logs', ['dbg-tree', 'dbg-status', 'dbg-cmds', 'dbg-events']],
-  ['Debug a container without a shell', 'ephemeral containers, netshoot', ['dbg-debug', 'dbg-net', 'run-oneoff']],
+  ['Keep Pods on, or off, certain nodes', 'taints, tolerations, node selectors', ['sch-sim', 'sch-select', 'sch-taint', 'sch-aks']],
+  ['Spread replicas across nodes and zones', 'anti-affinity, topology spread', ['sch-spread', 'wl-deploy', 'wl-pdb']],
   ['Run a job once or on a schedule', 'Jobs, CronJobs, migrations, sidecars', ['wl-job', 'wl-sidecar']],
+  ['See logs from every replica', 'stdout, JSON logs, stern, Log Analytics', ['obs-logs', 'obs-json', 'obs-kql', 'obs-flow']],
+  ['Trace requests and collect metrics', 'OpenTelemetry, Prometheus, alerts', ['obs-otel', 'obs-scrape', 'obs-enable', 'obs-alerts']],
   ['Lock down a workload', 'securityContext, Pod Security, RBAC, NetworkPolicy', ['sec-ctx', 'sec-psa', 'sec-rbac', 'net-pol']],
+  ['Build and deploy from a pipeline', 'Azure Pipelines, GitHub Actions, image tags', ['cicd-flow', 'cicd-ado', 'cicd-gha', 'cicd-tags']],
+  ['Deploy with GitOps', 'Flux on AKS, Argo CD', ['cicd-pushpull', 'cicd-flux', 'cicd-argo']],
   ['Promote a release across environments', 'Helm values, Kustomize overlays', ['helm-pick', 'helm-values', 'kus-layout', 'helm-cmds']],
-  ['Work with AKS and ACR', 'credentials, image pulls, node pools, upgrades', ['aks-connect', 'aks-acr', 'aks-ops', 'aks-checklist']],
+  ['Work with AKS and ACR', 'credentials, image pulls, node pools', ['aks-connect', 'aks-acr', 'aks-ops', 'aks-checklist']],
+  ['Upgrade a cluster safely', 'versions, removed APIs, surge', ['aks-upgrade', 'aks-ops', 'wl-pdb']],
+  ['Keep the cloud bill down', 'requests, autoscaling, spot, stopping', ['aks-cost', 'res-qos', 'res-zero']],
   ['Free up disk space', 'images, volumes, build cache', ['vol-clean', 'img-inspect']],
-  ['Understand what `kubectl apply` does', 'API server, controllers, scheduler', ['k8s-arch', 'k8s-apply', 'k8s-objs']]
+  ['Understand what `kubectl apply` does', 'API server, controllers, scheduler', ['core-loop', 'k8s-arch', 'k8s-apply', 'k8s-objs']]
 ];
+
+/* Manifest explainer: lines are [part id or '', yaml]; parts are [title, explanation] */
+window.DKS_ANATOMY = {
+  lines: [
+    ['api', 'apiVersion: apps/v1'],
+    ['kind', 'kind: Deployment'],
+    ['meta', 'metadata:'],
+    ['', '  name: shop-api'],
+    ['ns', '  namespace: shop'],
+    ['', '  labels: { app: shop-api }'],
+    ['spec', 'spec:'],
+    ['rep', '  replicas: 3'],
+    ['sel', '  selector:'],
+    ['sel', '    matchLabels: { app: shop-api }'],
+    ['tpl', '  template:'],
+    ['', '    metadata:'],
+    ['tlab', '      labels: { app: shop-api }'],
+    ['pspec', '    spec:'],
+    ['', '      containers:'],
+    ['ctr', '        - name: api'],
+    ['img', '          image: myacr.azurecr.io/shop-api:1.4.3'],
+    ['port', '          ports: [{ containerPort: 8080 }]'],
+    ['env', '          env:'],
+    ['env', '            - name: ASPNETCORE_ENVIRONMENT'],
+    ['env', '              value: Production'],
+    ['sep', '---'],
+    ['svc', 'apiVersion: v1'],
+    ['svc', 'kind: Service'],
+    ['', 'metadata: { name: shop-api, namespace: shop }'],
+    ['', 'spec:'],
+    ['ssel', '  selector: { app: shop-api }'],
+    ['sport', '  ports:'],
+    ['sport', '    - port: 80'],
+    ['sport', '      targetPort: 8080']
+  ],
+  parts: {
+    api: ['apiVersion', 'Which API group and version define this kind. Deployments live in `apps/v1`; core objects such as Pod, Service and ConfigMap use plain `v1`. `kubectl api-resources` lists them all.'],
+    kind: ['kind', 'The type of object. Together with `apiVersion`, it tells Kubernetes which schema to check the rest of the file against.'],
+    meta: ['metadata', 'Who this object is: a `name` that is unique for its kind in the namespace, and `labels` for grouping. Kubernetes adds a `uid`, timestamps and a `resourceVersion` when it stores it.'],
+    ns: ['namespace', 'The folder the object lives in. Leave it out and the object lands in your current namespace, usually `default`.'],
+    spec: ['spec', 'The desired state: what you want to be true. Kubernetes writes what is actually true into `status`, and controllers keep working until the two match. Never put `status` in your files.'],
+    rep: ['replicas', 'How many identical Pods to keep running. Delete one and a replacement appears within seconds. Leave the field out once an HPA manages the count.'],
+    sel: ['selector', 'How the Deployment recognises its own Pods: every Pod labelled `app: shop-api`. It must match the template labels further down, and it can’t be changed after creation.'],
+    tpl: ['template', 'The blueprint for each Pod. Changing anything inside it (image, env, resources) starts a rolling update; changing `replicas` doesn’t.'],
+    tlab: ['template labels', 'The labels every new Pod gets. The selector above and the Service below both find Pods through these.'],
+    pspec: ['Pod spec', 'Everything about the Pod itself: its containers, volumes, service account and security settings.'],
+    ctr: ['containers', 'The list of containers in each Pod, usually just one. Commands refer to it by `name`, as in `kubectl logs <pod> -c api` or `kubectl set image deploy/shop-api api=...`.'],
+    img: ['image', 'The image to run, with an immutable tag. With `:latest` you can’t tell which build is running or roll back to a known one.'],
+    port: ['containerPort', 'Documents the port the app listens on (8080 in .NET 8+ images). Like `EXPOSE`, it opens nothing by itself; the Service does the routing.'],
+    env: ['env', 'Environment variables. .NET configuration reads them, with `__` standing for `:`, so `Logging__LogLevel__Default` sets `Logging:LogLevel:Default`.'],
+    sep: ['---', 'Starts a new document. One file can hold several objects; `kubectl apply -f` applies them in order.'],
+    svc: ['Service', 'A second object in the same file: a stable name and virtual IP in front of the Pods.'],
+    ssel: ['Service selector', 'Sends traffic to every Ready Pod labelled `app: shop-api`, whichever Deployment created it. One typo here and the Service has no endpoints.'],
+    sport: ['port and targetPort', 'Callers use `http://shop-api:80`; the Service forwards each request to port 8080 in one of the Pods.']
+  }
+};
+
+/* "kubectl get pods -w" walkthrough: rows are [STATUS, READY, RESTARTS, colour, what is happening] */
+window.DKS_WATCH = {
+  'Healthy start': {
+    rows: [
+      ['Pending', '0/1', '0', 'w', 'Accepted by the API server; the scheduler is choosing a node.'],
+      ['ContainerCreating', '0/1', '0', 'w', 'Placed on a node. The kubelet pulls the image and sets up networking and volumes.'],
+      ['Running', '0/1', '0', 's', 'The process has started, but no probe has passed yet, so the Service sends it nothing.'],
+      ['Running', '1/1', '0', 'g', 'Readiness passed: the Pod is now a Service endpoint and receives requests.']
+    ],
+    next: 'kubectl get endpointslices -l kubernetes.io/service-name=shop-api   # the Pod IP is listed',
+    verdict: ['ok', '**Healthy.** READY counts containers passing readiness out of containers in the Pod; only `1/1` means it takes traffic.']
+  },
+  'Crash at startup': {
+    rows: [
+      ['ContainerCreating', '0/1', '0', 'w', 'Placed on a node, pulling the image.'],
+      ['Running', '0/1', '0', 's', 'The process starts…'],
+      ['Error', '0/1', '0', 'b', '…and exits with code 1: an unhandled exception, such as a missing connection string.'],
+      ['Running', '0/1', '1 (2s ago)', 's', 'The kubelet restarts it. RESTARTS counts restarts and says when the last one happened.'],
+      ['CrashLoopBackOff', '0/1', '1 (9s ago)', 'b', 'It failed again. The kubelet now waits between attempts: 10 s, 20 s, 40 s and so on, up to 5 minutes.'],
+      ['CrashLoopBackOff', '0/1', '4 (51s ago)', 'b', 'Not stuck, waiting. It keeps retrying until the cause is fixed.']
+    ],
+    next: 'kubectl logs shop-api-7d9f8c6b5d-x2x4k --previous   # output of the attempt that crashed',
+    verdict: ['bad', '**The app itself fails.** Plain `kubectl logs` may show the new attempt that is still starting; `--previous` shows the one that died.']
+  },
+  'Wrong image tag': {
+    rows: [
+      ['Pending', '0/1', '0', 'w', 'The scheduler is choosing a node.'],
+      ['ContainerCreating', '0/1', '0', 'w', 'Placed on a node; the kubelet asks the registry for `shop-api:1.4.33`…'],
+      ['ErrImagePull', '0/1', '0', 'b', '…and the pull fails: the tag doesn’t exist, or the node isn’t allowed to pull from this registry.'],
+      ['ImagePullBackOff', '0/1', '0', 'b', 'Waiting before the next pull attempt. RESTARTS stays 0 because no container ever started.']
+    ],
+    next: 'kubectl describe pod shop-api-7d9f8c6b5d-x2x4k | tail -15   # "not found" = tag, "unauthorized" = access',
+    verdict: ['bad', '**The image never arrived.** Check the tag in ACR, then run `az aks check-acr` for access. Your code isn’t involved yet.']
+  },
+  'Missing Secret': {
+    rows: [
+      ['Pending', '0/1', '0', 'w', 'The scheduler is choosing a node.'],
+      ['ContainerCreating', '0/1', '0', 'w', 'The kubelet prepares the container…'],
+      ['CreateContainerConfigError', '0/1', '0', 'b', '…but the Pod refers to Secret `db`, or a key in it, that doesn’t exist, so the container is never created.']
+    ],
+    next: 'kubectl describe pod shop-api-7d9f8c6b5d-x2x4k | grep -i "not found"   # Error: secret "db" not found',
+    verdict: ['bad', '**Configuration is missing, not broken code.** Create the Secret or ConfigMap in the same namespace; the kubelet retries by itself.']
+  },
+  'Out of memory': {
+    rows: [
+      ['Running', '1/1', '0', 'g', 'Serving normally.'],
+      ['OOMKilled', '0/1', '0', 'b', 'Memory use reached `limits.memory`, so the kernel killed the process (exit code 137).'],
+      ['Running', '0/1', '1 (3s ago)', 's', 'Restarted in place. Not Ready until its probes pass again.'],
+      ['Running', '1/1', '1 (40s ago)', 'g', 'Back in rotation. If it keeps happening, the restarts turn into CrashLoopBackOff.']
+    ],
+    next: 'kubectl describe pod shop-api-7d9f8c6b5d-x2x4k | grep -A4 "Last State"   # Reason: OOMKilled',
+    verdict: ['warn', '**The limit is too low, or memory leaks.** Compare `kubectl top pod` with the limit; the .NET GC aims to stay under 75% of it ([[res]]).']
+  },
+  'Slow start': {
+    rows: [
+      ['Running', '0/1', '0', 's', 'Booting: migrations and cache warm-up take 45 seconds.'],
+      ['Running', '0/1', '1 (1s ago)', 'b', 'Liveness failed three times before the boot finished, so the kubelet killed and restarted it.'],
+      ['CrashLoopBackOff', '0/1', '3 (12s ago)', 'b', 'Every boot is killed the same way. The logs show no error at all, and that is the clue.']
+    ],
+    next: 'kubectl describe pod shop-api-7d9f8c6b5d-x2x4k | grep -i liveness   # Liveness probe failed',
+    verdict: ['bad', '**The probes are too impatient.** Add a `startupProbe` so liveness waits until the app has booted ([[res]]).']
+  },
+  'Graceful stop': {
+    rows: [
+      ['Running', '1/1', '0', 'g', 'A rollout or `kubectl delete` starts removing this Pod.'],
+      ['Terminating', '1/1', '0', 'a', 'Taken out of the Service; the `preStop` sleep runs while routing catches up.'],
+      ['Terminating', '0/1', '0', 'a', 'SIGTERM: the app stops accepting new requests, finishes the ones in flight and exits 0.'],
+      ['(gone)', '', '', 'n', 'The Pod object is deleted. Its replacement has a new name and IP; nothing reuses this one.']
+    ],
+    next: 'kubectl get pods -w   # during a rollout, new Pods appear before old ones leave',
+    verdict: ['ok', '**A clean exit inside the grace period.** If Terminating lasts exactly 30 s and ends in exit code 137, the app ignored SIGTERM ([[df]]).']
+  }
+};
+
+
+/* ===== Hero map, task finder, widget data ===== */
 
 /* Docker -> Kubernetes translator: { need, k8, dk, dl, y, why } */
 window.DKS_MAP = [
@@ -600,7 +860,7 @@ spec:
   ports:
     - port: 80            # what callers use: http://shop-api
       targetPort: 8080    # the containerPort`,
-    why: 'A Service is reachable only inside the cluster. Traffic from the internet needs a Gateway route, an Ingress or `type: LoadBalancer` (NET).' },
+    why: 'A Service is reachable only inside the cluster. Traffic from the internet needs a Gateway route, an Ingress or `type: LoadBalancer` ([[net]]).' },
 
   { need: 'Set environment variables', k8: '`env`, and a ConfigMap for the rest', dl: 'bash', dk: `
 docker run -e ASPNETCORE_ENVIRONMENT=Production \\
@@ -620,7 +880,7 @@ env:
   - name: ConnectionStrings__Db
     valueFrom:
       secretKeyRef: { name: db, key: connection-string }`,
-    why: 'A Secret is base64, not encrypted. On AKS, keep the value in Key Vault and mount it with the CSI driver (CFG).' },
+    why: 'A Secret is base64, not encrypted. On AKS, keep the value in Key Vault and mount it with the CSI driver ([[cfg]]).' },
 
   { need: 'Keep data across restarts', k8: 'PersistentVolumeClaim', dl: 'bash', dk: `
 docker run -d -v pgdata:/var/lib/postgresql/data postgres:16`, y: `
@@ -657,7 +917,7 @@ docker run --cpus 1 --memory 512m shop-api:1.4.3`, y: `
 resources:
   requests: { cpu: 250m, memory: 256Mi }   # what the scheduler reserves
   limits: { memory: 512Mi }                # OOMKilled above this`,
-    why: 'Docker has no requests. The scheduler places Pods by requests only, so a Pod without them can land on a node that is already full (RES).' },
+    why: 'Docker has no requests. The scheduler places Pods by requests only, so a Pod without them can land on a node that is already full ([[res]]).' },
 
   { need: 'Restart it when it crashes', k8: 'Deployment', dl: 'bash', dk: `
 docker run -d --restart unless-stopped shop-api:1.4.3`, y: `
@@ -673,7 +933,7 @@ spec:
       containers:
         - { name: api, image: myacr.azurecr.io/shop-api:1.4.3 }
       # restartPolicy: Always is the only option in a Deployment`,
-    why: 'A container that keeps crashing waits longer before each restart, up to five minutes: that waiting state is `CrashLoopBackOff`.' },
+    why: 'A container that keeps crashing waits longer before each restart, up to five minutes: that waiting state is `CrashLoopBackOff` ([[life]]).' },
 
   { need: 'Check its health', k8: 'Liveness and readiness probes', dl: 'yaml', dk: `
 healthcheck:
@@ -839,7 +1099,7 @@ ENTRYPOINT ["dotnet", "Shop.Api.dll"]`,
       ['USER $APP_UID', 'user for later steps and at run time', 'a numeric ID lets Kubernetes verify `runAsNonRoot`'],
       ['ENTRYPOINT [..]', 'the fixed executable', 'exec form, so the app is PID 1 and receives SIGTERM'],
       ['CMD [..]', 'default arguments, or the default command', 'replaced by whatever follows the image name in `docker run`'],
-      ['HEALTHCHECK', 'command Docker runs to mark the container healthy', 'Kubernetes ignores it and uses probes (RES)'],
+      ['HEALTHCHECK', 'command Docker runs to mark the container healthy', 'Kubernetes ignores it and uses probes ([[res]])'],
       ['LABEL k=v', 'metadata, such as `org.opencontainers.image.source`', 'GHCR uses that label to link the image to its repository']
     ] },
 
@@ -1098,7 +1358,10 @@ services:
 
   db:
     image: postgres:16
-    environment: { POSTGRES_DB: app, POSTGRES_USER: app, POSTGRES_PASSWORD: \${DB_PASSWORD} }
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
     ports: ["127.0.0.1:5432:5432"]
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
@@ -1149,11 +1412,10 @@ docker compose config                      # the merged, resolved file
 docker compose ls                          # every Compose project on this machine` },
 
     { k: 'snip', id: 'cmp-env', t: 'Variables, `.env` and overrides', lang: 'yaml', code: `
-# .env, next to compose.yaml: used for \${...} substitution, not passed to containers
-DB_PASSWORD=dev-only-password
-API_TAG=dev
+# .env, next to compose.yaml, is used for \${...} substitution only:
+#   DB_PASSWORD=dev-only-password
+#   API_TAG=dev
 
-# compose.yaml
 services:
   api:
     image: shop-api:\${API_TAG:-dev}                 # default when unset
@@ -1726,7 +1988,7 @@ spec:
           objectName: db-password
           objectType: secret`,
       badNote: 'Anyone who can read the repository, or run `kubectl get secret -o yaml` in the namespace, can decode it. Encryption at rest protects etcd, not your Git history.',
-      goodNote: 'Mount it with a `csi` volume (`driver: secrets-store.csi.k8s.io`, `secretProviderClass: shop-kv`). The add-on is `azure-keyvault-secrets-provider`; the identity comes from Workload Identity (AKS).' },
+      goodNote: 'Mount it with a `csi` volume (`driver: secrets-store.csi.k8s.io`, `secretProviderClass: shop-kv`). The add-on is `azure-keyvault-secrets-provider`; the identity comes from Workload Identity ([[aks]]).' },
 
     { k: 'snip', id: 'cfg-pvc', t: 'Claim storage on AKS', lang: 'yaml', code: `
 apiVersion: v1
@@ -1767,7 +2029,7 @@ window.DKS.push({
 
     { k: 'table', id: 'res-rl', t: 'Requests vs limits', cols: ['', '`requests`', '`limits`'], rows: [
       ['Used for', 'scheduling: a node must have this much unreserved', 'a hard cap at run time'],
-      ['CPU above it', 'allowed while the node has idle CPU', 'throttled (CFS quota), never killed'],
+      ['CPU above it', 'allowed while the node has idle CPU', 'slowed down (throttled), never killed'],
       ['Memory above it', 'allowed, but first in line for eviction under pressure', 'OOMKilled: exit code 137'],
       ['Units', '`250m` = a quarter of a core; `256Mi` = 256 mebibytes', 'same units; set without a request, the request defaults to the limit']
     ] },
@@ -1966,7 +2228,7 @@ kubectl get events -n shop --sort-by=.lastTimestamp
 kubectl get events -A --field-selector type=Warning
 kubectl get events -n shop -w                      # watch while you reproduce` },
 
-    { k: 'call', kind: 'trap', text: 'Events are kept for one hour by default. Look at a crash soon after it happens, or send events to Container Insights or another log store.' }
+    { k: 'call', kind: 'trap', text: 'Events are kept for one hour by default. Look at a crash soon after it happens, or send events to Container Insights or another log store ([[obs]]).' }
   ]
 });
 
@@ -2201,12 +2463,977 @@ az aks start -g rg-shop -n aks-dev`,
       ['Network', 'private cluster or authorized IP ranges for the API server; a network policy engine'],
       ['Upgrades', 'an auto-upgrade channel plus a planned maintenance window'],
       ['Images', 'ACR attached; tags locked after release; scanning in CI'],
-      ['Observability', 'Container Insights or managed Prometheus; alerts on restarts, OOM kills and Pending Pods']
+      ['Observability', 'Container Insights or managed Prometheus; alerts on restarts, OOM kills and Pending Pods ([[obs-alerts]])']
     ] },
 
     { k: 'call', kind: 'trap', text: '`az aks get-credentials --admin` returns the cluster-admin certificate, which bypasses Entra ID and RBAC entirely. Disable local accounts in production so it cannot be used.' }
   ]
 });
+
+
+/* ===== New sections: CORE, LAB, YAML, LIFE, SCHED, OBS, CICD ===== */
+window.DKS = window.DKS || [];
+
+window.DKS.push({
+  id: 'core', code: 'CORE', grp: 'Start here', name: 'Core ideas in plain words',
+  blurb: 'Five words carry most of this sheet: image, container, Pod, node and cluster. Learn how they fit together and how Kubernetes keeps them in line, and every other section gets easier.',
+  plain: 'A **container** is your app plus everything it needs, sealed so it runs the same on any machine. **Kubernetes** manages a fleet of machines for you: you tell it what should be running, and it keeps making that true, even when a process crashes or a machine dies.',
+  blocks: [
+    { k: 'dg', id: 'core-vm', t: 'Virtual machines vs containers', seg: ['Virtual machines', 'Containers'],
+      capB: '**Virtual machines:** every app carries a whole guest operating system. Strong isolation, but gigabytes per copy and minutes to boot.',
+      capF: '**Containers:** apps share the host’s kernel and carry only their own files. Megabytes per copy, seconds to start, and the same image runs on your laptop and in AKS.',
+      b: { type: 'flow', w: 680, cols: 3, rows: 4, ch: 74, minw: 520,
+        nodes: [
+          { id: 'a1', x: 0, y: 0, l: 'Shop.Api', sub: 'your app', k: 'a' },
+          { id: 'a2', x: 1, y: 0, l: 'Shop.Worker', sub: 'your app', k: 'a' },
+          { id: 'a3', x: 2, y: 0, l: 'Postgres', sub: 'a database' },
+          { id: 'o1', x: 0, y: 1, l: 'Guest OS', sub: 'GBs, boots in minutes', k: 'w' },
+          { id: 'o2', x: 1, y: 1, l: 'Guest OS', sub: 'GBs, boots in minutes', k: 'w' },
+          { id: 'o3', x: 2, y: 1, l: 'Guest OS', sub: 'GBs, boots in minutes', k: 'w' },
+          { id: 'hv', x: 1, y: 2, l: 'Hypervisor', sub: 'Hyper-V, VMware', w: 620 },
+          { id: 'hw', x: 1, y: 3, l: 'Server', sub: 'CPU, memory, disk', w: 620, k: 'm' }
+        ],
+        groups: [{ n: ['a1', 'o1'], l: 'VM 1', k: 's' }, { n: ['a2', 'o2'], l: 'VM 2', k: 's' }, { n: ['a3', 'o3'], l: 'VM 3', k: 's' }] },
+      f: { type: 'flow', w: 680, cols: 3, rows: 4, ch: 74, minw: 520,
+        nodes: [
+          { id: 'c1', x: 0, y: 0, l: 'Shop.Api', sub: 'container: app + libraries', k: 'a' },
+          { id: 'c2', x: 1, y: 0, l: 'Shop.Worker', sub: 'container: app + libraries', k: 'a' },
+          { id: 'c3', x: 2, y: 0, l: 'Postgres', sub: 'container' },
+          { id: 'rt', x: 1, y: 1, l: 'Container runtime', sub: 'Docker Engine or containerd: MBs per app, starts in seconds', w: 620, k: 's' },
+          { id: 'os', x: 1, y: 2, l: 'One host OS (Linux)', sub: 'one kernel, shared by every container', w: 620, k: 'w' },
+          { id: 'hw', x: 1, y: 3, l: 'Server', sub: 'CPU, memory, disk', w: 620, k: 'm' }
+        ] } },
+
+    { k: 'dg', id: 'core-flow', t: 'Build, ship, run', cap: '**Build once, run anywhere.** `docker build` turns source into an image, `docker push` stores it in a registry, and every machine that runs it, your laptop or an AKS node, gets exactly the same bytes.',
+      d: { type: 'flow', w: 680, cols: 3, rows: 2, ch: 100, minw: 520,
+        alt: 'Source and Dockerfile are built into an image; the image is pushed to a registry; your laptop runs it as a container; an AKS node pulls it from the registry to run a Pod',
+        nodes: [
+          { id: 'src', x: 0, y: 0, l: 'Source + Dockerfile', sub: 'your repo', s: 'doc', w: 118 },
+          { id: 'img', x: 1, y: 0, l: 'Image', sub: 'shop-api:1.4.3, read-only layers', s: 'stack', k: 'a', w: 118 },
+          { id: 'reg', x: 2, y: 0, l: 'Registry', sub: 'ACR or Docker Hub', s: 'db', w: 118 },
+          { id: 'ctr', x: 1, y: 1, l: 'Container', sub: 'on your laptop', k: 'g', w: 118 },
+          { id: 'pod', x: 2, y: 1, l: 'Pod on AKS', sub: 'the node pulls the image', k: 's', w: 118 }
+        ],
+        edges: [
+          { f: 'src', t: 'img', l: 'docker build', mono: true, ly: -14 },
+          { f: 'img', t: 'reg', l: 'docker push', mono: true, ly: -14 },
+          { f: 'img', t: 'ctr', l: 'docker run', mono: true },
+          { f: 'reg', t: 'pod', l: 'pull' }
+        ] } },
+
+    { k: 'dg', id: 'core-nest', t: 'What runs where: cluster, nodes, Pods, containers', cap: '**They fit inside each other.** A cluster is a set of nodes (VMs); each node runs Pods; each Pod holds one or more containers that share an IP. The two `shop-api` Pods are copies placed on different nodes, and one Service reaches both.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 104, minw: 560,
+        alt: 'Two nodes, each running two Pods; one Pod has an app container and a sidecar; a Service in front of both shop-api Pods',
+        nodes: [
+          { id: 'p1', x: 0, y: 0, l: 'shop-api-x2x4k', sub: 'Pod: api + otel sidecar', k: 'a', w: 130 },
+          { id: 'p2', x: 1, y: 0, l: 'worker-q7w3e', sub: 'Pod: worker', w: 130 },
+          { id: 'p3', x: 2, y: 0, l: 'shop-api-p8m2n', sub: 'Pod: api', k: 'a', w: 130 },
+          { id: 'p4', x: 3, y: 0, l: 'postgres-0', sub: 'Pod: postgres, with its disk', s: 'db', w: 130 },
+          { id: 'svc', x: 1, y: 1, dx: 82, l: 'Service shop-api', sub: 'one stable name for both api Pods', s: 'pill', k: 's', w: 230 }
+        ],
+        edges: [{ f: 'svc', t: 'p1' }, { f: 'svc', t: 'p3' }],
+        groups: [{ n: ['p1', 'p2'], l: 'node 1, a VM', k: 'n' }, { n: ['p3', 'p4'], l: 'node 2, a VM', k: 'n' }] } },
+
+    { k: 'dg', id: 'core-loop', t: 'Kubernetes keeps reconciling', cap: '**Desired state, checked forever.** Controllers watch both what you asked for and what exists, and act on the difference. A Pod lost with a failed node comes back with no command from you, like a `BackgroundService` looping “compare, then fix”.',
+      d: { type: 'flow', w: 680, cols: 3, rows: 2, ch: 140, minw: 540,
+        alt: 'You apply replicas 3; the API server stores it; the Deployment controller compares wanted and running Pods and creates the missing one; when a node fails, the running count drops and the controller reacts',
+        nodes: [
+          { id: 'you', x: 0, y: 0, l: 'You', sub: 'kubectl apply: replicas 3', s: 'pill', k: 'a' },
+          { id: 'api', x: 1, y: 0, l: 'API server', sub: 'stores what you want: 3' },
+          { id: 'ctl', x: 2, y: 0, l: 'Deployment controller', sub: 'compares wanted (3) with running (2)' },
+          { id: 'fail', x: 1, y: 1, l: 'A node fails', sub: 'one Pod disappears', k: 'b' },
+          { id: 'pods', x: 2, y: 1, l: 'Running Pods', sub: 'what is actually there', s: 'stack', k: 'g' }
+        ],
+        edges: [
+          { f: 'you', t: 'api', l: 'apply', ly: -14 },
+          { f: 'api', t: 'ctl', l: 'watch', ly: -14 },
+          { f: 'ctl', t: 'pods', l: 'creates the missing Pod', k: 'g', c: -42 },
+          { f: 'pods', t: 'ctl', l: 'watch', c: -42 },
+          { f: 'fail', t: 'pods', k: 'b', d: true }
+        ] } },
+
+    { k: 'table', id: 'core-tools', t: 'Which tool does what', cols: ['Tool', 'Does', 'Runs on'], rows: [
+      ['Docker Engine', 'builds images and runs containers', 'your laptop, CI agents'],
+      ['Docker Compose', 'starts several containers together from one file', 'one machine: local development'],
+      ['Registry (ACR, Docker Hub)', 'stores images and hands them out', 'the cloud'],
+      ['Kubernetes', 'runs containers across many machines, replaces failed ones, rolls out new versions', 'a cluster of nodes'],
+      ['AKS', 'Kubernetes with the control plane run and patched by Azure', 'Azure'],
+      ['kubectl', 'the command line for any Kubernetes cluster', 'your laptop, CI'],
+      ['Helm, Kustomize', 'package manifests and adjust them per environment', 'your laptop, CI'],
+      ['kind, minikube, k3d', 'a small, real cluster to practise on', 'your laptop, inside Docker']
+    ] },
+
+    { k: 'table', id: 'core-when', t: 'Compose, Container Apps or AKS?', cols: ['', 'Docker Compose', 'Azure Container Apps', 'AKS'], rows: [
+      ['Runs on', 'one machine', 'a serverless platform run by Azure', 'node pools of VMs you choose'],
+      ['You manage', 'the machine and its containers', 'apps, revisions and scale rules', 'nodes, upgrades, add-ons and every manifest'],
+      ['Scaling', 'by hand', 'built in, down to zero', 'HPA, KEDA, cluster autoscaler'],
+      ['Pick it for', 'local development, small single-host apps', 'a handful of services, no platform team', 'many services, full control, a team to run it']
+    ], note: 'Container Apps runs on Kubernetes underneath but hides it. The Docker half of this sheet applies to it unchanged.' },
+
+    { k: 'table', id: 'core-terms', t: 'Glossary, with the closest .NET or Azure idea', cols: ['Term', 'In plain words', 'Closest .NET / Azure idea'], rows: [
+      ['Image', 'a read-only package of your app, its runtime and the OS files it needs', 'the `dotnet publish` folder plus the OS, sealed'],
+      ['Container', 'a running process started from an image, in its own sandbox', 'one running instance of that published app'],
+      ['Dockerfile', 'the recipe that builds an image, step by step', 'a build script: restore, publish, set the entry point'],
+      ['Layer', 'one cached step of an image build, reused while unchanged', 'incremental build output'],
+      ['Registry', 'a server that stores images by name and tag', 'a NuGet feed for images (ACR)'],
+      ['Tag', 'a name for one image version, such as `1.4.3`', 'a package version'],
+      ['Volume', 'storage that outlives the container', 'a mapped drive'],
+      ['Compose', 'several containers started together from one file', 'a launch profile for many projects, like an Aspire AppHost'],
+      ['Cluster', 'a group of machines that Kubernetes runs as one', 'a pool of VMs managed as one (AKS node pools are VM scale sets)'],
+      ['Node', 'one machine in the cluster', 'one VM in that pool'],
+      ['Pod', 'what Kubernetes runs: one or more containers sharing an IP', 'one deployed instance of your app, plus helpers'],
+      ['Deployment', 'keeps N copies of a Pod running and rolls out new versions', 'App Service instance count, with rolling releases'],
+      ['ReplicaSet', 'the Pods of one version; a Deployment manages these for you', 'the instances of one release'],
+      ['Service', 'a stable name and address in front of the healthy Pods', 'the base address you give `HttpClient`'],
+      ['Gateway, Ingress', 'the front door that routes outside HTTP traffic to Services', 'Application Gateway, or a YARP proxy'],
+      ['Namespace', 'a folder for objects, with its own permissions and quotas', 'a resource group'],
+      ['Label, selector', 'tags on objects, and a query that finds objects by tag', 'Azure resource tags, and a filter on them'],
+      ['ConfigMap', 'settings handed to Pods as variables or files', '`appsettings.json`, delivered by the cluster'],
+      ['Secret', 'sensitive values handed to Pods', 'user secrets; in production, Key Vault'],
+      ['PersistentVolumeClaim', 'a request for a disk of a given size and type', 'a ticket that says “I need a 20 GB disk”'],
+      ['Probe', 'a health check the kubelet runs against your container', 'the App Service health check path'],
+      ['Controller', 'a loop that compares desired and actual state and fixes the difference', 'a `BackgroundService` that never stops reconciling'],
+      ['kubelet', 'the agent on each node that starts containers and reports back', 'a host agent on every VM'],
+      ['kubectl', 'the command line that talks to the cluster API', '`az`, for Kubernetes'],
+      ['Manifest', 'a YAML file describing one or more objects', 'a Bicep file for one resource'],
+      ['HPA', 'adds and removes Pods as load changes', 'an autoscale rule'],
+      ['Helm chart', 'a versioned package of templated manifests', 'a NuGet package of Kubernetes objects'],
+      ['Operator, CRD', 'a new kind of object plus the controller that handles it', 'a plug-in that adds a resource type']
+    ] },
+
+    { k: 'call', kind: 'key', text: '**Two ideas carry you a long way.** Desired state: you describe what should be true, and controllers make it so. Labels: objects find each other by label, never by name.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'lab', code: 'LAB', grp: 'Start here', name: 'A practice cluster on your laptop',
+  blurb: 'kind, minikube and k3d run a small but real Kubernetes inside Docker. Everything in the Kubernetes sections works on them except the Azure-specific parts.',
+  plain: 'You can learn almost all of Kubernetes for free on your own machine. A local cluster behaves like AKS for Deployments, Services, probes and kubectl, mistakes cost nothing, and one command deletes the whole thing.',
+  blocks: [
+    { k: 'table', id: 'lab-pick', t: 'Pick a local cluster', cols: ['Tool', 'What it is', 'Good for', 'Use an image you built'], rows: [
+      ['kind', 'Kubernetes nodes running as Docker containers', 'fast throwaway clusters, several nodes, CI', '`kind load docker-image shop-api:dev`'],
+      ['minikube', 'a single-node cluster in a container or a VM', 'learning, with add-ons and a dashboard built in', '`minikube image load shop-api:dev`'],
+      ['k3d', 'k3s, a lightweight Kubernetes, inside Docker', 'low memory use, a load balancer included', '`k3d image import shop-api:dev -c dev`'],
+      ['Docker Desktop', 'a cluster you switch on in its settings', 'no setup if you already use it', 'in its default single-node mode, images you build are already there']
+    ] },
+
+    { k: 'dg', id: 'lab-kind-dg', t: 'Why a cluster can’t find the image you just built', seg: ['Not loaded', 'kind load'],
+      capB: '**The node can’t see your images.** A kind node is a container with its own image store, so `shop-api:dev` from `docker build` isn’t there. The kubelet tries Docker Hub instead, and the Pod ends in `ErrImagePull`.',
+      capF: '**`kind load docker-image` copies the image into every node.** With a tag other than `latest`, the default pull policy uses that local copy. `minikube image load` and `k3d image import` do the same job.',
+      b: { type: 'flow', w: 680, cols: 3, rows: 2, ch: 104, minw: 520,
+        nodes: [
+          { id: 'img', x: 0, y: 0, l: 'Your Docker', sub: 'image shop-api:dev', s: 'stack', k: 'a' },
+          { id: 'hub', x: 0, y: 1, l: 'Docker Hub', sub: 'no shop-api:dev here', s: 'ext' },
+          { id: 'store', x: 2, y: 0, l: 'Node image store', sub: 'containerd: empty', s: 'db' },
+          { id: 'pod', x: 2, y: 1, l: 'Pod', sub: 'image: shop-api:dev, ErrImagePull', k: 'b' }
+        ],
+        edges: [
+          { f: 'pod', t: 'store', l: 'not here', x: true, d: true },
+          { f: 'pod', t: 'hub', l: 'tries to pull', x: true, d: true }
+        ],
+        groups: [{ n: ['store', 'pod'], l: 'kind node, a Docker container', k: 's' }] },
+      f: { type: 'flow', w: 680, cols: 3, rows: 2, ch: 104, minw: 520,
+        nodes: [
+          { id: 'img', x: 0, y: 0, l: 'Your Docker', sub: 'image shop-api:dev', s: 'stack', k: 'a' },
+          { id: 'hub', x: 0, y: 1, l: 'Docker Hub', sub: 'not needed', s: 'ext', k: 'm' },
+          { id: 'store', x: 2, y: 0, l: 'Node image store', sub: 'containerd: shop-api:dev', s: 'db' },
+          { id: 'pod', x: 2, y: 1, l: 'Pod', sub: 'image: shop-api:dev, Running', k: 'g' }
+        ],
+        edges: [
+          { f: 'img', t: 'store', l: 'kind load docker-image', k: 'g', mono: true },
+          { f: 'pod', t: 'store', l: 'found locally', k: 'g' }
+        ],
+        groups: [{ n: ['store', 'pod'], l: 'kind node, a Docker container', k: 's' }] } },
+
+    { k: 'snip', id: 'lab-kind', t: 'kind: create, load, delete', lang: 'bash', code: `
+# install: brew install kind    (Windows: winget install Kubernetes.kind)
+kind create cluster --name dev                    # one node; switches kubectl to it
+kubectl cluster-info --context kind-dev
+docker build -t shop-api:dev .
+kind load docker-image shop-api:dev --name dev    # copy the image into the cluster's nodes
+kind get clusters
+kind delete cluster --name dev                    # gone, with everything in it` },
+
+    { k: 'snip', id: 'lab-cfg', t: 'A three-node kind cluster', lang: 'yaml', half: true, code: `
+# kind create cluster --name dev --config kind.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:      # localhost:8080 → NodePort 30080
+      - containerPort: 30080
+        hostPort: 8080
+  - role: worker
+  - role: worker`,
+      note: 'Several nodes let you practise scheduling, spreading and draining. A `NodePort` Service with `nodePort: 30080` then answers on `localhost:8080`.' },
+
+    { k: 'snip', id: 'lab-mini', t: 'minikube and k3d', lang: 'bash', half: true, code: `
+minikube start --cpus 4 --memory 8g
+minikube image load shop-api:dev
+minikube service shop-api --url     # a URL for a NodePort Service
+minikube addons enable metrics-server
+minikube dashboard
+
+k3d cluster create dev --agents 2 -p "8080:80@loadbalancer"
+k3d image import shop-api:dev -c dev
+k3d cluster delete dev` },
+
+    { k: 'snip', id: 'lab-first', t: 'Your first deploy, step by step', lang: 'bash', code: `
+# 1. a cluster, and an image it can use
+kind create cluster --name dev
+docker build -t shop-api:dev .
+kind load docker-image shop-api:dev --name dev
+
+# 2. a Deployment keeps 2 Pods running
+kubectl create deployment shop-api --image=shop-api:dev --replicas=2 --port=8080
+kubectl get pods -w                           # Ctrl+C once both show 1/1 Running
+
+# 3. a stable name, reachable from your laptop
+kubectl expose deployment shop-api --port=80 --target-port=8080
+kubectl port-forward svc/shop-api 8080:80     # in another terminal: curl localhost:8080/health/live
+
+# 4. self-healing: delete the Pods and watch replacements appear
+kubectl delete pod -l app=shop-api --wait=false
+kubectl get pods
+
+# 5. scale, roll out a new version, roll back
+kubectl scale deployment shop-api --replicas=4
+docker build -t shop-api:dev2 . && kind load docker-image shop-api:dev2 --name dev
+kubectl set image deployment/shop-api shop-api=shop-api:dev2   # the container is named after the image
+kubectl rollout status deployment/shop-api
+kubectl rollout undo deployment/shop-api
+
+# 6. keep a YAML version to edit, then clean up
+kubectl create deployment shop-api --image=shop-api:dev --dry-run=client -o yaml > shop-api.yaml
+kind delete cluster --name dev`,
+      note: 'Generated objects keep the first run short. From here on, write files and `kubectl apply` them ([[yaml]]).' },
+
+    { k: 'snip', id: 'lab-addons', t: 'Add-ons, and switching between clusters', lang: 'bash', code: `
+# kubectl top needs metrics-server (AKS has it already)
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl -n kube-system patch deployment metrics-server --type json \\
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'   # kind only
+kubectl top pods
+
+kubectl config get-contexts                   # kind-dev next to aks-prod: check before you type
+kubectl config use-context kind-dev`,
+      note: 'Every local tool adds its own context to `~/.kube/config`. Read the current context before any `delete`.' },
+
+    { k: 'call', kind: 'trap', text: 'With a `:latest` tag, or no tag, the default `imagePullPolicy` is `Always`, so the node ignores the image you loaded and pulls from Docker Hub instead: `ErrImagePull`. Use a tag such as `:dev`, or set `imagePullPolicy: IfNotPresent`.' },
+    { k: 'call', kind: 'tip', text: '**Break it on purpose, then fix it.** Set a wrong image tag, delete a Secret the Pod needs, lower `limits.memory` to `50Mi`, remove the readiness endpoint. Each failure has a row in [[dbg]] and a scenario in [[life]].' }
+  ]
+});
+
+window.DKS.push({
+  id: 'yaml', code: 'YAML', grp: 'Kubernetes', name: 'Manifests, labels and namespaces',
+  blurb: 'Every object has the same four parts: `apiVersion`, `kind`, `metadata` and `spec`. Labels tie objects together, namespaces group them, and the API server can check a file before anything changes.',
+  plain: 'A **manifest** is a YAML file that describes an object, like a form you fill in: what kind of thing it is, its name, and a `spec` saying what you want. **Labels** are sticky notes on objects; Services and Deployments find their Pods by label, never by name.',
+  blocks: [
+    { k: 'widget', id: 'yaml-anatomy', t: 'Read a manifest line by line', w: 'anatomy' },
+
+    { k: 'table', id: 'yaml-fields', t: 'The four top-level fields, and the one you never write', cols: ['Field', 'Holds', 'Written by'], rows: [
+      ['`apiVersion`, `kind`', 'which schema the object follows', 'you'],
+      ['`metadata`', 'name, namespace, labels, annotations', 'you; Kubernetes adds uid, timestamps and owner references'],
+      ['`spec`', 'the desired state', 'you'],
+      ['`status`', 'the actual state, as last observed', 'Kubernetes only: leave it out of your files']
+    ], note: '`kubectl get deploy shop-api -o yaml` shows all of it. Compare `spec.replicas` with `status.readyReplicas` to see whether reality has caught up.' },
+
+    { k: 'widget', id: 'yaml-labels', t: 'Label selectors: which Pods does this pick?', w: 'labels' },
+
+    { k: 'table', id: 'yaml-meta', t: 'Names, labels and annotations', cols: ['', 'Name', 'Labels', 'Annotations'], rows: [
+      ['Identifies', 'one object', 'groups of objects', 'nothing: notes only'],
+      ['Example', '`shop-api`', '`app: shop-api`, `env: prod`', '`kubernetes.io/change-cause`'],
+      ['Read by', 'you, and `kubectl get <name>`', 'selectors: Services, Deployments, `kubectl -l`', 'tools: controllers, CI, Helm'],
+      ['Rules', 'lowercase, DNS-style, up to 253 characters for most kinds', 'values up to 63 characters: letters, digits, `-`, `_`, `.`', 'free text, up to 256 KB in total']
+    ] },
+
+    { k: 'snip', id: 'yaml-std', t: 'The recommended labels', lang: 'yaml', half: true, code: `
+metadata:
+  labels:
+    app.kubernetes.io/name: shop-api           # the app
+    app.kubernetes.io/instance: shop-api-prod  # this installation of it
+    app.kubernetes.io/version: "1.4.3"         # quoted: a string
+    app.kubernetes.io/component: api           # api, worker, database...
+    app.kubernetes.io/part-of: shop            # the larger system
+    app.kubernetes.io/managed-by: helm         # the tool that applied it`,
+      note: 'Select on one or two stable labels such as `name` and `instance`: a selector can’t change after creation, other labels can.' },
+
+    { k: 'snip', id: 'yaml-ns', t: 'Namespaces', lang: 'bash', half: true, code: `
+kubectl create namespace shop
+kubectl get pods -n shop             # one namespace
+kubectl get pods -A                  # all of them
+kubectl config set-context --current --namespace=shop
+kubectl api-resources --namespaced=false   # nodes, PVs, StorageClasses: cluster-wide
+kubectl delete namespace shop-pr-123       # deletes everything inside it`,
+      note: 'Namespaces separate names, permissions and quotas, not network traffic: Pods in different namespaces can still talk unless a NetworkPolicy blocks it.' },
+
+    { k: 'gb', id: 'yaml-gotchas', t: 'YAML traps that `kubectl apply` rejects', lang: 'yaml', bad: `
+env:
+  name: Features__NewCheckout    # ✗ env is a list: items start with "- "
+  value: on                      # ✗ on is a boolean in YAML 1.1
+---
+data:
+  Api__Version: 1.10             # ✗ a number (1.1), not the text "1.10"
+  Payments__AccountId: 0123      # ✗ read as an octal number`, good: `
+env:
+  - name: Features__NewCheckout  # ✓ a list item
+    value: "on"                  # ✓ quoted: a string
+---
+data:
+  Api__Version: "1.10"           # ✓ quote numbers you mean as text
+  Payments__AccountId: "0123"`,
+      badNote: 'Each line fails with a type error such as *cannot unmarshal bool into Go struct field … of type string*. Kubernetes reads YAML 1.1, where `on`, `off`, `yes` and `no` are booleans.',
+      goodNote: 'When in doubt, quote. Indent with spaces only, never tabs; `kubectl apply --dry-run=server -f file.yaml` catches all of these before anything changes.' },
+
+    { k: 'table', id: 'yaml-versions', t: '`apiVersion` for the kinds you will write', cols: ['Kinds', 'apiVersion'], rows: [
+      ['Pod, Service, ConfigMap, Secret, Namespace, PersistentVolumeClaim, ServiceAccount', '`v1`'],
+      ['Deployment, StatefulSet, DaemonSet, ReplicaSet', '`apps/v1`'],
+      ['Job, CronJob', '`batch/v1`'],
+      ['Ingress, IngressClass, NetworkPolicy', '`networking.k8s.io/v1`'],
+      ['HorizontalPodAutoscaler', '`autoscaling/v2`'],
+      ['PodDisruptionBudget', '`policy/v1`'],
+      ['Role, RoleBinding, ClusterRole, ClusterRoleBinding', '`rbac.authorization.k8s.io/v1`'],
+      ['StorageClass', '`storage.k8s.io/v1`'],
+      ['PriorityClass', '`scheduling.k8s.io/v1`'],
+      ['Gateway, GatewayClass, HTTPRoute', '`gateway.networking.k8s.io/v1`']
+    ], note: 'Not sure? `kubectl api-resources | grep -i <kind>` prints the version your cluster serves.' },
+
+    { k: 'snip', id: 'yaml-explain', t: 'Look up fields, and validate before you apply', lang: 'bash', code: `
+kubectl explain deployment.spec.strategy          # what a field means, its type and default
+kubectl explain pod.spec.containers.resources
+kubectl explain pod.spec --recursive | less       # every field, as a tree
+kubectl api-resources | grep -i gateway           # group, version and short name of a kind
+kubectl apply --dry-run=server -f deploy.yaml     # full validation by the API server, nothing changes
+kubectl diff -f deploy.yaml                       # exactly what would change` },
+
+    { k: 'table', id: 'yaml-crd', t: 'Kinds that come from add-ons (CRDs)', cols: ['Kind', 'Comes from', 'Does'], rows: [
+      ['`Gateway`, `HTTPRoute`', 'Gateway API', 'HTTP routing into Services ([[net]])'],
+      ['`Certificate`, `ClusterIssuer`', 'cert-manager', 'issues and renews TLS certificates ([[net]])'],
+      ['`SecretProviderClass`', 'Secrets Store CSI driver', 'mounts Key Vault secrets as files ([[cfg]])'],
+      ['`ScaledObject`', 'KEDA', 'scales on queue length and other events ([[res]])'],
+      ['`PodMonitor`, `ServiceMonitor`', 'Prometheus Operator, Azure Managed Prometheus', 'which Pods to scrape for metrics ([[obs]])'],
+      ['`Application`', 'Argo CD', 'keeps a folder of a Git repo applied to the cluster ([[cicd]])'],
+      ['`GitRepository`, Flux’s `Kustomization`', 'Flux, installed by the AKS GitOps extension', 'the same job, the Flux way ([[cicd]])']
+    ], note: 'A CRD adds a new kind to the API; an *operator* is the controller that acts on it. `kubectl get crds` lists what is installed, and `kubectl explain` works on these kinds too.' },
+
+    { k: 'call', kind: 'trap', text: 'A Service whose selector doesn’t exactly match the Pod labels has no endpoints, so calls to it hang or are refused. Compare the Selector line of `kubectl describe svc shop-api` with `kubectl get pods --show-labels`.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'life', code: 'LIFE', grp: 'Kubernetes', name: 'Pod lifecycle',
+  blurb: 'A Pod waits for a node, pulls its image, runs init containers, starts, becomes Ready and finally shuts down. The STATUS column summarises where it is, and each stage fails in its own recognisable way.',
+  plain: 'A Pod goes through a few stages: **waiting** for a node and its image, **starting**, **ready** for traffic, and **stopping**. The STATUS column of `kubectl get pods` tells you which stage it is stuck in, and that tells you where to look.',
+  blocks: [
+    { k: 'dg', id: 'life-timeline', t: 'A Pod’s life on one timeline', cap: '**One Pod, start to finish.** Pending while it waits for a node, its image and init containers; Running once the app starts; in the Service only after the probes pass; then preStop, SIGTERM and exit inside the 30 s grace period.',
+      d: { type: 'tl', w: 680, span: 72, unit: ' s', lw: 116, minw: 560,
+        lanes: ['Pod STATUS', 'Init container', 'App container', 'Probes', 'In the Service'],
+        bars: [
+          { lane: 0, s: 0, e: 9, l: 'Pending', k: 'w' },
+          { lane: 0, s: 9, e: 56, l: 'Running', k: 's' },
+          { lane: 0, s: 56, e: 68, l: 'Terminating', k: 'a' },
+          { lane: 1, s: 3, e: 9, l: 'wait-for-db', k: 'n' },
+          { lane: 2, s: 9, e: 21, l: 'booting', k: 'w', wait: true },
+          { lane: 2, s: 21, e: 56, l: 'serving requests', k: 'g' },
+          { lane: 2, s: 56, e: 68, l: 'stopping', k: 'a', wait: true },
+          { lane: 3, s: 9, e: 21, l: 'startup', k: 's', wait: true },
+          { lane: 3, s: 21, e: 56, l: 'liveness and readiness', k: 'g' },
+          { lane: 4, s: 22, e: 56, l: 'receives traffic', k: 'g' }
+        ],
+        marks: [
+          { t: 1, l: 'scheduled', k: 'n' },
+          { t: 21, l: 'Ready', k: 'g' },
+          { t: 56, l: 'deleted', k: 'b' },
+          { t: 61, l: 'SIGTERM', k: 'a', row: 1 },
+          { t: 68, l: 'exit 0', k: 'n' }
+        ] } },
+
+    { k: 'widget', id: 'life-watch', t: 'What `kubectl get pods -w` shows, and what it means', w: 'watch' },
+
+    { k: 'table', id: 'life-phases', t: 'Phase vs the STATUS column', cols: ['Phase', 'Means', 'STATUS you may see'], rows: [
+      ['`Pending`', 'accepted, but not running yet: waiting for a node, an image or init containers', '`Pending`, `ContainerCreating`, `Init:0/1`, `PodInitializing`, `ImagePullBackOff`, `CreateContainerConfigError`'],
+      ['`Running`', 'on a node, with at least one container running or restarting', '`Running`, `CrashLoopBackOff`, `OOMKilled`, `Error`, `Terminating`'],
+      ['`Succeeded`', 'every container exited 0 and won’t restart', '`Completed`'],
+      ['`Failed`', 'every container has stopped, at least one with an error', '`Error`, `OOMKilled`'],
+      ['`Unknown`', 'the node stopped reporting', '`Unknown`']
+    ], note: 'STATUS is a summary that kubectl builds from the phase, the container states and their reasons, which is why `CrashLoopBackOff` can appear while the phase is still `Running`. `Terminating` means deletion has started; it isn’t a phase.' },
+
+    { k: 'table', id: 'life-states', t: 'Container states and reasons', cols: ['State', 'Reason', 'What happened'], rows: [
+      ['`Waiting`', '`ContainerCreating`', 'pulling the image, mounting volumes'],
+      ['`Waiting`', '`ErrImagePull`, `ImagePullBackOff`', 'the image can’t be pulled'],
+      ['`Waiting`', '`CreateContainerConfigError`', 'a ConfigMap, Secret or key it refers to is missing'],
+      ['`Waiting`', '`CrashLoopBackOff`', 'it crashed, and the kubelet is waiting before the next restart'],
+      ['`Running`', '—', 'the process is up; `startedAt` says since when'],
+      ['`Terminated`', '`Completed`', 'exited with code 0'],
+      ['`Terminated`', '`Error`', 'exited with another code: see `exitCode`'],
+      ['`Terminated`', '`OOMKilled`', 'went over `limits.memory` (exit code 137)']
+    ], note: 'Read them directly with `kubectl get pod <name> -o jsonpath=\'{.status.containerStatuses[0].state}\'`; `lastState` holds the previous container’s end.' },
+
+    { k: 'table', id: 'life-restart', t: '`restartPolicy` and the restart delay', half: true, cols: ['Policy', 'Restarts a container that', 'Used by'], rows: [
+      ['`Always`', 'exits for any reason', 'Deployments, StatefulSets, DaemonSets'],
+      ['`OnFailure`', 'exits with a non-zero code', 'Jobs that may retry in place'],
+      ['`Never`', 'never; the Job makes a new Pod', 'Jobs that want a fresh Pod per attempt']
+    ], note: 'Restarts wait 10 s, then 20 s, 40 s and so on, up to 5 minutes; the delay resets after 10 minutes without a crash. That wait is what `CrashLoopBackOff` means.' },
+
+    { k: 'table', id: 'life-cond', t: 'Pod conditions', half: true, cols: ['Condition', 'True when'], rows: [
+      ['`PodScheduled`', 'a node has been chosen'],
+      ['`PodReadyToStartContainers`', 'the Pod sandbox and its network are set up'],
+      ['`Initialized`', 'every init container has finished'],
+      ['`ContainersReady`', 'every container passes readiness'],
+      ['`Ready`', 'the Pod can take traffic: it is a Service endpoint']
+    ], note: '`kubectl wait --for=condition=Ready pod -l app=shop-api --timeout=2m` blocks until they are, which is handy in scripts.' },
+
+    { k: 'snip', id: 'life-stop', t: 'Budget the shutdown', lang: 'yaml', code: `
+spec:
+  terminationGracePeriodSeconds: 30    # the whole budget, from deletion to SIGKILL
+  containers:
+    - name: api
+      lifecycle:
+        preStop:
+          sleep: { seconds: 5 }        # 1. keep serving while routing stops sending traffic
+      # 2. SIGTERM: .NET stops accepting and drains, for up to HostOptions.ShutdownTimeout
+      # 3. SIGKILL at 30 s if anything is still running (exit code 137)`,
+      note: 'Make the parts add up: 5 s of `preStop` plus `builder.Services.Configure<HostOptions>(o => o.ShutdownTimeout = TimeSpan.FromSeconds(20))` fits inside 30 s. The clock starts at deletion, so `preStop` time counts against the budget.' },
+
+    { k: 'call', kind: 'trap', text: 'Running isn’t the same as Ready. `0/1 Running` means the process is up but readiness hasn’t passed, so the Service skips the Pod. Rollouts wait for Ready, not Running.' },
+    { k: 'call', kind: 'key', text: '**Pods are replaceable.** A deleted or evicted Pod never comes back; its controller creates a new one with a new name and IP. Don’t hard-code Pod names or IPs anywhere: use Services and labels.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'sch', code: 'SCHED', grp: 'Kubernetes', name: 'Scheduling: where Pods run',
+  blurb: 'The scheduler filters out nodes that can’t take a Pod, scores the rest and binds the Pod to the best one. Requests, taints, selectors, affinity and spread rules are how you steer it.',
+  plain: 'The **scheduler** is a seating planner. For each new Pod it skips nodes that are too full, nodes with a **taint** the Pod doesn’t tolerate and nodes its **selector** rules out, then picks the roomiest of the rest. If no node passes, the Pod waits in Pending.',
+  blocks: [
+    { k: 'widget', id: 'sch-sim', t: 'Where will this Pod land?', w: 'sched' },
+
+    { k: 'table', id: 'sch-tools', t: 'Ways to steer the scheduler', cols: ['Setting', 'Says', 'Typical use'], rows: [
+      ['`resources.requests`', 'how much room the Pod needs', 'every Pod: without it, placement is guesswork'],
+      ['`nodeSelector`', 'only nodes with these labels', 'send Pods to a dedicated pool'],
+      ['node affinity', 'like `nodeSelector`, with operators and “preferred” rules', 'prefer one zone, require Linux nodes'],
+      ['taints and tolerations', 'the node turns away Pods that don’t tolerate it', 'keep ordinary Pods off spot, GPU or system nodes'],
+      ['pod anti-affinity', 'keep away from Pods like these', 'at most one replica per node'],
+      ['`topologySpreadConstraints`', 'spread evenly across zones or nodes', 'survive losing a zone'],
+      ['`priorityClassName`', 'who goes first, and who is evicted to make room', 'critical APIs before batch jobs']
+    ] },
+
+    { k: 'snip', id: 'sch-select', t: 'Run only on the spot pool', lang: 'yaml', half: true, code: `
+spec:
+  nodeSelector:                       # only spot nodes...
+    kubernetes.azure.com/scalesetpriority: spot
+  tolerations:                        # ...and allowed onto them
+    - key: kubernetes.azure.com/scalesetpriority
+      operator: Equal
+      value: spot
+      effect: NoSchedule`,
+      note: 'Azure can take spot nodes back at short notice, so use them for work that can restart: batch Jobs and queue consumers.' },
+
+    { k: 'table', id: 'sch-effects', t: 'Taint effects', half: true, cols: ['Effect', 'New Pods without a toleration', 'Running Pods'], rows: [
+      ['`NoSchedule`', 'never placed here', 'stay'],
+      ['`PreferNoSchedule`', 'placed here only if nothing else fits', 'stay'],
+      ['`NoExecute`', 'never placed here', 'evicted, unless they tolerate it']
+    ], note: 'A `NoExecute` toleration can set `tolerationSeconds`: how long the Pod may stay before it is evicted.' },
+
+    { k: 'snip', id: 'sch-spread', t: 'Spread replicas across zones and nodes', lang: 'yaml', code: `
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                                  # zones differ by at most one Pod
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: ScheduleAnyway           # a preference, not a hard rule
+      labelSelector: { matchLabels: { app: shop-api } }
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname   # avoid two replicas on one node
+            labelSelector: { matchLabels: { app: shop-api } }`,
+      note: '“IgnoredDuringExecution” means the rule is checked only at placement: Pods are not moved later if the spread drifts.' },
+
+    { k: 'snip', id: 'sch-taint', t: 'Label, taint, cordon and drain nodes', lang: 'bash', code: `
+kubectl get nodes -L agentpool,topology.kubernetes.io/zone    # extra columns from labels
+kubectl describe node aks-user-12345678-vmss000000 | grep -A3 Taints
+kubectl label node aks-user-12345678-vmss000000 disk=ssd
+kubectl taint node aks-user-12345678-vmss000000 dedicated=batch:NoSchedule
+kubectl taint node aks-user-12345678-vmss000000 dedicated=batch:NoSchedule-   # the trailing - removes it
+kubectl cordon aks-user-12345678-vmss000000                  # no new Pods; running ones stay
+kubectl drain aks-user-12345678-vmss000000 --ignore-daemonsets --delete-emptydir-data   # respects PDBs
+kubectl uncordon aks-user-12345678-vmss000000`,
+      note: 'On AKS, set labels and taints on the node pool ([[sch-aks]]), not on single nodes: upgrades and scaling replace nodes, and changes made to a node go with it.' },
+
+    { k: 'snip', id: 'sch-aks', t: 'AKS: system and user node pools', lang: 'bash', code: `
+az aks nodepool add -g rg-shop --cluster-name aks-prod -n batch --mode User \\
+  --node-vm-size Standard_D8s_v5 --node-count 1 \\
+  --labels workload=batch --node-taints workload=batch:NoSchedule
+az aks nodepool update -g rg-shop --cluster-name aks-prod -n nodepool1 \\
+  --node-taints CriticalAddonsOnly=true:NoSchedule    # keep your apps off the system pool
+kubectl get nodes -L agentpool,kubernetes.azure.com/mode`,
+      note: 'System pools run CoreDNS, metrics-server and other add-ons, which tolerate `CriticalAddonsOnly`; user pools run your workloads. Taint the system pool only once a user pool can take your Pods.' },
+
+    { k: 'call', kind: 'tip', text: 'A toleration *allows* a Pod onto a tainted node; it doesn’t *send* it there. For a dedicated pool, use both: a taint to keep other Pods out, and a `nodeSelector` to keep these Pods in.' },
+    { k: 'call', kind: 'trap', text: 'Required anti-affinity (`requiredDuringScheduling…`) with more replicas than nodes leaves the extra Pods Pending for ever. Use the `preferred…` form unless you truly need one replica per node.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'obs', code: 'OBS', grp: 'Operate', name: 'Logs, metrics and traces',
+  blurb: 'Write logs to stdout, send traces and metrics over OTLP, expose Prometheus metrics, and let agents on each node ship everything to a store you can query after the Pod is gone.',
+  plain: 'In a cluster you can’t log in to a server and tail a file: Pods move, restart and disappear. So the app writes to **stdout**, and agents on every node collect **logs**, **metrics** and **traces** into one place, where you can search across all replicas, including ones that no longer exist.',
+  blocks: [
+    { k: 'dg', id: 'obs-flow', t: 'Three signals, three paths', cap: '**Logs** go to stdout and an agent ships the node’s log files. **Traces** and OTLP metrics go to a collector on the same node. **Prometheus metrics** are scraped from `/metrics`. On AKS, the log and metric agents are add-ons you switch on.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 3, ch: 92, minw: 580,
+        alt: 'shop-api Pods write logs to node log files, which a logs agent ships to Log Analytics; they send OTLP to an OpenTelemetry Collector that forwards traces; a metrics agent scrapes /metrics into Managed Prometheus',
+        nodes: [
+          { id: 'app', x: 0, y: 1, l: 'shop-api Pods', sub: 'stdout, OTLP, /metrics', s: 'stack', k: 'a', w: 130 },
+          { id: 'files', x: 1, y: 0, l: 'Node log files', sub: '/var/log/containers', w: 130 },
+          { id: 'ama', x: 2, y: 0, l: 'Logs agent', sub: 'DaemonSet', w: 130 },
+          { id: 'la', x: 3, y: 0, l: 'Log Analytics', sub: 'ContainerLogV2, KubeEvents', s: 'db', w: 130 },
+          { id: 'otel', x: 1, y: 1, l: 'OTel Collector', sub: 'DaemonSet', k: 's', w: 130 },
+          { id: 'ai', x: 3, y: 1, l: 'Traces store', sub: 'App Insights, Tempo', s: 'db', w: 130 },
+          { id: 'prom', x: 1, y: 2, l: 'Metrics agent', sub: 'scrapes /metrics', w: 130 },
+          { id: 'graf', x: 3, y: 2, l: 'Managed Prometheus', sub: 'Grafana, alerts', s: 'db', w: 130 }
+        ],
+        edges: [
+          { f: 'app', t: 'files', l: 'stdout' },
+          { f: 'files', t: 'ama' },
+          { f: 'ama', t: 'la' },
+          { f: 'app', t: 'otel' },
+          { f: 'otel', t: 'ai', l: 'traces' },
+          { f: 'prom', t: 'app', l: 'scrape' },
+          { f: 'prom', t: 'graf', l: 'metrics' }
+        ] } },
+
+    { k: 'snip', id: 'obs-logs', t: '`kubectl logs` and friends', lang: 'bash', code: `
+kubectl logs shop-api-7d9f8c6b5d-x2x4k                    # one Pod with one container
+kubectl logs shop-api-7d9f8c6b5d-x2x4k -c otel-collector  # one container of a multi-container Pod
+kubectl logs shop-api-7d9f8c6b5d-x2x4k --previous         # the container before the last restart
+kubectl logs deploy/shop-api --since=15m --timestamps     # one Pod of the Deployment
+kubectl logs -l app=shop-api --all-containers --prefix --tail=100   # every replica, labelled
+kubectl logs -l app=shop-api -f --max-log-requests=10     # follow up to 10 Pods at once
+kubectl logs deploy/shop-api | jq 'select(.LogLevel == "Error")'   # JSON logs: filter by field
+stern shop-api -n shop --since 10m                        # tail every matching Pod, in colour`,
+      note: 'The kubelet keeps only the current and a few rotated log files per container, so `kubectl logs` is for now. Anything older lives in your log store ([[obs-kql]]).' },
+
+    { k: 'snip', id: 'obs-json', t: 'JSON logs from .NET, no code change', lang: 'yaml', half: true, code: `
+env:
+  - name: Logging__Console__FormatterName
+    value: json               # one JSON object per line
+  - name: Logging__Console__FormatterOptions__IncludeScopes
+    value: "true"             # adds scopes, such as the trace id`,
+      note: 'In code, `builder.Logging.AddJsonConsole()` does the same. Log stores turn JSON into fields, so you can filter on level, category or trace id instead of searching text.' },
+
+    { k: 'table', id: 'obs-down', t: 'What a Pod can know about itself', half: true, cols: ['fieldPath', 'Gives'], rows: [
+      ['`metadata.name`', 'the Pod’s name'],
+      ['`metadata.namespace`', 'its namespace'],
+      ['`spec.nodeName`', 'the node it runs on'],
+      ['`status.podIP`', 'its own IP'],
+      ['`status.hostIP`', 'the node’s IP, where a node-local agent listens'],
+      ['`limits.memory`', 'its memory limit (through `resourceFieldRef`)']
+    ], note: 'Pass these in with `valueFrom: { fieldRef: { fieldPath: ... } }`, the *downward API*, so logs and traces say which Pod and node they came from.' },
+
+    { k: 'snip', id: 'obs-otel', t: 'Send traces and metrics to a collector on the same node', lang: 'yaml', code: `
+env:
+  - name: HOST_IP
+    valueFrom: { fieldRef: { fieldPath: status.hostIP } }
+  - name: POD_NAME
+    valueFrom: { fieldRef: { fieldPath: metadata.name } }
+  - name: OTEL_SERVICE_NAME
+    value: shop-api
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: http://$(HOST_IP):4317                      # the collector DaemonSet's hostPort
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: k8s.pod.name=$(POD_NAME),deployment.environment=prod`,
+      note: '`$(VAR)` expands a variable defined earlier in the same list. .NET’s `UseOtlpExporter()` reads these standard variables, so the same image reports correctly anywhere. [[wl-sidecar]] shows the sidecar alternative.' },
+
+    { k: 'snip', id: 'obs-scrape', t: 'Prometheus: tell the agent what to scrape', lang: 'yaml', half: true, code: `
+apiVersion: azmonitoring.coreos.com/v1   # Prometheus Operator: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata: { name: shop-api, namespace: shop }
+spec:
+  selector: { matchLabels: { app: shop-api } }
+  podMetricsEndpoints:
+    - port: http                         # the named containerPort
+      path: /metrics`,
+      note: 'The app serves `/metrics` through the OpenTelemetry Prometheus exporter. Azure Managed Prometheus reads `azmonitoring.coreos.com` monitors.' },
+
+    { k: 'snip', id: 'obs-enable', t: 'Turn on monitoring in AKS', lang: 'bash', half: true, code: `
+az aks enable-addons -a monitoring -g rg-shop -n aks-prod \\
+  --workspace-resource-id <log-analytics-id>     # Container Insights
+az aks update -g rg-shop -n aks-prod --enable-azure-monitor-metrics \\
+  --azure-monitor-workspace-resource-id <workspace-id> \\
+  --grafana-resource-id <grafana-id>             # Managed Prometheus + Grafana
+kubectl top nodes                                # metrics-server: built into AKS
+kubectl top pods -n shop --containers`,
+      note: 'Container Insights collects logs, events and inventory; Managed Prometheus collects metrics and drives Grafana dashboards.' },
+
+    { k: 'snip', id: 'obs-kql', t: 'Query logs and events in Log Analytics', lang: 'kql', code: `
+// errors from shop-api in the last hour
+ContainerLogV2
+| where TimeGenerated > ago(1h)
+| where PodNamespace == "shop" and PodName startswith "shop-api"
+| where tostring(LogMessage) has_any ("Error", "Exception")
+| project TimeGenerated, PodName, LogMessage
+| order by TimeGenerated desc
+
+// warnings, kept long after Kubernetes forgets them
+KubeEvents
+| where TimeGenerated > ago(1d) and Namespace == "shop" and KubeEventType == "Warning"
+| summarize Count = count() by Reason, Name
+| order by Count desc`,
+      note: 'Kubernetes keeps events for about an hour ([[dbg-events]]); `KubeEvents` keeps them as long as your workspace retains data. `KubePodInventory` has restart counts per container.' },
+
+    { k: 'table', id: 'obs-alerts', t: 'Alerts worth having on day one', cols: ['Alert', 'Prometheus signal', 'Usually means'], rows: [
+      ['Restarts climbing', '`increase(kube_pod_container_status_restarts_total[15m]) > 3`', 'a crash loop, OOM kills or impatient probes'],
+      ['OOM killed', '`kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1`', 'a memory limit that is too low, or a leak'],
+      ['Pods stuck Pending', '`kube_pod_status_phase{phase="Pending"} == 1` for 10 minutes', 'no node fits: requests, taints, quota'],
+      ['Replicas missing', '`kube_deployment_status_replicas_unavailable > 0` for 10 minutes', 'a stuck rollout or failing readiness'],
+      ['CPU throttled', '`rate(container_cpu_cfs_throttled_periods_total[5m]) / rate(container_cpu_cfs_periods_total[5m]) > 0.25`', 'a CPU limit that is too low'],
+      ['Node not ready', '`kube_node_status_condition{condition="Ready",status="true"} == 0`', 'a broken or overloaded node'],
+      ['Disk filling', '`kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes > 0.8`', 'a PVC that needs resizing or cleanup']
+    ], note: 'Azure Monitor offers recommended Prometheus alert rules for Kubernetes that cover most of these. Turn them on and tune the thresholds.' },
+
+    { k: 'call', kind: 'trap', text: 'Log files written inside the container vanish with it, and `kubectl logs` never sees them. Log to stdout; if a library insists on a file, point it at `/dev/stdout`.' },
+    { k: 'call', kind: 'tip', text: 'Put the trace id in every log line (logging scopes do it in .NET). One id then finds every log line and span of a single request, across all services.' }
+  ]
+});
+
+window.DKS.push({
+  id: 'cicd', code: 'CICD', grp: 'Ship it', name: 'CI/CD and GitOps',
+  blurb: 'Build the image once, tag it with the commit, test and scan it, push it, then deploy that exact image to each environment in turn. A pipeline can push changes into the cluster, or the cluster can pull them from Git.',
+  plain: '**CI/CD** is the conveyor belt from a commit to the cluster: build, test, scan, push, deploy, check. With **GitOps**, a Git repo holds what every environment should run, and an agent inside the cluster keeps the cluster matching it.',
+  blocks: [
+    { k: 'table', id: 'cicd-flow', t: 'A pipeline, stage by stage', cols: ['Stage', 'Does', 'Stops the run when'], rows: [
+      ['Build and test', '`dotnet test`, then `docker build`, tagged with the commit SHA', 'a test fails'],
+      ['Scan', 'Trivy, Docker Scout or Defender for Containers', 'HIGH or CRITICAL findings'],
+      ['Push', 'pushes the image to ACR', 'auth or network errors'],
+      ['Deploy to test', 'applies manifests with the new tag, waits for `rollout status`', 'the rollout doesn’t finish in time'],
+      ['Smoke test', 'calls `/health/ready` and one key endpoint', 'a response other than 2xx'],
+      ['Promote', 'the same image to production, after an approval', 'any earlier check failed']
+    ] },
+
+    { k: 'dg', id: 'cicd-pushpull', t: 'Push or pull: who applies the change?', seg: ['Push: CI deploys', 'Pull: GitOps'],
+      capB: '**Push:** the pipeline holds cluster credentials and runs `kubectl apply`. Easy to start with, but a change made by hand stays until the next deploy overwrites it.',
+      capF: '**Pull:** the pipeline only pushes the image and commits the new tag. Flux or Argo CD, running in the cluster, applies what Git says and undoes manual changes. No cluster credentials leave the cluster.',
+      b: { type: 'seq', w: 680, minw: 560,
+        actors: [{ l: 'Developer', k: 'a' }, 'Git repo', 'Pipeline', { l: 'ACR', s: 'db' }, { l: 'AKS', k: 's' }],
+        steps: [
+          { f: 0, t: 1, l: 'push' },
+          { f: 1, t: 2, l: 'trigger' },
+          { self: 2, l: 'build, test, scan' },
+          { f: 2, t: 3, l: 'push shop-api:3f9c2e1' },
+          { f: 2, t: 4, l: 'kubectl apply, with cluster credentials', k: 'w' },
+          { f: 4, t: 3, l: 'pull image', d: true }
+        ] },
+      f: { type: 'seq', w: 680, minw: 560,
+        actors: [{ l: 'Developer', k: 'a' }, 'Git repos', 'Pipeline', { l: 'ACR', s: 'db' }, { l: 'Flux or Argo CD in AKS', k: 'g' }],
+        steps: [
+          { f: 0, t: 1, l: 'push code' },
+          { f: 1, t: 2, l: 'trigger' },
+          { self: 2, l: 'build, test, scan' },
+          { f: 2, t: 3, l: 'push shop-api:3f9c2e1' },
+          { f: 2, t: 1, l: 'commit the new tag to the config repo' },
+          { f: 4, t: 1, l: 'pull desired state' },
+          { self: 4, l: 'apply, and undo manual changes', k: 'g' },
+          { f: 4, t: 3, l: 'pull image', d: true }
+        ] } },
+
+    { k: 'snip', id: 'cicd-ado', t: 'Azure Pipelines: build, push, deploy', lang: 'yaml', code: `
+trigger: { branches: { include: [main] } }
+
+variables:
+  image: myacr.azurecr.io/shop-api
+  tag: $(Build.SourceVersion)                  # the commit SHA
+
+stages:
+  - stage: build
+    jobs:
+      - job: image
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - task: Docker@2
+            inputs:
+              command: buildAndPush
+              containerRegistry: acr-shop      # a Docker registry service connection
+              repository: shop-api
+              tags: $(tag)
+
+  - stage: prod
+    dependsOn: build
+    jobs:
+      - deployment: aks
+        environment: prod                      # approvals and checks live here
+        pool: { vmImage: ubuntu-latest }
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: KubernetesManifest@1
+                  name: bake
+                  inputs:
+                    action: bake
+                    renderType: kustomize
+                    kustomizationPath: k8s/overlays/prod
+                - task: KubernetesManifest@1
+                  inputs:
+                    action: deploy
+                    connectionType: azureResourceManager
+                    azureSubscriptionConnection: azure-prod   # workload identity federation
+                    azureResourceGroup: rg-shop
+                    kubernetesCluster: aks-prod
+                    namespace: shop
+                    manifests: $(bake.manifestsBundle)
+                    containers: $(image):$(tag)               # swaps in the new tag`,
+      note: 'Use service connections with workload identity federation, so no secret is stored. The `environment` gives you approvals and a deployment history per environment.' },
+
+    { k: 'snip', id: 'cicd-gha', t: 'GitHub Actions: the same pipeline', lang: 'yaml', code: `
+name: ship
+on: { push: { branches: [main] } }
+permissions: { id-token: write, contents: read }   # OIDC to Azure: no stored secret
+
+jobs:
+  ship:
+    runs-on: ubuntu-latest
+    environment: prod                               # protection rules and approvals
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: \${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: \${{ vars.AZURE_TENANT_ID }}
+          subscription-id: \${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: az acr login -n myacr
+      - uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: myacr.azurecr.io/shop-api:\${{ github.sha }}
+      - uses: azure/aks-set-context@v4
+        with: { resource-group: rg-shop, cluster-name: aks-prod }
+      - run: |
+          cd k8s/overlays/prod
+          kustomize edit set image myacr.azurecr.io/shop-api:\${{ github.sha }}
+          kubectl apply -k .
+          kubectl rollout status deploy/shop-api -n shop --timeout=5m`,
+      note: 'Pin actions to their current major version or a full commit SHA. Clusters with Entra ID sign-in also need `azure/use-kubelogin` and `use-kubelogin: true`.' },
+
+    { k: 'gb', id: 'cicd-tags', t: 'Build once, promote the same image', lang: 'bash', bad: `
+# ✗ a new build per environment: prod may differ from what you tested
+docker build -t myacr.azurecr.io/shop-api:latest . && docker push myacr.azurecr.io/shop-api:latest
+kubectl apply -k k8s/overlays/test
+docker build -t myacr.azurecr.io/shop-api:latest . && docker push myacr.azurecr.io/shop-api:latest
+kubectl apply -k k8s/overlays/prod     # ✗ which build is :latest now?`, good: `
+TAG=$(git rev-parse --short=12 HEAD)                  # ✓ one tag per commit
+docker build -t myacr.azurecr.io/shop-api:$TAG .
+docker push myacr.azurecr.io/shop-api:$TAG
+(cd k8s/overlays/test && kustomize edit set image myacr.azurecr.io/shop-api:$TAG)
+# tests pass and the release is approved: promote the very same tag
+(cd k8s/overlays/prod && kustomize edit set image myacr.azurecr.io/shop-api:$TAG)   # ✓`,
+      badNote: 'Two builds of the same commit can differ (a newer base image, other package versions), and `:latest` makes rollbacks guesswork.',
+      goodNote: 'The tag names the exact commit, and production runs bytes that already passed test. Lock released tags in ACR ([[img]]).' },
+
+    { k: 'snip', id: 'cicd-flux', t: 'GitOps on AKS with the Flux extension', lang: 'bash', half: true, code: `
+az k8s-configuration flux create -g rg-shop -c aks-prod -t managedClusters \\
+  -n shop --namespace flux-system --scope cluster \\
+  -u https://github.com/contoso/shop-deploy --branch main \\
+  --kustomization name=prod path=./overlays/prod prune=true
+az k8s-configuration flux show -g rg-shop -c aks-prod -t managedClusters -n shop
+kubectl get gitrepositories,kustomizations -n flux-system`,
+      note: 'Flux checks the repo every few minutes and applies `overlays/prod`; `prune=true` deletes objects you remove from Git. A private repo needs credentials added to the configuration.' },
+
+    { k: 'snip', id: 'cicd-argo', t: 'GitOps with Argo CD', lang: 'yaml', half: true, code: `
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: { name: shop-api, namespace: argocd }
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/contoso/shop-deploy
+    targetRevision: main
+    path: overlays/prod
+  destination:
+    server: https://kubernetes.default.svc   # this cluster
+    namespace: shop
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }`,
+      note: 'Argo CD adds a web UI that shows every object’s sync and health state, which helps while you are still learning what a rollout does.' },
+
+    { k: 'table', id: 'cicd-strategies', t: 'Ways to release a new version', cols: ['Strategy', 'How', 'Trade-off', 'Tooling'], rows: [
+      ['Rolling update', 'replace Pods a few at a time', 'both versions serve for a while; the default', 'built in ([[wl-roll]])'],
+      ['Recreate', 'stop every old Pod, then start the new ones', 'downtime; for apps that can’t run two versions at once', 'built in'],
+      ['Blue-green', 'run v2 beside v1, then switch all traffic at once', 'double capacity for a while; instant rollback', 'two Deployments and a Service selector switch, or Argo Rollouts'],
+      ['Canary', 'send a small share of traffic to v2, then raise it', 'slower; a bad version reaches few users', 'Gateway API weights, Argo Rollouts, Flagger']
+    ] },
+
+    { k: 'snip', id: 'cicd-canary', t: 'A canary with Gateway API weights', lang: 'yaml', code: `
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata: { name: shop-api, namespace: shop }
+spec:
+  parentRefs: [{ name: public, namespace: infra }]
+  hostnames: [api.shop.example.com]
+  rules:
+    - backendRefs:
+        - { name: shop-api-v1, port: 80, weight: 90 }
+        - { name: shop-api-v2, port: 80, weight: 10 }   # 10% of requests try v2`,
+      note: 'Each version has its own Deployment and Service. Watch v2’s error rate, then move the weights to 50/50 and 0/100, or back to 100/0 to roll back.' },
+
+    { k: 'call', kind: 'key', text: '**Build once, deploy the same image everywhere.** Promote the exact tag or digest that passed test; a rebuild per environment means production runs something nobody tested.' },
+    { k: 'call', kind: 'trap', text: 'With GitOps self-heal on, changes made with `kubectl edit` or `kubectl scale` are undone within minutes. Change Git instead, and in an emergency suspend the sync first.' }
+  ]
+});
+
+/* ===== Additions to the existing sections: plain-words summaries and new cards ===== */
+(function () {
+  var S = {};
+  window.DKS.forEach(function (s) { S[s.id] = s; });
+  function at(sec, id) {
+    var i = -1;
+    S[sec].blocks.forEach(function (b, j) { if (b.id === id) i = j; });
+    if (i < 0) throw new Error('No block ' + id + ' in ' + sec);
+    return i;
+  }
+  function after(sec, id, blocks) { var i = at(sec, id) + 1; Array.prototype.splice.apply(S[sec].blocks, [i, 0].concat(blocks)); }
+
+  var PLAIN = {
+    img: 'An **image** is a read-only snapshot of your app and everything it needs to run, like a published build folder sealed together with the OS files. You build it once, give it a name and version (a **tag**), push it to a registry, and every machine pulls exactly the same bytes.',
+    df: 'A **Dockerfile** is the recipe for an image: start from a base image, copy files in, run build commands, then say how to start the app. Docker caches each step, so the order of the lines decides how fast your rebuilds are.',
+    run: 'A **container** is a running copy of an image: an ordinary process that sees its own files, network and limits. Remove it and it is gone, along with anything it wrote inside itself, so keep data in volumes.',
+    vol: 'Containers are throwaway, so anything worth keeping goes in a **volume** that outlives them. Containers on the same **network** reach each other by name, like computers on a small private LAN.',
+    cmp: '**Compose** starts several containers together from one file, such as your API, its database and its message broker, all on one machine. It is the tool for local development; production goes to Kubernetes.',
+    k8s: '**Kubernetes** runs containers across many machines and keeps them the way you described: how many copies, which image, which settings. You never tell it what to do step by step. You say what should be true, and its controllers keep fixing any difference.',
+    ctl: '**kubectl** is the command line for Kubernetes. Every command is a request to the cluster’s API server: `get` and `describe` read, `apply` sends the state you want, and `logs` and `exec` reach into containers. Check which cluster you are pointed at before anything else.',
+    wl: 'You rarely create Pods yourself. A **Deployment** says “keep 3 copies of this Pod running”, replaces any that die and rolls out new versions gradually. Other controllers cover Pods that need their own disk (StatefulSet), one Pod per node (DaemonSet), and work that runs to completion (Job).',
+    net: 'Pods come and go and change IP addresses, so callers never use a Pod directly. A **Service** is a stable name and address in front of the healthy Pods; a **Gateway** or **Ingress** brings traffic from outside the cluster to the right Service.',
+    cfg: 'Keep settings out of the image so the same image runs everywhere. A **ConfigMap** is like `appsettings.json` delivered by the cluster, a **Secret** holds passwords and keys, and a **PersistentVolumeClaim** asks for a disk that survives Pod restarts.',
+    res: '**Requests** reserve room for a Pod on a node; **limits** are the hard ceiling. **Probes** are health checks: readiness decides whether a Pod gets traffic, liveness decides whether it gets restarted. Get these right and most mysterious restarts go away.',
+    dbg: 'Debugging Kubernetes is mostly reading. `get` shows the status, `describe` shows the events that explain it, and `logs --previous` shows why the last container died. Go in that order and the cause is usually on screen within a minute.',
+    sec: 'Assume someone could break into a container, and limit what they could do there: no root user, no extra Linux privileges, a read-only filesystem. Give each app its own identity with only the permissions it needs.',
+    helm: 'Plain YAML gets repetitive across dev, test and prod. **Helm** turns manifests into a versioned package with settings you can change (values); **Kustomize** keeps plain YAML and layers small patches per environment on top.',
+    aks: '**AKS** is Kubernetes where Azure runs and patches the control plane for you; you choose the node VMs and manage what runs on them. **ACR** is Azure’s private image registry, kept next to the cluster.'
+  };
+  Object.keys(PLAIN).forEach(function (k) { S[k].plain = PLAIN[k]; });
+
+  after('df', 'df-dotnet', [
+    { k: 'call', kind: 'tip', text: 'New project? `docker init` asks a few questions and writes a working `Dockerfile`, `compose.yaml` and `.dockerignore` for ASP.NET Core. Then tune them with the cards below.' }
+  ]);
+
+  after('ctl', 'ctl-read', [
+    { k: 'snip', id: 'ctl-output', t: 'Read the output of `kubectl get pods`', lang: 'text', code: `
+$ kubectl get pods
+NAME                        READY   STATUS             RESTARTS      AGE
+shop-api-7d9f8c6b5d-x2x4k   1/1     Running            0             3h
+shop-api-7d9f8c6b5d-p8m2n   1/1     Running            0             3h
+shop-api-5c2e9a7f1b-q7w3e   0/1     CrashLoopBackOff   5 (30s ago)   6m
+
+shop-api        the Deployment
+7d9f8c6b5d      the ReplicaSet: one per Pod template, so two values mean a rollout
+x2x4k           this Pod's random suffix
+READY 1/1       containers passing readiness / containers in the Pod
+STATUS          a summary of where the Pod is in its life (see LIFE)
+RESTARTS        container restarts, and how long ago the last one was
+AGE             time since the Pod was created`,
+      note: 'This rollout is stuck: the new ReplicaSet’s Pod keeps crashing, while the two old Pods keep serving because `maxUnavailable` is 0. Next step: `kubectl logs shop-api-5c2e9a7f1b-q7w3e --previous`.' }
+  ]);
+
+  after('dbg', 'dbg-cmds', [
+    { k: 'snip', id: 'dbg-describe', t: 'Read `kubectl describe pod`', lang: 'text', code: `
+$ kubectl describe pod shop-api-5c2e9a7f1b-q7w3e
+Name:         shop-api-5c2e9a7f1b-q7w3e
+Namespace:    shop
+Node:         aks-user-12345678-vmss000001/10.224.0.5
+Status:       Running
+Containers:
+  api:
+    Image:          myacr.azurecr.io/shop-api:1.4.4
+    State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    1
+    Ready:          False
+    Restart Count:  5
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  6m                 default-scheduler  Successfully assigned shop/shop-api-5c2e9a7f1b-q7w3e to aks-user-12345678-vmss000001
+  Normal   Pulled     4m (x5 over 6m)    kubelet            Container image "myacr.azurecr.io/shop-api:1.4.4" already present on machine
+  Warning  BackOff    30s (x25 over 6m)  kubelet            Back-off restarting failed container api in pod shop-api-5c2e9a7f1b-q7w3e_shop`,
+      note: 'Read three places. **State** and **Last State** say how the container ended (exit code 1: the app threw an exception), **Restart Count** says how often, and **Events**, oldest first, say what Kubernetes did about it. Events disappear after about an hour.' }
+  ]);
+
+  after('net', 'net-path', [
+    { k: 'table', id: 'net-expose', t: 'Which way in?', cols: ['Option', 'Reachable from', 'Use it for'], rows: [
+      ['`kubectl port-forward`', 'your laptop only, while the command runs', 'debugging and trying things out'],
+      ['Service `ClusterIP`', 'other Pods in the cluster', 'service-to-service calls'],
+      ['Service `LoadBalancer`', 'an Azure load balancer IP: public, or private with the internal annotation', 'one TCP service, such as a broker reached from another VNet'],
+      ['Gateway API or Ingress', 'one shared IP with host and path routing and TLS', 'public web APIs and sites']
+    ], note: 'For a private load balancer, annotate the Service with `service.beta.kubernetes.io/azure-load-balancer-internal: "true"`.' }
+  ]);
+
+  after('net', 'net-types', [
+    { k: 'table', id: 'net-ips', t: 'Three kinds of address, and DNS', cols: ['Address', 'Comes from', 'Example'], rows: [
+      ['Node IP', 'the node pool’s VNet subnet', '`10.224.0.4`'],
+      ['Pod IP', 'the Pod range (Azure CNI Overlay) or the subnet (flat Azure CNI); a new one each time a Pod starts', '`10.244.1.17`'],
+      ['Service IP', 'the service range: virtual, stable for the life of the Service', '`10.0.142.12`'],
+      ['DNS name', 'CoreDNS maps Service names to Service IPs', '`shop-api.shop.svc.cluster.local`']
+    ], note: 'Every Pod can reach every other Pod directly unless a NetworkPolicy blocks it. Only Service names and IPs stay put, so those are what callers should use.' }
+  ]);
+
+  after('net', 'net-gw', [
+    { k: 'snip', id: 'net-tls', t: 'HTTPS certificates with cert-manager', lang: 'yaml', code: `
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata: { name: letsencrypt }
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: platform@shop.example.com
+    privateKeySecretRef: { name: letsencrypt-account }
+    solvers:
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs: [{ name: public, namespace: infra, kind: Gateway }]
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata: { name: shop-tls, namespace: infra }
+spec:
+  secretName: shop-tls                  # the Secret a Gateway listener's certificateRefs points to
+  issuerRef: { name: letsencrypt, kind: ClusterIssuer }
+  dnsNames: [api.shop.example.com]`,
+      note: 'Install cert-manager with Helm ([[helm-3p]]) and turn on its Gateway API support (`config.enableGatewayAPI`). HTTP-01 needs a port-80 listener and works for exact names; a wildcard such as the listener in [[net-gw]] needs a DNS-01 solver, for example Azure DNS with Workload Identity. Renewal is automatic.' }
+  ]);
+
+  after('helm', 'helm-cmds', [
+    { k: 'snip', id: 'helm-3p', t: 'Install third-party software with Helm', lang: 'bash', code: `
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm search repo jetstack/cert-manager --versions | head -5
+helm show values jetstack/cert-manager > cert-manager.values.yaml   # every setting, documented
+helm upgrade --install cert-manager jetstack/cert-manager -n cert-manager --create-namespace \\
+  --version <chart-version> --set crds.enabled=true
+helm list -A                                          # what is installed, in every namespace`,
+      note: 'Pin `--version` so a rebuilt cluster gets the same chart. Many projects also publish charts as OCI artifacts that you install with `helm install name oci://...`.' }
+  ]);
+
+  after('aks', 'aks-ops', [
+    { k: 'snip', id: 'aks-upgrade', t: 'Before you upgrade a cluster', lang: 'bash', code: `
+az aks get-upgrades -g rg-shop -n aks-prod -o table          # versions you can move to
+kubectl get --raw /metrics | grep apiserver_requested_deprecated_apis   # calls to APIs that go away
+kubectl get pdb -A                                           # ALLOWED DISRUPTIONS 0 blocks node drains
+az aks nodepool update -g rg-shop --cluster-name aks-prod -n nodepool1 --max-surge 33%
+az aks upgrade -g rg-shop -n aks-prod --kubernetes-version <next-minor>`,
+      note: 'AKS upgrades one minor version at a time, and it pauses an upgrade when it sees recent calls to APIs the target version removes. A larger `--max-surge` finishes sooner but needs quota for the extra nodes.' },
+    { k: 'table', id: 'aks-cost', t: 'Keep the bill down', cols: ['Lever', 'Effect'], rows: [
+      ['Right-size requests', 'requests, not real use, decide how many nodes you pay for: compare them with `kubectl top` ([[res-qos]])'],
+      ['Cluster autoscaler', 'removes nodes that sit mostly empty'],
+      ['Spot node pools', 'large discounts for work that can be interrupted ([[sch-select]])'],
+      ['Scale to zero', 'KEDA, or the HPA in 1.37, for consumers that sit idle ([[res-zero]])'],
+      ['Stop dev clusters', '`az aks stop` overnight and at weekends'],
+      ['Pricing tier', 'the Free tier for dev; the Standard tier where you need the uptime SLA']
+    ] }
+  ]);
+})();
 
 </script>
 <script>
@@ -2537,27 +3764,43 @@ window.DG = (function () {
 (function () {
   'use strict';
   var SECS = window.DKS || [], esc = DG.esc;
-  var GROUPS = ['Docker', 'Kubernetes', 'Traffic and config', 'Operate', 'Ship it'];
-  var LANG = { cs: 'C#', bash: 'Shell', json: 'JSON', xml: 'XML', sql: 'SQL', yaml: 'YAML', docker: 'Dockerfile', js: 'JavaScript', proto: 'Protobuf', text: 'Text' };
+  var ORDER = window.DKS_ORDER || [];
+  if (ORDER.length) SECS.sort(function (a, b) { return ORDER.indexOf(a.id) - ORDER.indexOf(b.id); });
+  var SECX = {};
+  SECS.forEach(function (s) { if (ORDER.length && ORDER.indexOf(s.id) < 0) console.error('Section missing from DKS_ORDER', s.id); SECX[s.id] = s; });
+  var GROUPS = ['Start here', 'Docker', 'Kubernetes', 'Traffic and config', 'Operate', 'Ship it'];
+  var LANG = { cs: 'C#', bash: 'Shell', json: 'JSON', xml: 'XML', sql: 'SQL', yaml: 'YAML', docker: 'Dockerfile', js: 'JavaScript', proto: 'Protobuf', kql: 'KQL', text: 'Text' };
   var $ = function (s, el) { return (el || document).querySelector(s); };
   var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
   var COPY = {};
 
   /* inline markup: `code`, **bold**, *italic* — never inside code spans */
+  /* [[id]] in any text: a cross-reference to a section or a card */
+  function xref(id) {
+    var s = SECX[id], b = IDX[id];
+    if (s) return '<button class="xref" type="button" data-to="s-' + s.id + '" title="' + esc(s.name) + '">' + esc(s.code) + '</button>';
+    if (b) return '<button class="xref xref-c" type="button" data-to="c-' + b.id + '" title="' + esc(b.sec.name) + '"><span>' + esc(b.sec.code) + '</span>' + esc(plainT(b.t)) + '</button>';
+    console.error('Unknown cross-reference', id);
+    return esc(id);
+  }
   function inl(s) {
     return String(s == null ? '' : s).split('`').map(function (part, i) {
       if (i % 2) return '<code>' + esc(part) + '</code>';
       return esc(part).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
-        .replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,;:!?]|$)/g, '$1<i>$2</i>');
+        .replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,;:!?]|$)/g, '$1<i>$2</i>')
+        .replace(/\[\[([a-z0-9-]+)\]\]/g, function (m, id) { return xref(id); });
     }).join('');
   }
-  function plain(s) { return String(s || '').replace(/`/g, '').replace(/\*\*/g, ''); }
+  function plainT(s) { return String(s || '').replace(/`/g, '').replace(/\*\*/g, ''); }
+  function refs(s) { return String(s || '').replace(/\[\[([a-z0-9-]+)\]\]/g, function (m, id) { return SECX[id] ? SECX[id].code : IDX[id] ? plainT(IDX[id].t) : id; }); }
+  function plain(s) { return plainT(refs(s)); }
 
   /* ---- tiny syntax highlighter ---- */
   var KW = {
     cs: 'abstract as async await base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for foreach goto if implicit in init int interface internal is lock long namespace new null object operator out override params private protected public readonly record ref required return sbyte sealed short sizeof stackalloc static string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using var virtual void volatile when where while with yield get set value nameof extension field union closed global partial and or not file scoped dynamic',
     sql: 'select from where and or not insert into values update set delete merge join inner left right outer cross apply on group by order having as with begin commit rollback transaction create table index primary key unique alter add drop column exec declare top offset fetch next rows only is null in exists case when then else end output inserted deleted type bigint int decimal varchar nvarchar count sum',
     bash: 'if then fi for do done in export until while', json: 'true false null', xml: '', text: '',
+    kql: 'where project summarize by extend order desc asc and or has has_any contains startswith in let top count ago tostring not',
     yaml: 'true false null', docker: 'FROM AS WORKDIR COPY ADD RUN USER EXPOSE ENTRYPOINT ARG ENV CMD HEALTHCHECK LABEL VOLUME SHELL STOPSIGNAL ONBUILD',
     js: 'import export from const let var function return if else for of in new await async default true false null undefined typeof',
     proto: 'syntax option service rpc returns stream message string int32 int64 uint32 uint64 bool bytes double float repeated map oneof enum import package reserved'
@@ -2582,7 +3825,7 @@ window.DG = (function () {
         else if (lang === 'cs' && src.charAt(last) === '(' && !/\bnew\s*$/.test(src.slice(0, m.index))) out += '<span class="tk-fn">' + esc(t) + '</span>';
         else if ((lang === 'cs' || lang === 'xml') && /^[A-Z]/.test(t)) out += '<span class="tk-type">' + esc(t) + '</span>';
         else if (lang === 'yaml' && src.charAt(last) === ':') out += '<span class="tk-fn">' + esc(t) + '</span>';
-        else if (lang === 'bash' && /^(docker|kubectl|helm|az|kubelogin|kustomize|trivy|curl|dotnet|export|grep|alias|source|complete|echo|cat|cd)$/.test(t) && /^\s*$/.test(src.slice(0, m.index))) out += '<span class="tk-fn">' + esc(t) + '</span>';
+        else if (lang === 'bash' && /^(docker|kubectl|helm|az|kubelogin|kustomize|trivy|curl|dotnet|export|grep|alias|source|complete|echo|cat|cd|kind|minikube|k3d|stern|git|jq|brew|winget|less|head|tail)$/.test(t) && /^\s*$/.test(src.slice(0, m.index))) out += '<span class="tk-fn">' + esc(t) + '</span>';
         else out += esc(t);
       }
     }
@@ -2667,7 +3910,7 @@ window.DG = (function () {
       var n = s.blocks.filter(function (b) { return b.k !== 'call'; }).length;
       sh += '<section class="sec" id="s-' + s.id + '" data-s="' + s.id + '" aria-labelledby="h-' + s.id + '"><div class="sec-h"><span class="code">' + s.code + '</span><h2 id="h-' + s.id + '">' + esc(s.name) + '</h2>' +
         '<span class="ct">' + n + ' cards</span><button class="sec-tg" type="button" aria-expanded="true" aria-controls="b-' + s.id + '" aria-label="Collapse ' + esc(s.name) + '">' + chev + '</button></div>' +
-        '<p class="sec-blurb">' + inl(s.blurb) + '</p><div class="blks" id="b-' + s.id + '">' + s.blocks.map(blockHTML).join('') + '</div></section>';
+        '<p class="sec-blurb">' + inl(s.blurb) + '</p>' + (s.plain ? '<p class="plain"><b class="kl">In plain words</b>' + inl(s.plain) + '</p>' : '') + '<div class="blks" id="b-' + s.id + '">' + s.blocks.map(blockHTML).join('') + '</div></section>';
       nav += '<li><button class="nav-i" type="button" data-to="s-' + s.id + '"><span class="c">' + s.code + '</span><span class="n">' + esc(s.name) + '</span><span class="ct">' + n + '</span></button></li>';
     });
     nav += '</ul></div>';
@@ -2703,6 +3946,16 @@ window.DG = (function () {
   }).join('');
   $('#finder-ct').textContent = (window.DKS_FINDER || []).length + ' tasks';
 
+  /* ---- learning path ---- */
+  var PATH = window.DKS_PATH || [];
+  $('#path-list').innerHTML = PATH.map(function (p, i) {
+    return '<li class="fd-row path-row"><div class="fd-sym"><span class="path-n" aria-hidden="true">' + (i + 1) + '</span><span>' + inl(p[0]) + '<small>' + inl(p[1]) + '</small></span></div><div class="fd-chips">' +
+      p[2].filter(function (id) { if (!IDX[id]) console.error('Path id missing', id); return IDX[id]; }).map(function (id) {
+        var b = IDX[id]; return '<button class="chipbtn" type="button" data-to="c-' + id + '"><span class="c">' + b.sec.code + '</span>' + esc(plain(b.t)) + '</button>';
+      }).join('') + '</div></li>';
+  }).join('');
+  $('#path-ct').textContent = PATH.length + ' stops';
+
   /* ======================= widgets ======================= */
   function segHTML(key, opts, cur, label) {
     return '<span class="seg" role="group" aria-label="' + esc(label) + '" data-k="' + key + '">' + opts.map(function (o) {
@@ -2711,7 +3964,7 @@ window.DG = (function () {
   }
   function bindSeg(root, onPick) {
     root.addEventListener('click', function (e) {
-      var b = e.target.closest('.seg[data-k] button'); if (!b || !root.contains(b)) return;
+      var b = e.target.closest('.seg[data-k] button, .opts[data-k] button'); if (!b || !root.contains(b)) return;
       var seg = b.parentNode;
       $$('button', seg).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
       onPick(seg.getAttribute('data-k'), b.getAttribute('data-v'));
@@ -2848,7 +4101,191 @@ window.DG = (function () {
     bindSeg(el, function (k, v) { st[k] = v; render(); });
     render();
   }
-  var WIDGETS = { map: mapWidget, roll: rollWidget, qos: qosWidget };
+  /* wrapping option buttons, for long or many choices */
+  function optsHTML(key, opts, cur, label, mono) {
+    return '<span class="opts' + (mono ? ' mono' : '') + '" role="group" aria-label="' + esc(label) + '" data-k="' + key + '">' + opts.map(function (o) {
+      return '<button type="button" data-v="' + esc(o) + '" aria-pressed="' + (o === cur) + '">' + esc(o) + '</button>';
+    }).join('') + '</span>';
+  }
+
+  /* Manifest explainer: tap a numbered line to see what it does */
+  function anatomyWidget(el) {
+    var A = window.DKS_ANATOMY, mode = 'One at a time', open = 'spec', num = {}, first = {}, last = {}, n = 0;
+    A.lines.forEach(function (l, i) {
+      var p = l[0]; if (!p) return;
+      if (!(p in num)) { num[p] = ++n; first[p] = i; }
+      last[p] = i;
+    });
+    el.innerHTML = '<div class="wdg-row">' + segHTML('m', ['One at a time', 'Show all'], mode, 'How many explanations to show') +
+      '<span class="wdg-hint">Tap a numbered line to see what it does.</span></div><div class="anat"></div>';
+    function expl(p) {
+      var d = A.parts[p];
+      return '<div class="ax"><b>' + num[p] + '. ' + esc(d[0]) + '</b> ' + inl(d[1]) + '</div>';
+    }
+    function render() {
+      var all = mode === 'Show all';
+      $('.anat', el).innerHTML = A.lines.map(function (l, i) {
+        var p = l[0], on = !!p && (all || p === open), ind = l[1].match(/^ */)[0].length;
+        var row = '<div class="al' + (p ? ' to' : '') + (on ? ' hot' : '') + '"' +
+          (p ? ' data-p="' + p + '" role="button" tabindex="0" aria-expanded="' + on + '" aria-label="' + esc(num[p] + '. ' + A.parts[p][0] + ': ' + l[1].trim()) + '"' : '') + '>' +
+          '<span class="ag">' + (p && first[p] === i ? num[p] : '') + '</span><code style="padding-left:calc(6px + ' + (ind + 2) + 'ch);text-indent:-2ch">' + (hlLine(l[1].slice(ind), 'yaml') || ' ') + '</code></div>';
+        return row + (on && last[p] === i ? expl(p) : '');
+      }).join('');
+    }
+    function setMode(m) {
+      mode = m;
+      $$('.seg[data-k="m"] button', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-v') === m)); });
+    }
+    function pick(p, keepFocus) {
+      if (mode === 'Show all') { setMode('One at a time'); open = p; }
+      else open = open === p ? null : p;
+      render();
+      if (keepFocus) { var row = el.querySelector('.al[data-p="' + p + '"]'); if (row) row.focus(); }
+    }
+    el.addEventListener('click', function (e) { var r = e.target.closest('.al[data-p]'); if (r) pick(r.getAttribute('data-p'), false); });
+    el.addEventListener('keydown', function (e) {
+      var r = e.target.closest('.al[data-p]');
+      if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pick(r.getAttribute('data-p'), true); }
+    });
+    bindSeg(el, function (k, v) { mode = v; if (v === 'One at a time' && !open) open = 'spec'; render(); });
+    render();
+  }
+
+  /* Label selector playground */
+  function labelsWidget(el) {
+    var PODS = [
+      ['shop-api-7d9f-a1', { app: 'shop-api', version: 'v1', env: 'prod' }],
+      ['shop-api-7d9f-b2', { app: 'shop-api', version: 'v1', env: 'prod' }],
+      ['shop-api-5c2e-c3', { app: 'shop-api', version: 'v2', env: 'prod' }],
+      ['shop-api-6b1d-d4', { app: 'shop-api', version: 'v2', env: 'test' }],
+      ['shop-worker-81aa-e5', { app: 'shop-worker', version: 'v1', env: 'prod' }],
+      ['postgres-0', { app: 'postgres', tier: 'db', env: 'prod' }]
+    ];
+    var SEL = [
+      { s: 'app=shop-api', t: [['app', 'eq', 'shop-api']], y: 'matchLabels: { app: shop-api }', svc: 'selector: { app: shop-api }',
+        why: 'Equality: every Pod whose `app` label is `shop-api`. That includes the `test` Pod, because selectors only look at labels; keep environments in separate namespaces.' },
+      { s: 'app=shop-api,version=v2', t: [['app', 'eq', 'shop-api'], ['version', 'eq', 'v2']], y: 'matchLabels: { app: shop-api, version: v2 }', svc: 'selector: { app: shop-api, version: v2 }',
+        why: 'A comma means AND: both labels must match. This is how a Service can send traffic to the new version only.' },
+      { s: 'env!=prod', t: [['env', 'ne', 'prod']], y: 'matchExpressions:\n    - { key: env, operator: NotIn, values: [prod] }',
+        why: 'Not equal. It also matches Pods that have no `env` label at all.' },
+      { s: 'app in (shop-api,shop-worker)', t: [['app', 'in', ['shop-api', 'shop-worker']]], y: 'matchExpressions:\n    - { key: app, operator: In, values: [shop-api, shop-worker] }',
+        why: 'Set-based: the value must be one in the list. Handy in a NetworkPolicy that covers a whole app.' },
+      { s: 'tier', t: [['tier', 'ex']], y: 'matchExpressions:\n    - { key: tier, operator: Exists }',
+        why: 'Exists: the label is present, whatever its value.' },
+      { s: '!tier', t: [['tier', 'nx']], y: 'matchExpressions:\n    - { key: tier, operator: DoesNotExist }',
+        why: 'Does not exist: only Pods without the label.' }
+    ];
+    var cur = 0;
+    el.innerHTML = '<div class="wdg-row"><span class="wdg-lbl">Selector</span>' + optsHTML('s', SEL.map(function (x) { return x.s; }), SEL[0].s, 'Label selector', true) + '</div>' +
+      '<div class="lpods" aria-live="polite"></div><div class="verdict-line ok"></div><div class="wdg-code"></div>';
+    function test(lbl, t) {
+      var v = lbl[t[0]];
+      switch (t[1]) {
+        case 'eq': return v === t[2];
+        case 'ne': return v !== t[2];
+        case 'in': return t[2].indexOf(v) > -1;
+        case 'ex': return v !== undefined;
+        default: return v === undefined;
+      }
+    }
+    function render() {
+      var S = SEL[cur], keys = S.t.map(function (t) { return t[0]; }), hits = 0;
+      $('.lpods', el).innerHTML = PODS.map(function (p) {
+        var ok = S.t.every(function (t) { return test(p[1], t); });
+        if (ok) hits++;
+        return '<div class="lp ' + (ok ? 'hit' : 'miss') + '"><span class="pn">' + (ok ? '✓ ' : '') + esc(p[0]) + '</span><span class="lc">' +
+          Object.keys(p[1]).map(function (k) { return '<span class="kchip' + (keys.indexOf(k) > -1 ? ' used' : '') + '">' + esc(k + '=' + p[1][k]) + '</span>'; }).join('') + '</span></div>';
+      }).join('');
+      $('.verdict-line', el).innerHTML = '<b>' + hits + ' of ' + PODS.length + ' Pods match.</b> ' + inl(S.why);
+      $('.wdg-code', el).textContent = '# kubectl\nkubectl get pods -l \'' + S.s + '\'\n\n# Deployment, Job or NetworkPolicy\nselector:\n  ' + S.y +
+        (S.svc ? '\n\n# Service (equality only)\n' + S.svc : '\n\n# Service: not possible, Services take equality only');
+    }
+    bindSeg(el, function (k, v) { cur = SEL.map(function (x) { return x.s; }).indexOf(v); render(); });
+    render();
+  }
+
+  /* Scheduler simulator: filter nodes, then pick the roomiest */
+  function schedWidget(el) {
+    var NODES = [
+      { n: 'aks-system-0', pool: 'system', alloc: 1.9, used: 1.3, taint: ['CriticalAddonsOnly', 'true'] },
+      { n: 'aks-user-0', pool: 'user', alloc: 3.86, used: 2.66, taint: null },
+      { n: 'aks-spot-0', pool: 'spot', alloc: 3.86, used: 0.46, taint: ['kubernetes.azure.com/scalesetpriority', 'spot'] }
+    ];
+    var CPU = { '250m': 0.25, '1': 1, '2': 2, '4': 4 }, st = { cpu: '250m', tol: 'no', sel: 'none' };
+    el.innerHTML =
+      '<div class="wdg-row"><span class="wdg-lbl">CPU request</span>' + segHTML('cpu', ['250m', '1', '2', '4'], st.cpu, 'CPU request') + '</div>' +
+      '<div class="wdg-row"><span class="wdg-lbl">Tolerates the spot taint</span>' + segHTML('tol', ['no', 'yes'], st.tol, 'Toleration') + '</div>' +
+      '<div class="wdg-row"><span class="wdg-lbl">nodeSelector</span>' + segHTML('sel', ['none', 'agentpool: user', 'agentpool: spot'], st.sel, 'Node selector') + '</div>' +
+      '<div class="nodes" aria-live="polite"></div><div class="verdict-line"></div><div class="evt" hidden></div><div class="wdg-code"></div>';
+    function fmt(c) { c = Math.round(c * 100) / 100; return c < 1 ? Math.round(c * 1000) + 'm' : c + ' CPU'; }
+    function tolerates(nd) { return !nd.taint || (st.tol === 'yes' && nd.pool === 'spot'); }
+    function selOk(nd) { return st.sel === 'none' || st.sel.split(': ')[1] === nd.pool; }
+    /* filters run in the scheduler's order: taints, then node selector, then resources */
+    function check(nd, req) {
+      if (!tolerates(nd)) return { k: 'taint', why: 'untolerated taint `' + nd.taint[0] + '=' + nd.taint[1] + ':NoSchedule`', ev: 'node(s) had untolerated taint {' + nd.taint[0] + ': ' + nd.taint[1] + '}' };
+      if (!selOk(nd)) return { k: 'sel', why: 'doesn’t match the Pod’s node selector', ev: 'node(s) didn’t match Pod’s node affinity/selector' };
+      var free = nd.alloc - nd.used;
+      if (req > free + 1e-9) return { k: 'cpu', why: 'Insufficient cpu: needs ' + fmt(req) + ', ' + fmt(free) + ' free', ev: 'Insufficient cpu' };
+      return null;
+    }
+    function render() {
+      var req = CPU[st.cpu], res = NODES.map(function (nd) { return check(nd, req); }), best = -1, fits = 0;
+      NODES.forEach(function (nd, i) { if (!res[i]) { fits++; if (best < 0 || nd.alloc - nd.used > NODES[best].alloc - NODES[best].used) best = i; } });
+      $('.nodes', el).innerHTML = NODES.map(function (nd, i) {
+        var r = res[i], placed = i === best, uw = nd.used / nd.alloc * 100, pw = placed ? req / nd.alloc * 100 : 0;
+        return '<div class="nd-c ' + (placed ? 'ok' : r ? 'no' : '') + '"><h4>' + esc(nd.n) + '</h4>' +
+          '<span class="meta">pool <code>' + nd.pool + '</code> · ' + fmt(nd.alloc - nd.used) + ' of ' + fmt(nd.alloc) + ' free' +
+          (nd.taint ? '<br>taint <code>' + esc(nd.taint[0] + '=' + nd.taint[1]) + '</code>' : '<br>no taint') + '</span>' +
+          '<span class="cpu" aria-hidden="true"><i class="u" style="width:' + uw.toFixed(1) + '%"></i><i class="p" style="width:' + pw.toFixed(1) + '%"></i></span>' +
+          (placed ? '<span class="tag">Scheduled here</span>' : '') +
+          '<span class="res">' + (r ? '✗ ' + inl(r.why) : placed ? '✓ passes every filter and has the most room left' : '✓ passes every filter') + '</span></div>';
+      }).join('');
+      var vl = $('.verdict-line', el), ev = $('.evt', el), v;
+      if (best >= 0) {
+        if (st.tol === 'yes' && st.sel === 'none' && fits > 1) v = ['warn', '**Scheduled on ' + NODES[best].n + ', but only because it had the most room.** The toleration *allows* spot nodes; it doesn’t send the Pod there. Add a `nodeSelector` to decide.'];
+        else v = ['ok', '**Scheduled on ' + NODES[best].n + '.** It passed every filter, and among the nodes that did, it has the most CPU left.'];
+        ev.hidden = true;
+      } else {
+        var counts = {};
+        res.forEach(function (r) { counts[r.ev] = (counts[r.ev] || 0) + 1; });
+        ev.hidden = false;
+        ev.textContent = 'Warning  FailedScheduling  0/' + NODES.length + ' nodes are available: ' + Object.keys(counts).sort().map(function (k) { return counts[k] + ' ' + k; }).join(', ') + '.';
+        var grow = NODES.filter(function (nd) { return tolerates(nd) && selOk(nd) && req <= nd.alloc - 0.2; });
+        if (req > Math.max.apply(null, NODES.map(function (nd) { return nd.alloc; }))) v = ['bad', '**Pending for ever.** No node has ' + fmt(req) + ' to give: each offers at most ' + fmt(3.86) + '. The cluster autoscaler can’t help, because a new node of the same size wouldn’t fit either; lower the request or add a pool with bigger VMs.'];
+        else if (st.sel === 'agentpool: spot' && st.tol === 'no') v = ['bad', '**Pending.** The selector allows only spot nodes, and without a toleration the spot taint turns the Pod away. A dedicated pool needs both.'];
+        else if (grow.length) v = ['bad', '**Pending for now.** No node passes every filter. With the cluster autoscaler on, AKS adds a node to the `' + grow[0].pool + '` pool, where a fresh node has room; the Pod starts once that node is Ready.'];
+        else v = ['bad', '**Pending.** No node passes every filter, and no pool could add one that does. Read the event below: it lists why each node said no.'];
+      }
+      vl.className = 'verdict-line ' + v[0]; vl.innerHTML = inl(v[1]);
+      $('.wdg-code', el).textContent = 'spec:' +
+        (st.sel !== 'none' ? '\n  nodeSelector:\n    ' + st.sel : '') +
+        (st.tol === 'yes' ? '\n  tolerations:\n    - key: kubernetes.azure.com/scalesetpriority\n      operator: Equal\n      value: spot\n      effect: NoSchedule' : '') +
+        '\n  containers:\n    - name: api\n      resources:\n        requests: { cpu: ' + st.cpu + ' }';
+    }
+    bindSeg(el, function (k, v) { st[k] = v; render(); });
+    render();
+  }
+
+  /* kubectl get pods -w, scenario by scenario */
+  function watchWidget(el) {
+    var W = window.DKS_WATCH, names = Object.keys(W), cur = names[0];
+    el.innerHTML = '<div class="wdg-row">' + optsHTML('w', names, cur, 'Scenario') + '</div>' +
+      '<div class="wt-cmd">$ kubectl get pods -w</div>' +
+      '<div class="wt-head" aria-hidden="true"><span>Status</span><span>Ready</span><span>Restarts</span><span>What is happening</span></div>' +
+      '<ol class="wt" aria-live="polite"></ol><div class="verdict-line"></div><div class="wdg-code"></div>';
+    function render() {
+      var s = W[cur];
+      $('.wt', el).innerHTML = s.rows.map(function (r) {
+        return '<li class="wt-row"><span class="wt-st s-' + r[3] + '">' + esc(r[0]) + '</span><span class="rd">' + esc(r[1]) + '</span><span class="rs">' + esc(r[2]) + '</span><span class="d">' + inl(r[4]) + '</span></li>';
+      }).join('');
+      var vl = $('.verdict-line', el);
+      vl.className = 'verdict-line ' + s.verdict[0]; vl.innerHTML = inl(s.verdict[1]);
+      $('.wdg-code', el).textContent = '# next\n' + s.next;
+    }
+    bindSeg(el, function (k, v) { cur = v; render(); });
+    render();
+  }
+  var WIDGETS = { map: mapWidget, roll: rollWidget, qos: qosWidget, anatomy: anatomyWidget, labels: labelsWidget, sched: schedWidget, watch: watchWidget };
   $$('.wdg[data-w]').forEach(function (el) {
     try { WIDGETS[el.getAttribute('data-w')](el); }
     catch (err) { console.error('Widget failed', err); el.innerHTML = '<div class="dg-err">This widget failed to load: ' + esc(err.message) + '</div>'; }
@@ -2922,6 +4359,14 @@ window.DG = (function () {
   setWrap(wrap);
   wrapBtn.addEventListener('click', function () { setWrap(!wrap); try { localStorage.setItem('dks-wrap', wrap ? '1' : '0'); } catch (e) { } });
 
+  /* plain-words summaries */
+  var exBtn = $('#explain-btn'), ex = null;
+  try { ex = localStorage.getItem('dks-explain'); } catch (e) { }
+  ex = ex !== '0';
+  function setEx(on) { ex = on; document.body.classList.toggle('no-plain', !on); exBtn.setAttribute('aria-pressed', String(on)); }
+  setEx(ex);
+  exBtn.addEventListener('click', function () { setEx(!ex); try { localStorage.setItem('dks-explain', ex ? '1' : '0'); } catch (e) { } });
+
   /* mobile nav */
   mb.addEventListener('click', function () { document.body.classList.contains('nav-open') ? closeNav() : openNav(); });
   scrim.addEventListener('click', closeNav);
@@ -2936,7 +4381,11 @@ window.DG = (function () {
     if (b.w === 'map') parts.push(window.DKS_MAP.map(function (c) { return c.need + ' ' + c.k8 + ' ' + c.dk + ' ' + c.y + ' ' + c.why; }).join(' '));
     if (b.w === 'roll') parts.push('maxSurge maxUnavailable RollingUpdate Recreate rollout strategy replicas');
     if (b.w === 'qos') parts.push('requests limits QoS Guaranteed Burstable BestEffort OOMKilled throttled GC heap ProcessorCount cpu memory');
-    return parts.filter(Boolean).join(' ').toLowerCase();
+    if (b.w === 'anatomy') { var A = window.DKS_ANATOMY; parts.push(A.lines.map(function (l) { return l[1]; }).join(' '), Object.keys(A.parts).map(function (k) { return A.parts[k].join(' '); }).join(' ')); }
+    if (b.w === 'labels') parts.push('label labels selector matchLabels matchExpressions In NotIn Exists DoesNotExist app=shop-api version env tier');
+    if (b.w === 'sched') parts.push('scheduler scheduling taint toleration nodeSelector Insufficient cpu Pending FailedScheduling spot system user pool CriticalAddonsOnly autoscaler');
+    if (b.w === 'watch') { var Wt = window.DKS_WATCH; parts.push(Object.keys(Wt).map(function (k) { return k + ' ' + Wt[k].rows.map(function (r) { return r.join(' '); }).join(' ') + ' ' + Wt[k].next + ' ' + Wt[k].verdict[1]; }).join(' ')); }
+    return refs(parts.filter(Boolean).join(' ')).toLowerCase();
   }
   blocks.forEach(function (el) { var id = el.getAttribute('data-id'); TEXT[id] = btext(IDX[id]); });
   function filter() {
@@ -2952,7 +4401,7 @@ window.DG = (function () {
     });
     $$('.nav-g').forEach(function (g) { g.hidden = !$$('.nav-list li', g).some(function (li) { return !li.hidden; }); });
     document.body.classList.toggle('searching', active);
-    $('.hero').hidden = active; $('.intro').hidden = active; $('#finder').hidden = active; $('#nav-top').hidden = active;
+    $('.hero').hidden = active; $('#path').hidden = active; $('.intro').hidden = active; $('#finder').hidden = active; $('#nav-top').hidden = active;
     hits.hidden = !active; hits.textContent = n + ' / ' + CARDS;
     $('#empty').hidden = !(active && n === 0 && !$$('.blks > .call').some(function (c) { return !c.hidden; }));
   }
@@ -2979,10 +4428,10 @@ window.DG = (function () {
       entries.forEach(function (en) { if (en.isIntersecting) mark(en.target.id); });
     }, { rootMargin: '-15% 0px -75% 0px' });
     $$('.sec').forEach(function (s) { io.observe(s); });
-    io.observe($('#intro')); io.observe($('#finder'));
+    io.observe($('#path')); io.observe($('#intro')); io.observe($('#finder'));
   }
 })();
 
 </script>
-</body>
-</html>
+
+</body></html>
