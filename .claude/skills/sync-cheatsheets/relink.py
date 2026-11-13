@@ -5,6 +5,10 @@
                                 resolve (excluded or unknown sheets)
   relink.py --check             check that every local .html link in the repo
                                 root points at an existing file
+
+Pages built with the cheatsheet kit (kit/) keep their links in the page's data
+as [text](url) and render only https links, so those become absolute links to
+the published site instead of relative file names.
 """
 import glob
 import json
@@ -13,8 +17,10 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+SITE = 'https://ngtuanloc.github.io/Claude-Cheatsheet/'
 LINK = re.compile(
     r'<a href="https://claude\.ai/(?:code/)?artifact/([A-Za-z0-9-]+)"[^>]*>(.*?)</a>', re.S)
+MD_LINK = re.compile(r'\[([^\]\n]+)\]\(https://claude\.ai/(?:code/)?artifact/([A-Za-z0-9-]+)\)')
 
 
 def load():
@@ -28,17 +34,24 @@ def relink(src, dest, own_file):
     known, excluded = load()
     unresolved = []
 
-    def sub(m):
-        art_id, text = m.group(1), m.group(2)
+    def resolve(art_id, text):
         target = known.get(art_id)
         if target and target != own_file:
-            return '<a href="%s">%s</a>' % (target, text)
+            return target
         why = 'links to itself' if target else (
             'excluded: ' + excluded[art_id][1] if art_id in excluded else 'unknown artifact')
         unresolved.append((re.sub(r'<[^>]+>', '', text), art_id, why))
-        return m.group(0)
+        return None
 
-    s = LINK.sub(sub, open(src, encoding='utf-8').read())
+    def sub(m):
+        target = resolve(m.group(1), m.group(2))
+        return '<a href="%s">%s</a>' % (target, m.group(2)) if target else m.group(0)
+
+    def md(m):
+        target = resolve(m.group(2), m.group(1))
+        return '[%s](%s%s)' % (m.group(1), SITE, target) if target else m.group(0)
+
+    s = MD_LINK.sub(md, LINK.sub(sub, open(src, encoding='utf-8').read()))
     open(dest, 'w', encoding='utf-8', newline='').write(s)
     print('wrote', dest)
     for text, art_id, why in unresolved:

@@ -20,3 +20,16 @@ Self-contained HTML cheat sheets. Each file is a single page with its own styles
 - **Locally:** open any `.html` file in a browser.
 
 Fonts load from Google Fonts; everything else is inline. Light and dark themes follow the system setting and can be toggled on each page.
+
+## Building a cheat sheet
+
+[`kit/`](kit/) is the template new sheets are built from; `dotnet-cheatsheet.html` is the first one built with it. It holds the page engine, the build and check tools, a reference for every card, diagram and widget type ([`kit/KIT.md`](kit/KIT.md)) and a small Git sample to copy ([`kit/starter/`](kit/starter/)). It needs Python 3 and Node; `shot.py` also needs Playwright with Chromium.
+
+```bash
+cp -r kit/starter sheets/my-topic                              # then replace the content
+python3 kit/build.py sheets/my-topic -o my-topic-cheatsheet.html
+python3 kit/shot.py my-topic-cheatsheet.html --shots shots      # must end with "no problems found"
+python3 kit/split.py dotnet-cheatsheet.html sheets/dotnet       # a built page carries its own sources
+```
+
+[`skills/cheatsheet-template/SKILL.md`](skills/cheatsheet-template/SKILL.md) is the Claude skill that runs this workflow and publishes each sheet as a claude.ai artifact. It is a copy of the skill saved in the owner's claude.ai account, which fetches this same kit from the Cheatsheet Starter artifact.

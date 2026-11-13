@@ -1,6 +1,6 @@
 {
   "sheets": [
-    {"file": "dotnet-cheatsheet.html", "title": ".NET Cheatsheet", "url": "https://claude.ai/artifact/CqEj5PJa8DxQnBnQXuZLeV", "ids": ["CqEj5PJa8DxQnBnQXuZLeV", "5fd0af50-99af-4eac-b5b3-5ef64d770f6a"], "version": "1790423848-b7c1"},
+    {"file": "dotnet-cheatsheet.html", "title": ".NET Cheatsheet", "url": "https://claude.ai/artifact/CqEj5PJa8DxQnBnQXuZLeV", "ids": ["CqEj5PJa8DxQnBnQXuZLeV", "5fd0af50-99af-4eac-b5b3-5ef64d770f6a"], "version": "1794578148-d358"},
     {"file": "sql-server-cheatsheet.html", "title": "SQL Server Cheatsheet", "url": "https://claude.ai/artifact/PpXQ45edYNcuoS6uto7Pz4", "ids": ["PpXQ45edYNcuoS6uto7Pz4", "b8cbbda6-06a7-4410-8f5a-0591af328935"], "version": "1790761090-b670"},
     {"file": "react-javascript-cheatsheet.html", "title": "React & JavaScript Cheatsheet", "url": "https://claude.ai/artifact/7QwPEiciAQLpxFbjyEXFcX", "ids": ["7QwPEiciAQLpxFbjyEXFcX", "33ee7420-ade3-4c47-b956-68cd1e156904"], "version": "1790703260-809e"},
     {"file": "angular-cheatsheet.html", "title": "Angular Cheatsheet", "url": "https://claude.ai/artifact/GoUk6eQxVXDiJQ9V1F958G", "ids": ["GoUk6eQxVXDiJQ9V1F958G", "7ff663fd-78c5-4cb6-9953-d26c4c145655"], "version": "1791182829-49d5"},
