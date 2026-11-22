@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="generator" content="cheatsheet-kit 1.0">
+<meta name="generator" content="cheatsheet-kit 1.1">
 <title>.NET Cheatsheet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -490,6 +490,14 @@ body.searching .short,body.searching .jump{display:none}
   .prog-secs .glabel{grid-column:1/-1}
 }
 
+/* the annotated file at the top of the page: the list beside it is the key to its tags and stays in view */
+.prog.prog-top{overflow:clip}
+.prog-top .prog-secs .glabel:not(:first-child){margin-top:6px}
+.prog-top .prog-secs .grow{padding-block:3px}
+@media (min-width:1121px){
+  .prog-top .prog-secs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;max-height:calc(100vh - 84px);max-height:calc(100dvh - 84px);overflow-y:auto;scrollbar-width:thin}
+}
+
 /* section header on a phone: title and toggle share one row */
 @media (max-width:760px){
   .sec .sec-h{flex-wrap:nowrap}
@@ -948,11 +956,11 @@ window.NCS_LANGDEFS = {
 </script>
 <script>
 /*@@FILE sheet/00-meta.js@@*/
-/* ===== [00-meta.js] The sheet: title, texts, badges, the annotated Program.cs, groups and tasks ===== */
+/* ===== [00-meta.js] The sheet: title, texts, badges, the annotated shop.cs, groups and tasks ===== */
 window.NCS_META = {
   title: '.NET Cheatsheet',
   lang: 'cs',
-  lede: 'Copy-paste C#, ASP.NET Core and data-access patterns for **.NET 10 LTS**. The sections are sorted into six groups, and each group answers one question. Pick a section or a task from the map, or search for an API, a concept or an error.',
+  lede: 'Copy-paste C#, ASP.NET Core and data-access patterns for **.NET 10 LTS**. Start with `shop.cs` below: one file that touches every group, with each line linked to the section that explains it. Then pick a section or a task from the map, or search for an API, a concept or an error.',
   now: { label: 'Release status, November 2026', items: [
     { tone: 'g', t: '.NET 10 LTS, C# 14', d: 'What this sheet targets. Supported until November 14, 2028.' },
     { tone: 'a', t: '.NET 11, C# 15', d: 'Released November 10, 2026. STS, supported until November 14, 2028.' },
@@ -974,50 +982,119 @@ window.NCS_META = {
     'The .NET Cheatsheet: {count}. Written for .NET 10 LTS and C# 14; cards marked C# 15 or .NET 11 need the release that shipped on November 10, 2026. Release dates and support windows checked on November 13, 2026.',
     'Companions in this library: [Failure Modes & Fixes](https://ngtuanloc.github.io/Claude-Cheatsheet/failure-modes-and-fixes.html) for the production bugs, and the .NET Memory & Performance and Multithreading manuals for depth on the concurrency and performance sections.'
   ],
-  /* Program.cs, line by line: [section id or '', code]. It opens the App foundations group. */
+  /* shop.cs, line by line: [section id or '', code, language?]. With no group it sits at the top of the page. */
   prog: {
-    group: 'app', code: 'MAIN', nav: 'Program.cs, annotated', title: 'One `Program.cs`, annotated', copy: 'Copy Program.cs',
-    cap: 'How the pieces are wired together in a typical service. Each tagged line jumps to the section that explains it.',
+    code: 'FILE', nav: 'shop.cs, annotated', title: 'The whole service in one file: `shop.cs`', copy: 'Copy shop.cs',
+    cap: 'An orders API as one .NET 10 file-based app. Each tagged line jumps to the section that explains it, and the list beside the file is the key to the tags. Usings and a few small types it registers are left out to keep it short.',
     lines: [
-    ['cfg', 'var builder = WebApplication.CreateBuilder(args);'],
-    ['dep', 'builder.AddServiceDefaults();'],
-    ['', ''],
-    ['cfg', 'builder.Services.AddOptions<DbOptions>().BindConfiguration("Db")'],
-    ['cfg', '    .ValidateDataAnnotations().ValidateOnStart();'],
-    ['ef', 'builder.Services.AddDbContextPool<AppDb>(o =>'],
-    ['ef', '    o.UseSqlServer(builder.Configuration.GetConnectionString("Db")));'],
-    ['di', 'builder.Services.AddScoped<IOrderService, OrderService>();'],
-    ['http', 'builder.Services.AddHttpClient<PaymentsClient>()'],
-    ['http', '    .AddStandardResilienceHandler();'],
-    ['cache', 'builder.Services.AddHybridCache();'],
-    ['msg', 'builder.AddAzureServiceBusClient("bus");'],
-    ['host', 'builder.Services.AddHostedService<OutboxPublisher>();'],
-    ['mw', 'builder.Services.AddProblemDetails()'],
-    ['mw', '    .AddExceptionHandler<GlobalExceptionHandler>();'],
-    ['api', 'builder.Services.AddValidation().AddOpenApi();'],
-    ['ctr', 'builder.Services.AddApiVersioning().AddApiExplorer();'],
-    ['api', 'builder.Services.AddAuthentication().AddJwtBearer();'],
-    ['api', 'builder.Services.AddAuthorization();'],
-    ['log', 'builder.Services.AddOpenTelemetry()'],
-    ['log', '    .WithTracing(t => t.AddAspNetCoreInstrumentation())'],
-    ['log', '    .UseOtlpExporter();'],
-    ['host', 'builder.Services.AddHealthChecks().AddDbContextCheck<AppDb>();'],
-    ['', ''],
-    ['', 'var app = builder.Build();'],
-    ['', ''],
-    ['mw', 'app.UseExceptionHandler();'],
-    ['mw', 'app.UseHttpsRedirection();'],
-    ['mw', 'app.UseAuthentication();'],
-    ['mw', 'app.UseAuthorization();'],
-    ['', ''],
-    ['api', 'app.MapOpenApi();'],
-    ['host', 'app.MapHealthChecks("/health/ready");'],
-    ['dep', 'app.MapDefaultEndpoints();'],
-    ['api', 'var orders = app.MapGroup("/api/orders").RequireAuthorization();'],
-    ['api', 'orders.MapGet("/{id:int}", Orders.Get);'],
-    ['api', 'orders.MapPost("/", Orders.Create);'],
-    ['', ''],
-    ['', 'app.Run();']
+      ['ver', '// shop.cs: a whole orders API in one file, on .NET 10 LTS and C# 14'],
+      ['cli', '// Run it with: dotnet run shop.cs   (no .csproj, no solution)'],
+      ['cli', '#:sdk Microsoft.NET.Sdk.Web'],
+      ['aot', '// File-based apps publish as Native AOT; EF Core is not ready for it'],
+      ['aot', '#:property PublishAot=false'],
+      ['ef', '#:package Microsoft.EntityFrameworkCore.SqlServer@10.*'],
+      ['dap', '#:package Dapper@2.*'],
+      ['cache', '#:package Microsoft.Extensions.Caching.Hybrid@10.*'],
+      ['http', '#:package Microsoft.Extensions.Http.Resilience@10.*'],
+      ['api', '#:package Microsoft.AspNetCore.Authentication.JwtBearer@10.*'],
+      ['msg', '#:package Azure.Messaging.ServiceBus@7.*'],
+      ['sec', '#:package Azure.Identity@1.*'],
+      ['', ''],
+      ['cfg', 'var builder = WebApplication.CreateBuilder(args);'],
+      ['di', 'var services = builder.Services;'],
+      ['cfg', 'services.AddOptions<ShopOptions>().BindConfiguration("Shop")'],
+      ['cfg', '    .ValidateDataAnnotations().ValidateOnStart();'],
+      ['ef', 'services.AddDbContextPool<AppDb>(o =>'],
+      ['ef', '    o.UseSqlServer(builder.Configuration.GetConnectionString("shop")));'],
+      ['di', 'services.AddScoped<OrderService>();'],
+      ['bcl', 'services.AddSingleton(TimeProvider.System);'],
+      ['cache', 'services.AddHybridCache();'],
+      ['http', 'services.AddHttpClient<PaymentsClient>(c =>'],
+      ['http', '        c.BaseAddress = new("https://payments.example.com/"))'],
+      ['http', '    .AddStandardResilienceHandler();'],
+      ['msg', 'services.AddSingleton(new ServiceBusClient('],
+      ['sec', '    "shop.servicebus.windows.net", new DefaultAzureCredential()));'],
+      ['host', 'services.AddHostedService<OutboxRelay>();   // sends what the outbox holds'],
+      ['mw', 'services.AddProblemDetails();'],
+      ['api', 'services.AddValidation();'],
+      ['api', 'services.AddAuthentication().AddJwtBearer();'],
+      ['api', 'services.AddAuthorization();'],
+      ['host', 'services.AddHealthChecks();'],
+      ['', ''],
+      ['', 'var app = builder.Build();'],
+      ['thr', 'AppDomain.CurrentDomain.UnhandledException += (_, e) =>'],
+      ['thr', '    app.Logger.LogCritical(e.ExceptionObject as Exception, "Crashing");'],
+      ['mw', 'app.UseExceptionHandler();   // first: every error becomes ProblemDetails'],
+      ['mw', 'app.UseAuthentication();'],
+      ['mw', 'app.UseAuthorization();'],
+      ['dep', 'app.MapHealthChecks("/health/ready");   // the Kubernetes readiness probe'],
+      ['', ''],
+      ['api', 'var orders = app.MapGroup("/api/orders").RequireAuthorization();'],
+      ['api', 'orders.MapGet("/{id:guid}", async (Guid id, OrderService svc,'],
+      ['asy', '        CancellationToken ct) =>'],
+      ['pat', '    await svc.FindAsync(id, ct) is { } dto'],
+      ['api', '        ? Results.Ok(dto) : Results.NotFound());'],
+      ['api', 'orders.MapPost("/", async (NewOrder req, OrderService svc,'],
+      ['asy', '        CancellationToken ct) =>'],
+      ['', '{'],
+      ['asy', '    var dto = await svc.PlaceAsync(req, ct);'],
+      ['api', '    return Results.Created($"/api/orders/{dto.Id}", dto);'],
+      ['', '});'],
+      ['', 'app.Run();'],
+      ['', ''],
+      ['typ', 'public record NewOrder([Required] string Customer, Line[] Lines);'],
+      ['typ', 'public record Line(string Sku, int Qty, decimal Price);'],
+      ['typ', 'public record OrderDto(Guid Id, decimal Total, OrderStatus Status);'],
+      ['ctr', '[JsonConverter(typeof(JsonStringEnumConverter<OrderStatus>))]'],
+      ['ctr', 'public enum OrderStatus { Unknown, Placed, Paid, Shipped }'],
+      ['', ''],
+      ['typ', 'public sealed class Order   // an entity has identity: a class'],
+      ['', '{'],
+      ['bcl', '    public Guid Id { get; init; } = Guid.CreateVersion7();   // time-ordered'],
+      ['cs', '    public required string Customer { get; init; }'],
+      ['', '    public decimal Total { get; init; }'],
+      ['', '    public OrderStatus Status { get; set; } = OrderStatus.Placed;'],
+      ['bcl', '    public DateTimeOffset CreatedAt { get; init; }'],
+      ['cs', '    public string Note { get; set => field = value.Trim(); } = "";'],
+      ['', '}'],
+      ['', ''],
+      ['ef', 'public sealed class AppDb(DbContextOptions<AppDb> o) : DbContext(o)'],
+      ['', '{'],
+      ['ef', '    public DbSet<Order> Orders => Set<Order>();'],
+      ['msg', '    public DbSet<OutboxMessage> Outbox => Set<OutboxMessage>();'],
+      ['', '}'],
+      ['', ''],
+      ['cs', 'public sealed class OrderService(AppDb db, HybridCache cache,'],
+      ['di', '    TimeProvider clock, ILogger<OrderService> log)'],
+      ['', '{'],
+      ['cache', '    public ValueTask<OrderDto?> FindAsync(Guid id, CancellationToken ct) =>'],
+      ['cache', '        cache.GetOrCreateAsync($"order:{id}", async t =>'],
+      ['ef', '            await db.Orders.AsNoTracking().Where(o => o.Id == id)'],
+      ['ef', '                .Select(o => new OrderDto(o.Id, o.Total, o.Status))'],
+      ['asy', '                .FirstOrDefaultAsync(t), cancellationToken: ct);'],
+      ['', ''],
+      ['asy', '    public async Task<OrderDto> PlaceAsync(NewOrder req,'],
+      ['', '        CancellationToken ct)'],
+      ['', '    {'],
+      ['cs', '        var order = new Order { Customer = req.Customer,'],
+      ['col', '            Total = req.Lines.Sum(l => l.Qty * l.Price),'],
+      ['bcl', '            CreatedAt = clock.GetUtcNow() };'],
+      ['ef', '        db.Orders.Add(order);'],
+      ['msg', '        db.Outbox.Add(new() { Type = "OrderPlaced",'],
+      ['msg', '            Payload = JsonSerializer.Serialize(new { order.Id }) });'],
+      ['msg', '        await db.SaveChangesAsync(ct);   // order + event: one commit'],
+      ['log', '        log.LogInformation("Order {OrderId} placed", order.Id);'],
+      ['', '        return new(order.Id, order.Total, order.Status);'],
+      ['', '    }'],
+      ['', ''],
+      ['dap', '    public Task<IEnumerable<DayTotal>> DailyTotalsAsync() =>'],
+      ['dap', '        db.Database.GetDbConnection().QueryAsync<DayTotal>("""'],
+      ['dap', '            SELECT CAST(CreatedAt AS date) AS Day, SUM(Total) AS Total', 'sql'],
+      ['dap', '            FROM dbo.Orders GROUP BY CAST(CreatedAt AS date)', 'sql'],
+      ['cs', '            """);   // a raw string literal: SQL with nothing escaped'],
+      ['', '}'],
+      ['', ''],
+      ['tst', '// Tests: WebApplicationFactory<Program> + SQL Server in Testcontainers']
     ]
   }
 };
@@ -4716,10 +4793,19 @@ grep -r "<TargetFramework" --include=*.csproj --include=*.props .` }
       }).join('') + '</div>' : '') +
       '<div class="blks" id="b-' + s.id + '">' + s.blocks.map(blockHTML).join('') + '</div></section>';
   }
-  /* optional: one annotated file that opens a group and links each line to the section that explains it */
+  /* optional: one annotated file whose lines link to the sections that explain them. With a group it opens
+     that group; without one it sits at the top of the page, right under the hero, and comes first in the sidebar */
   var PROG = META.prog && META.prog.lines && META.prog.lines.length ? META.prog : null;
+  var PROG_TOP = !!PROG && !PROG.group;
   var progCode = PROG ? esc(PROG.code || 'MAIN') : '', progNav = PROG ? esc(PROG.nav || 'Annotated file') : '';
   var progRow = '<button class="nav-i" type="button" data-to="prog"><span class="c">' + progCode + '</span><span class="n">' + progNav + '</span></button>';
+  function progHTML() {
+    var h = PROG_TOP ? 'h2' : 'h3';
+    return '<article class="blk prog' + (PROG_TOP ? ' prog-top' : '') + '" id="prog" aria-labelledby="prog-h"><header class="blk-h"><' + h + ' class="bt" id="prog-h">' + inl(PROG.title || PROG.nav) + '</' + h + '>' +
+      '<span class="tools"><span id="pmap-copy"></span></span></header>' +
+      '<p class="prog-cap">' + inl(PROG.cap || 'Each tagged line jumps to the section that explains it.') + '</p>' +
+      '<div class="prog-body"><div class="pmap" id="pmap"></div><ul class="prog-secs" id="prog-secs" aria-label="Sections this file touches"></ul></div></article>';
+  }
   var sh = '', nav = '';
   GROUPS.forEach(function (g) {
     g.cards = g.sections.reduce(function (n, s) { return n + s.cards; }, 0);
@@ -4727,10 +4813,7 @@ grep -r "<TargetFramework" --include=*.csproj --include=*.props .` }
       '<h2>' + esc(g.name) + '</h2><p class="gq">' + esc(g.q) + '</p><div class="gchips">' + g.sections.map(function (s) {
         return '<button class="gchip" type="button" data-to="s-' + s.id + '"><span class="c">' + s.code + '</span>' + esc(s.name) + '</button>';
       }).join('') + '</div></div>';
-    if (PROG && g.id === PROG.group) sh += '<article class="blk prog" id="prog" aria-labelledby="prog-h"><header class="blk-h"><h3 class="bt" id="prog-h">' + inl(PROG.title || PROG.nav) + '</h3>' +
-      '<span class="tools"><span id="pmap-copy"></span></span></header>' +
-      '<p class="prog-cap">' + inl(PROG.cap || 'Each tagged line jumps to the section that explains it.') + '</p>' +
-      '<div class="prog-body"><div class="pmap" id="pmap"></div><ul class="prog-secs" id="prog-secs" aria-label="Sections this file touches"></ul></div></article>';
+    if (PROG && g.id === PROG.group) sh += progHTML();
     nav += '<div class="nav-g" data-g="' + g.id + '"><button class="nav-gh" type="button" aria-expanded="true" title="' + esc(g.q) + '"><span>' + esc(g.name) + '</span><span class="chev">' + chev + '</span></button><ul class="nav-list">';
     if (PROG && g.id === PROG.group) nav += '<li>' + progRow + '</li>';
     g.sections.forEach(function (s) {
@@ -4741,6 +4824,10 @@ grep -r "<TargetFramework" --include=*.csproj --include=*.props .` }
   });
   $('#secs').innerHTML = sh;
   $('#nav').innerHTML = nav;
+  if (PROG_TOP) {
+    $('#map').insertAdjacentHTML('beforebegin', progHTML());
+    $('#nav-top').insertAdjacentHTML('afterbegin', progRow.replace('class="nav-i"', 'class="nav-i nav-top"'));
+  }
   $('#side-meta').textContent = many(CARDS, 'card') + ' · ' + many(SECS.length, 'section') + ' · ' + many(GROUPS.length, 'group');
 
   /* ---- page furniture that the sheet words: hero, map blurb, legend, search hints, footer ---- */
@@ -4776,17 +4863,23 @@ grep -r "<TargetFramework" --include=*.csproj --include=*.props .` }
   /* ---- the annotated file ---- */
   if (PROG) {
     $('#pmap').innerHTML = PROG.lines.map(function (p) {
-      var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], PROG.lang || DEF) : ' ') + '</code>';
+      var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], p[2] || PROG.lang || DEF) : ' ') + '</code>';
       if (!s) return '<div class="pl"><span class="pg"></span>' + code + '</div>';
       return '<div class="pl to" data-to="s-' + s.id + '" data-s="' + s.id + '" title="' + esc(s.name) + '"><button class="pg" type="button" data-to="s-' + s.id + '" aria-label="' + esc(s.name) + '">' + s.code + '</button>' + code + '</div>';
     }).join('');
     $('#pmap-copy').outerHTML = cpBtn('prog', PROG.lines.map(function (p) { return p[1]; }).join('\n'), PROG.copy || 'Copy the file');
     var progSeen = {}, progSecs = [];
     PROG.lines.forEach(function (p) { var x = SEC[p[0]]; if (x) { if (!progSeen[x.id]) { progSeen[x.id] = { s: x, n: 0 }; progSecs.push(progSeen[x.id]); } progSeen[x.id].n++; } });
-    $('#prog-secs').innerHTML = '<li class="glabel">Sections this file touches</li>' + progSecs.map(function (x) {
+    var progLi = function (x) {
       return '<li><button class="grow" type="button" data-to="s-' + x.s.id + '" data-s="' + x.s.id + '"><span class="c">' + x.s.code + '</span><span class="n">' + esc(x.s.name) + '</span>' +
         '<span class="ct">' + x.n + (x.n === 1 ? ' line' : ' lines') + '</span></button></li>';
-    }).join('');
+    };
+    /* at the top of the page the list is the key to every tag, so it follows the groups; inside a group it follows the file */
+    $('#prog-secs').innerHTML = PROG_TOP ? GROUPS.map(function (g) {
+      var rows = progSecs.filter(function (x) { return x.s.g === g; })
+        .sort(function (a, b) { return g.sections.indexOf(a.s) - g.sections.indexOf(b.s); });
+      return rows.length ? '<li class="glabel">' + esc(g.name) + '</li>' + rows.map(progLi).join('') : '';
+    }).join('') : '<li class="glabel">Sections this file touches</li>' + progSecs.map(progLi).join('');
     var progHot = function (id) {
       $$('#prog .hot').forEach(function (x) { if (x.getAttribute('data-s') !== id) x.classList.remove('hot'); });
       if (id) $$('#prog [data-s="' + id + '"]').forEach(function (x) { x.classList.add('hot'); });
@@ -4993,7 +5086,7 @@ grep -r "<TargetFramework" --include=*.csproj --include=*.props .` }
       s.hidden = !vis;
       var ni = $('.nav-i[data-to="' + s.id + '"]'); if (ni) ni.parentNode.hidden = !vis;
     });
-    if (PROG) $('.nav-i[data-to="prog"]').parentNode.hidden = active;     /* the annotated file is not a search result */
+    if (PROG && !PROG_TOP) $('.nav-i[data-to="prog"]').parentNode.hidden = active;     /* the annotated file is not a search result */
     $$('.nav-g').forEach(function (g) { g.hidden = !$$('.nav-list li', g).some(function (li) { return !li.hidden; }); });
     /* a sub-heading stays only while one of the cards under it matches */
     $$('.blks').forEach(function (list) {

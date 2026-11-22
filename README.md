@@ -4,7 +4,7 @@ Self-contained HTML cheat sheets. Each file is a single page with its own styles
 
 | File | What it covers |
 | --- | --- |
-| [`dotnet-cheatsheet.html`](dotnet-cheatsheet.html) | Copy-paste C#, ASP.NET Core and data-access patterns for .NET 10 LTS / C# 14, with an annotated `Program.cs`, a task finder and interactive DI / configuration / middleware widgets. |
+| [`dotnet-cheatsheet.html`](dotnet-cheatsheet.html) | Copy-paste C#, ASP.NET Core and data-access patterns for .NET 10 LTS / C# 14. It opens with `shop.cs`, a whole orders API in one annotated file, and has a task finder and interactive DI / configuration / middleware widgets. |
 | [`sql-server-cheatsheet.html`](sql-server-cheatsheet.html) | Copy-paste T-SQL for SQL Server 2025 and Azure SQL — queries, joins, window functions, locking and isolation, indexing and tuning — with an annotated script and interactive widgets. |
 | [`react-javascript-cheatsheet.html`](react-javascript-cheatsheet.html) | JavaScript, TypeScript and React patterns for React 19.3, TypeScript 7 and ES2026, with an annotated `main.tsx` and event-loop, re-render and effect widgets. |
 | [`angular-cheatsheet.html`](angular-cheatsheet.html) | Signal-first, zoneless, OnPush patterns for Angular 22.2, TypeScript 6, RxJS 7 and NgRx 22, with an annotated `order-page.ts` and change-detection, injector, flattening-operator and template-translator widgets. |
@@ -23,7 +23,7 @@ Fonts load from Google Fonts; everything else is inline. Light and dark themes f
 
 ## Building a cheat sheet
 
-[`kit/`](kit/) is the template new sheets are built from; `dotnet-cheatsheet.html` is the first one built with it. It holds the page engine, the build and check tools, a reference for every card, diagram and widget type ([`kit/KIT.md`](kit/KIT.md)) and a small Git sample to copy ([`kit/starter/`](kit/starter/)). It needs Python 3 and Node; `shot.py` also needs Playwright with Chromium.
+[`kit/`](kit/) is the template the newer sheets are built from; a page built with it has `<meta name="generator" content="cheatsheet-kit …">` in its head. It holds the page engine, the build and check tools, a reference for every card, diagram and widget type ([`kit/KIT.md`](kit/KIT.md)) and a small Git sample to copy ([`kit/starter/`](kit/starter/)). It needs Python 3 and Node; `shot.py` also needs Playwright with Chromium.
 
 ```bash
 cp -r kit/starter sheets/my-topic                              # then replace the content

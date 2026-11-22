@@ -20,7 +20,28 @@ window.NCS_META = {
     empty: 'Try a command (“rebase”) or a situation (“undo”).'
   },
   // footer paragraphs. {count} becomes "12 cards across 3 sections"; [label](https://…) makes a link.
-  foot: ['Git Starter: {count}. A sample for the cheatsheet template; facts checked against the Git documentation.']
+  foot: ['Git Starter: {count}. A sample for the cheatsheet template; facts checked against the Git documentation.'],
+  // optional: one annotated file. Without "group" it sits at the top of the page; each tagged line jumps to its section.
+  prog: {
+    code: 'FILE', nav: 'A day with Git, annotated', title: 'A day with Git, from branch to merge',
+    cap: 'One feature from start to finish. Tagged lines jump to the section that explains them.', copy: 'Copy the commands',
+    lines: [
+      ['', '# start the feature from an up-to-date main'],
+      ['branch', 'git switch main && git pull --ff-only'],
+      ['branch', 'git switch -c feature/rounding'],
+      ['', ''],
+      ['', '# work, then commit in small steps'],
+      ['save', 'git status'],
+      ['save', 'git add -p'],
+      ['save', 'git commit -m "Fix total rounding"'],
+      ['', ''],
+      ['', '# share it'],
+      ['branch', 'git fetch origin && git rebase origin/main'],
+      ['branch', 'git push --force-with-lease'],
+      ['', ''],
+      ['undo', 'git reflog        # when something went wrong'],
+    ]
+  }
 };
 
 /* Groups in reading order. Each answers one question; every section belongs to exactly one group. */

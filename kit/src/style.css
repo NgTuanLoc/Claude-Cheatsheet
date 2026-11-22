@@ -476,6 +476,14 @@ body.searching .short,body.searching .jump{display:none}
   .prog-secs .glabel{grid-column:1/-1}
 }
 
+/* the annotated file at the top of the page: the list beside it is the key to its tags and stays in view */
+.prog.prog-top{overflow:clip}
+.prog-top .prog-secs .glabel:not(:first-child){margin-top:6px}
+.prog-top .prog-secs .grow{padding-block:3px}
+@media (min-width:1121px){
+  .prog-top .prog-secs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;max-height:calc(100vh - 84px);max-height:calc(100dvh - 84px);overflow-y:auto;scrollbar-width:thin}
+}
+
 /* section header on a phone: title and toggle share one row */
 @media (max-width:760px){
   .sec .sec-h{flex-wrap:nowrap}

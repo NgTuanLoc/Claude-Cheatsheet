@@ -3,6 +3,8 @@
 One cheatsheet = the kit's engine (`kit/src`, never edited per sheet) + one **sheet** folder you write.
 `kit/starter/` is a small complete sheet that uses every feature. Copy it and replace the content.
 
+Kit version 1.1: the annotated file can sit at the top of the page (`prog` without `group`).
+
 Contents: [Files](#files) · [Commands](#commands) · [Meta](#meta) · [Sections](#sections) · [Cards](#cards) · [Inline markup](#inline-markup) · [Diagrams](#diagrams) · [Widgets](#widgets) · [Languages](#languages) · [Styling rules](#styling-rules) · [Changing the kit](#changing-the-kit)
 
 ## Files
@@ -43,16 +45,20 @@ window.NCS_META = {
   tryIt: 'Legend sentence about the interactive parts.',      // default text is used when omitted
   search: { placeholder: '…', hint: 'an API or an error: “x”, “y”.', empty: 'Try an API (“x”).' },
   foot: ['Name: {count}. What it targets, when the facts were checked.', 'See also [Other sheet](https://…).'],
-  prog: { group: 'app', code: 'MAIN', nav: 'Program.cs, annotated', title: 'One `Program.cs`, annotated',
-          cap: 'What the file shows.', copy: 'Copy Program.cs', lang: 'cs',
-          lines: [['', 'var builder = …;'], ['di', 'builder.Services.AddScoped<…>();']] }   // optional annotated file
+  prog: { code: 'FILE', nav: 'shop.cs, annotated', title: 'The whole service in one file: `shop.cs`',
+          cap: 'What the file shows.', copy: 'Copy shop.cs', lang: 'cs',      // optional annotated file
+          lines: [['', 'var builder = …;'], ['di', 'builder.Services.AddScoped<…>();'],
+                  ['dap', 'SELECT Id FROM dbo.Orders', 'sql']] }            // third cell: this line's language
 };
 window.NCS_GROUPS = [{ id: 'daily', name: 'Everyday work', q: 'The one question this group answers?', secs: ['save', 'branch'] }];
 window.NCS_TASKS  = [['Task in the reader\'s words', 'short hint', ['card-id', 'second-card-id']]];
 ```
 
 - Every section is in exactly one group. Every group has at least one task (a task belongs to the group of its first card).
-- `prog` shows one real file line by line at the top of a group; a line tagged with a section id jumps to that section.
+- `prog` shows one real file line by line; a line tagged with a section id jumps to that section, and the list beside
+  the file is the key to the tags. Without `group` the file sits at the top of the page, right under the hero, and
+  comes first in the sidebar: use that for a file that walks through the whole topic. With `group: '<group id>'` it
+  opens that group instead. Keep lines under about 76 characters so they fit without scrolling on a laptop.
 
 ## Sections
 

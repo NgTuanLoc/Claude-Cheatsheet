@@ -6,7 +6,7 @@ self-contained HTML file, and runs the structural checks first. Nothing is writt
 import argparse, glob, html, json, os, re, subprocess, sys
 from html.parser import HTMLParser
 
-KIT_VERSION = '1.0'
+KIT_VERSION = '1.1'
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, 'src')
 

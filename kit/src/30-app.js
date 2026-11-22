@@ -159,10 +159,19 @@
       }).join('') + '</div>' : '') +
       '<div class="blks" id="b-' + s.id + '">' + s.blocks.map(blockHTML).join('') + '</div></section>';
   }
-  /* optional: one annotated file that opens a group and links each line to the section that explains it */
+  /* optional: one annotated file whose lines link to the sections that explain them. With a group it opens
+     that group; without one it sits at the top of the page, right under the hero, and comes first in the sidebar */
   var PROG = META.prog && META.prog.lines && META.prog.lines.length ? META.prog : null;
+  var PROG_TOP = !!PROG && !PROG.group;
   var progCode = PROG ? esc(PROG.code || 'MAIN') : '', progNav = PROG ? esc(PROG.nav || 'Annotated file') : '';
   var progRow = '<button class="nav-i" type="button" data-to="prog"><span class="c">' + progCode + '</span><span class="n">' + progNav + '</span></button>';
+  function progHTML() {
+    var h = PROG_TOP ? 'h2' : 'h3';
+    return '<article class="blk prog' + (PROG_TOP ? ' prog-top' : '') + '" id="prog" aria-labelledby="prog-h"><header class="blk-h"><' + h + ' class="bt" id="prog-h">' + inl(PROG.title || PROG.nav) + '</' + h + '>' +
+      '<span class="tools"><span id="pmap-copy"></span></span></header>' +
+      '<p class="prog-cap">' + inl(PROG.cap || 'Each tagged line jumps to the section that explains it.') + '</p>' +
+      '<div class="prog-body"><div class="pmap" id="pmap"></div><ul class="prog-secs" id="prog-secs" aria-label="Sections this file touches"></ul></div></article>';
+  }
   var sh = '', nav = '';
   GROUPS.forEach(function (g) {
     g.cards = g.sections.reduce(function (n, s) { return n + s.cards; }, 0);
@@ -170,10 +179,7 @@
       '<h2>' + esc(g.name) + '</h2><p class="gq">' + esc(g.q) + '</p><div class="gchips">' + g.sections.map(function (s) {
         return '<button class="gchip" type="button" data-to="s-' + s.id + '"><span class="c">' + s.code + '</span>' + esc(s.name) + '</button>';
       }).join('') + '</div></div>';
-    if (PROG && g.id === PROG.group) sh += '<article class="blk prog" id="prog" aria-labelledby="prog-h"><header class="blk-h"><h3 class="bt" id="prog-h">' + inl(PROG.title || PROG.nav) + '</h3>' +
-      '<span class="tools"><span id="pmap-copy"></span></span></header>' +
-      '<p class="prog-cap">' + inl(PROG.cap || 'Each tagged line jumps to the section that explains it.') + '</p>' +
-      '<div class="prog-body"><div class="pmap" id="pmap"></div><ul class="prog-secs" id="prog-secs" aria-label="Sections this file touches"></ul></div></article>';
+    if (PROG && g.id === PROG.group) sh += progHTML();
     nav += '<div class="nav-g" data-g="' + g.id + '"><button class="nav-gh" type="button" aria-expanded="true" title="' + esc(g.q) + '"><span>' + esc(g.name) + '</span><span class="chev">' + chev + '</span></button><ul class="nav-list">';
     if (PROG && g.id === PROG.group) nav += '<li>' + progRow + '</li>';
     g.sections.forEach(function (s) {
@@ -184,6 +190,10 @@
   });
   $('#secs').innerHTML = sh;
   $('#nav').innerHTML = nav;
+  if (PROG_TOP) {
+    $('#map').insertAdjacentHTML('beforebegin', progHTML());
+    $('#nav-top').insertAdjacentHTML('afterbegin', progRow.replace('class="nav-i"', 'class="nav-i nav-top"'));
+  }
   $('#side-meta').textContent = many(CARDS, 'card') + ' · ' + many(SECS.length, 'section') + ' · ' + many(GROUPS.length, 'group');
 
   /* ---- page furniture that the sheet words: hero, map blurb, legend, search hints, footer ---- */
@@ -219,17 +229,23 @@
   /* ---- the annotated file ---- */
   if (PROG) {
     $('#pmap').innerHTML = PROG.lines.map(function (p) {
-      var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], PROG.lang || DEF) : ' ') + '</code>';
+      var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], p[2] || PROG.lang || DEF) : ' ') + '</code>';
       if (!s) return '<div class="pl"><span class="pg"></span>' + code + '</div>';
       return '<div class="pl to" data-to="s-' + s.id + '" data-s="' + s.id + '" title="' + esc(s.name) + '"><button class="pg" type="button" data-to="s-' + s.id + '" aria-label="' + esc(s.name) + '">' + s.code + '</button>' + code + '</div>';
     }).join('');
     $('#pmap-copy').outerHTML = cpBtn('prog', PROG.lines.map(function (p) { return p[1]; }).join('\n'), PROG.copy || 'Copy the file');
     var progSeen = {}, progSecs = [];
     PROG.lines.forEach(function (p) { var x = SEC[p[0]]; if (x) { if (!progSeen[x.id]) { progSeen[x.id] = { s: x, n: 0 }; progSecs.push(progSeen[x.id]); } progSeen[x.id].n++; } });
-    $('#prog-secs').innerHTML = '<li class="glabel">Sections this file touches</li>' + progSecs.map(function (x) {
+    var progLi = function (x) {
       return '<li><button class="grow" type="button" data-to="s-' + x.s.id + '" data-s="' + x.s.id + '"><span class="c">' + x.s.code + '</span><span class="n">' + esc(x.s.name) + '</span>' +
         '<span class="ct">' + x.n + (x.n === 1 ? ' line' : ' lines') + '</span></button></li>';
-    }).join('');
+    };
+    /* at the top of the page the list is the key to every tag, so it follows the groups; inside a group it follows the file */
+    $('#prog-secs').innerHTML = PROG_TOP ? GROUPS.map(function (g) {
+      var rows = progSecs.filter(function (x) { return x.s.g === g; })
+        .sort(function (a, b) { return g.sections.indexOf(a.s) - g.sections.indexOf(b.s); });
+      return rows.length ? '<li class="glabel">' + esc(g.name) + '</li>' + rows.map(progLi).join('') : '';
+    }).join('') : '<li class="glabel">Sections this file touches</li>' + progSecs.map(progLi).join('');
     var progHot = function (id) {
       $$('#prog .hot').forEach(function (x) { if (x.getAttribute('data-s') !== id) x.classList.remove('hot'); });
       if (id) $$('#prog [data-s="' + id + '"]').forEach(function (x) { x.classList.add('hot'); });
@@ -436,7 +452,7 @@
       s.hidden = !vis;
       var ni = $('.nav-i[data-to="' + s.id + '"]'); if (ni) ni.parentNode.hidden = !vis;
     });
-    if (PROG) $('.nav-i[data-to="prog"]').parentNode.hidden = active;     /* the annotated file is not a search result */
+    if (PROG && !PROG_TOP) $('.nav-i[data-to="prog"]').parentNode.hidden = active;     /* the annotated file is not a search result */
     $$('.nav-g').forEach(function (g) { g.hidden = !$$('.nav-list li', g).some(function (li) { return !li.hidden; }); });
     /* a sub-heading stays only while one of the cards under it matches */
     $$('.blks').forEach(function (list) {

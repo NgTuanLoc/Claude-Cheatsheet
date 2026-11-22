@@ -124,10 +124,14 @@ for (const row of T) {
 for (const g of G) if (!tasksPerGroup[g.id]) errs.push(`group ${g.id} has no tasks: add a row to NCS_TASKS whose first card is in that group`);
 if (M.prog) {
   const p = M.prog;
-  if (!G.some(g => g.id === p.group)) errs.push('NCS_META.prog.group must be the id of a group');
+  if (p.group != null && !G.some(g => g.id === p.group)) errs.push('NCS_META.prog.group must be the id of a group, or left out to put the file at the top of the page');
   if (!str(p.nav) || !str(p.title)) errs.push('NCS_META.prog needs nav and title');
   if (!Array.isArray(p.lines) || !p.lines.length) errs.push('NCS_META.prog.lines must be [[section id or "", code], ...]');
-  else for (const l of p.lines) if (l[0] && !secIds.has(l[0])) errs.push('annotated file -> missing section ' + l[0]);
+  else for (const l of p.lines) {
+    if (!Array.isArray(l) || typeof l[1] !== 'string') { errs.push('annotated file lines are [section id or "", code, lang?]: ' + JSON.stringify(l).slice(0, 80)); continue; }
+    if (l[0] && !secIds.has(l[0])) errs.push('annotated file -> missing section ' + l[0]);
+    if (l[2] && !LANGS[l[2]]) errs.push('annotated file: unknown lang ' + l[2] + ' on line ' + JSON.stringify(l[1]).slice(0, 60));
+  }
   if (p.lang && !LANGS[p.lang]) errs.push('NCS_META.prog.lang: unknown lang ' + p.lang);
 }
 

@@ -175,7 +175,7 @@ def run():
         sub = pg.evaluate("() => { const b = document.querySelector('.jchip'); return b && b.getAttribute('data-to'); }")
         if sub: pg.click('.jchip'); landed('sub-heading chip', sub)
         if pg.evaluate("() => !!document.getElementById('prog')"):
-            pg.evaluate("() => scrollTo(0, 0)"); pg.click('#nav .nav-i[data-to="prog"]'); landed('annotated file', 'prog')
+            pg.evaluate("() => scrollTo(0, 0)"); pg.click('.side .nav-i[data-to="prog"]'); landed('annotated file', 'prog')
             line = pg.evaluate("() => { const l = document.querySelector('#pmap .pl.to'); return l && l.getAttribute('data-to'); }")
             if line: pg.click('#pmap .pl.to code'); landed('annotated line', line)
 
