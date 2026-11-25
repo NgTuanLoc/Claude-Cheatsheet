@@ -1,11 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="generator" content="cheatsheet-kit 1.0">
+<meta name="generator" content="cheatsheet-kit 1.1">
 <title>Docker &amp; Kubernetes Cheatsheet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -489,6 +488,14 @@ body.searching .short,body.searching .jump{display:none}
   .prog-body{grid-template-columns:minmax(0,1fr)}
   .prog-secs{border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fill,minmax(13.5rem,1fr))}
   .prog-secs .glabel{grid-column:1/-1}
+}
+
+/* the annotated file at the top of the page: the list beside it is the key to its tags and stays in view */
+.prog.prog-top{overflow:clip}
+.prog-top .prog-secs .glabel:not(:first-child){margin-top:6px}
+.prog-top .prog-secs .grow{padding-block:3px}
+@media (min-width:1121px){
+  .prog-top .prog-secs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;max-height:calc(100vh - 84px);max-height:calc(100dvh - 84px);overflow-y:auto;scrollbar-width:thin}
 }
 
 /* section header on a phone: title and toggle share one row */
@@ -1015,7 +1022,7 @@ window.NCS_LANGDEFS = {
 window.NCS_META = {
   title: 'Docker & Kubernetes Cheatsheet',
   lang: 'bash',
-  lede: 'Docker, Compose, kubectl and Kubernetes manifests for shipping **.NET 10** services to **AKS**. New to it? Read the groups in order, starting with *Start here*: every section opens with what it is and three things to remember.',
+  lede: 'Docker, Compose, kubectl and Kubernetes manifests for shipping **.NET 10** services to **AKS**. Start with the shop-api repo below, one listing that touches all six groups, each line linked to the section that explains it. New to it? Then read the groups in order, starting with *Start here*: every section opens with what it is and three things to remember.',
   now: { label: 'Versions this sheet tracks', items: [
     { tone: 'g', t: 'Kubernetes 1.37', d: 'The current release, since 26 August 2026; 1.38 is due on 16 December. The project patches the three newest minor versions.' },
     { tone: 'b', t: 'Ingress NGINX is retired', d: 'No releases or security fixes since March 2026. Move to Gateway API or another controller.' },
@@ -1036,37 +1043,118 @@ window.NCS_META = {
     'Docker & Kubernetes Cheatsheet: {count}. Written for Kubernetes 1.37, Docker Engine with BuildKit and Compose v2, .NET 10 images and AKS. Versions and retirements checked on 21 November 2026 against [Kubernetes releases](https://kubernetes.io/releases/), the [v1.37 release](https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/), the [v1.38 schedule](https://www.k8s.dev/resources/release/), [Gateway API v1.6](https://kubernetes.io/blog/2026/08/03/gateway-api-v1-6-release/), the [Ingress NGINX retirement](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/) and [Ingress2Gateway 1.0](https://kubernetes.io/blog/2026/03/20/ingress2gateway-1-0-release/).',
     'Companions in this library: the [.NET Cheatsheet](https://ngtuanloc.github.io/Claude-Cheatsheet/dotnet-cheatsheet.html) for the app side of containers, and the [System Design Cheatsheet](https://ngtuanloc.github.io/Claude-Cheatsheet/system-design-cheatsheet.html) for the architecture around them.'
   ],
-  prog: { group: 'ship', code: 'SHIP', nav: 'ship.sh, annotated', title: 'From a commit to running Pods: `ship.sh`',
-    cap: 'The whole sheet in one script, from your laptop to AKS. Each tagged line jumps to the section that explains it.', copy: 'Copy ship.sh', lang: 'bash',
+  prog: {
+    code: 'REPO', nav: 'The shop-api repo, annotated', title: 'From a commit to running Pods, file by file',
+    cap: 'The shop-api repo, file by file: its Dockerfile, the Compose file for your laptop, the Kubernetes manifests with their production overlay, and the CI script that ships it all to AKS. Each tagged line jumps to the section that explains it, and the list beside the file is the key to the tags. The Gateway, which the platform team runs, and `config.env` are left out to keep it short.',
+    copy: 'Copy the listing', lang: 'bash',
     lines: [
-      ['', '# ship.sh: from a commit to running Pods'],
-      ['lab', '# practise first on your laptop: kind create cluster --name dev'],
-      ['df', '# the image: multi-stage build, chiseled runtime, non-root'],
-      ['img', 'docker build -t myacr.azurecr.io/shop-api:1.4.3 .'],
-      ['run', 'docker run --rm -p 8080:8080 myacr.azurecr.io/shop-api:1.4.3'],
-      ['cmp', 'docker compose up -d --build                # api + postgres + rabbitmq'],
-      ['cmp', 'docker compose down -v                      # and wipe the local volumes'],
+      ['tools', '# shop-api, from laptop to AKS: Docker, Compose, then Kubernetes'],
       ['', ''],
-      ['cicd', '# in CI, everything below runs on each push to main'],
-      ['aks', 'az acr login -n myacr'],
-      ['img', 'docker push myacr.azurecr.io/shop-api:1.4.3'],
-      ['aks', 'az aks get-credentials -g rg-shop -n aks-prod'],
-      ['ctl', 'kubectl config use-context aks-prod'],
+      ['', '# Dockerfile'],
+      ['df', 'FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build', 'docker'],
+      ['', 'WORKDIR /src', 'docker'],
+      ['df', 'COPY src/Shop.Api/Shop.Api.csproj src/Shop.Api/', 'docker'],
+      ['df', 'RUN dotnet restore src/Shop.Api/Shop.Api.csproj', 'docker'],
+      ['', 'COPY . .', 'docker'],
+      ['df', 'RUN dotnet publish src/Shop.Api -c Release -o /app --no-restore', 'docker'],
+      ['df', 'FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled AS final', 'docker'],
+      ['', 'WORKDIR /app', 'docker'],
+      ['', 'COPY --from=build /app .', 'docker'],
+      ['df', 'EXPOSE 8080', 'docker'],
+      ['df', 'ENTRYPOINT ["dotnet", "Shop.Api.dll"]', 'docker'],
+      ['', ''],
+      ['cmp', '# compose.yaml: the API and Postgres on your laptop', 'yaml'],
+      ['', 'services:', 'yaml'],
+      ['', '  api:', 'yaml'],
+      ['cmp', '    build: .                                  # the Dockerfile above', 'yaml'],
+      ['run', '    ports: ["8080:8080"]                      # host:container', 'yaml'],
+      ['cmp', '    environment:', 'yaml'],
+      ['vol', '      ConnectionStrings__Db: Host=db;Username=app;Password=app  # by name', 'yaml'],
+      ['cmp', '    depends_on: { db: { condition: service_healthy } }', 'yaml'],
+      ['', '  db:', 'yaml'],
+      ['', '    image: postgres:16', 'yaml'],
+      ['cmp', '    environment: { POSTGRES_USER: app, POSTGRES_PASSWORD: app }', 'yaml'],
+      ['vol', '    volumes: [pgdata:/var/lib/postgresql/data]    # outlives it', 'yaml'],
+      ['cmp', '    healthcheck: { test: ["CMD-SHELL", "pg_isready -U app"], interval: 5s }', 'yaml'],
+      ['vol', 'volumes: { pgdata: {} }', 'yaml'],
+      ['', ''],
+      ['wl', '# k8s/base/deployment.yaml: keep 3 copies of the Pod running', 'yaml'],
+      ['yaml', 'apiVersion: apps/v1', 'yaml'],
+      ['wl', 'kind: Deployment', 'yaml'],
+      ['yaml', 'metadata: { name: shop-api, labels: { app: shop-api } }', 'yaml'],
+      ['', 'spec:', 'yaml'],
+      ['core', '  replicas: 3                     # desired state: lost Pods come back', 'yaml'],
+      ['yaml', '  selector: { matchLabels: { app: shop-api } }       # finds its Pods', 'yaml'],
+      ['roll', '  strategy: { rollingUpdate: { maxSurge: 1, maxUnavailable: 0 } }', 'yaml'],
+      ['', '  template:', 'yaml'],
+      ['', '    metadata:', 'yaml'],
+      ['yaml', '      labels: { app: shop-api, azure.workload.identity/use: "true" }', 'yaml'],
+      ['', '    spec:', 'yaml'],
+      ['aks', '      serviceAccountName: shop-api    # Workload Identity: no secrets', 'yaml'],
+      ['roll', '      terminationGracePeriodSeconds: 30     # preStop plus shutdown', 'yaml'],
+      ['sch', '      topologySpreadConstraints:            # survive losing a zone', 'yaml'],
+      ['sch', '        - maxSkew: 1', 'yaml'],
+      ['sch', '          topologyKey: topology.kubernetes.io/zone', 'yaml'],
+      ['sch', '          whenUnsatisfiable: ScheduleAnyway', 'yaml'],
+      ['sch', '          labelSelector: { matchLabels: { app: shop-api } }', 'yaml'],
+      ['', '      containers:', 'yaml'],
+      ['', '        - name: api', 'yaml'],
+      ['img', '          image: myacr.azurecr.io/shop-api:1.4.3   # immutable tag', 'yaml'],
+      ['svc', '          ports: [{ name: http, containerPort: 8080 }]', 'yaml'],
+      ['cfg', '          envFrom: [{ configMapRef: { name: api-config } }]', 'yaml'],
+      ['res', '          resources:', 'yaml'],
+      ['res', '            requests: { cpu: 250m, memory: 256Mi }   # for scheduling', 'yaml'],
+      ['res', '            limits: { memory: 512Mi }                # OOMKilled above', 'yaml'],
+      ['probe', '          startupProbe: { httpGet: { path: /health/live, port: http },', 'yaml'],
+      ['probe', '                          periodSeconds: 2, failureThreshold: 30 }', 'yaml'],
+      ['probe', '          livenessProbe: { httpGet: { path: /health/live, port: http } }', 'yaml'],
+      ['probe', '          readinessProbe: { httpGet: { path: /health/ready, port: http } }', 'yaml'],
+      ['roll', '          lifecycle: { preStop: { sleep: { seconds: 5 } } }   # no 502s', 'yaml'],
+      ['sec', '          securityContext:', 'yaml'],
+      ['sec', '            runAsNonRoot: true                 # chiseled: UID 1654', 'yaml'],
+      ['sec', '            allowPrivilegeEscalation: false', 'yaml'],
+      ['', ''],
+      ['svc', '# k8s/base/service.yaml: one stable name in front of the Ready Pods', 'yaml'],
+      ['', 'apiVersion: v1', 'yaml'],
+      ['svc', 'kind: Service', 'yaml'],
+      ['', 'metadata: { name: shop-api }', 'yaml'],
+      ['', 'spec:', 'yaml'],
+      ['yaml', '  selector: { app: shop-api }                # the Pod label, exactly', 'yaml'],
+      ['svc', '  ports: [{ name: http, port: 80, targetPort: http }]   # http://shop-api', 'yaml'],
+      ['', ''],
+      ['edge', '# k8s/base/httproute.yaml: the way in from the internet', 'yaml'],
+      ['', 'apiVersion: gateway.networking.k8s.io/v1', 'yaml'],
+      ['edge', 'kind: HTTPRoute', 'yaml'],
+      ['', 'metadata: { name: shop-api }', 'yaml'],
+      ['', 'spec:', 'yaml'],
+      ['edge', '  parentRefs: [{ name: public, namespace: infra }]   # the shared Gateway', 'yaml'],
+      ['edge', '  hostnames: [api.shop.example.com]', 'yaml'],
+      ['edge', '  rules:', 'yaml'],
+      ['edge', '    - matches: [{ path: { type: PathPrefix, value: /orders } }]', 'yaml'],
+      ['edge', '      backendRefs: [{ name: shop-api, port: 80 }]', 'yaml'],
+      ['', ''],
+      ['helm', '# k8s/overlays/prod/kustomization.yaml: what differs in production', 'yaml'],
+      ['helm', 'resources: [../../base]', 'yaml'],
+      ['', 'namespace: shop', 'yaml'],
+      ['helm', 'images: [{ name: myacr.azurecr.io/shop-api, newTag: "1.4.3" }]', 'yaml'],
+      ['cfg', 'configMapGenerator: [{ name: api-config, envs: [config.env] }]', 'yaml'],
+      ['', ''],
+      ['cicd', '# ship.sh: CI runs it on every push to main'],
+      ['lab', '# try the manifests first on a free local cluster: kind create cluster'],
+      ['cicd', 'TAG=$(git rev-parse --short=12 HEAD)          # one image per commit'],
+      ['img', 'IMG=myacr.azurecr.io/shop-api:$TAG'],
+      ['aks', 'az acr login -n myacr                         # with the CI identity'],
+      ['img', 'docker build -t $IMG . && docker push $IMG'],
+      ['aks', 'az aks get-credentials -g rg-shop -n aks-prod  # adds the context'],
       ['ctl', 'kubectl config set-context --current --namespace=shop'],
-      ['', ''],
-      ['k8s', '# apply stores desired state; controllers make it real'],
-      ['yaml', 'kubectl apply --dry-run=server -k k8s/overlays/prod   # validate first'],
-      ['cfg', 'kubectl apply -f k8s/secret-provider.yaml    # Key Vault, not plain Secrets'],
-      ['helm', 'kubectl apply -k k8s/overlays/prod          # Deployment, Service, HTTPRoute'],
-      ['roll', 'kubectl rollout status deploy/shop-api'],
-      ['life', 'kubectl get pods -w                         # Pending, Running, then 1/1 Ready'],
-      ['sch', 'kubectl get pods -o wide                     # which node each Pod landed on'],
-      ['edge', 'kubectl get svc,httproute'],
-      ['res', 'kubectl top pods -l app=shop-api'],
-      ['obs', 'kubectl logs -f deploy/shop-api'],
-      ['sec', 'kubectl auth can-i delete pods               # what may this identity do?'],
-      ['', ''],
-      ['roll', 'kubectl rollout undo deploy/shop-api         # if the new version misbehaves']
+      ['helm', 'cd k8s/overlays/prod && kustomize edit set image $IMG'],
+      ['yaml', 'kubectl apply --dry-run=server -k .           # validate; changes nothing'],
+      ['k8s', 'kubectl apply -k .                            # stores what you want'],
+      ['roll', 'kubectl rollout status deploy/shop-api --timeout=5m || {'],
+      ['dbg', '  kubectl describe pods -l app=shop-api | tail -30      # the Events'],
+      ['obs', '  kubectl logs -l app=shop-api --prefix --tail=50       # the app\'s logs'],
+      ['roll', '  kubectl rollout undo deploy/shop-api; exit 1; }       # back it goes'],
+      ['life', 'kubectl get pods -l app=shop-api              # 3 Pods, each 1/1 Ready']
     ] }
 };
 
@@ -4710,10 +4798,19 @@ spec:
       }).join('') + '</div>' : '') +
       '<div class="blks" id="b-' + s.id + '">' + s.blocks.map(blockHTML).join('') + '</div></section>';
   }
-  /* optional: one annotated file that opens a group and links each line to the section that explains it */
+  /* optional: one annotated file whose lines link to the sections that explain them. With a group it opens
+     that group; without one it sits at the top of the page, right under the hero, and comes first in the sidebar */
   var PROG = META.prog && META.prog.lines && META.prog.lines.length ? META.prog : null;
+  var PROG_TOP = !!PROG && !PROG.group;
   var progCode = PROG ? esc(PROG.code || 'MAIN') : '', progNav = PROG ? esc(PROG.nav || 'Annotated file') : '';
   var progRow = '<button class="nav-i" type="button" data-to="prog"><span class="c">' + progCode + '</span><span class="n">' + progNav + '</span></button>';
+  function progHTML() {
+    var h = PROG_TOP ? 'h2' : 'h3';
+    return '<article class="blk prog' + (PROG_TOP ? ' prog-top' : '') + '" id="prog" aria-labelledby="prog-h"><header class="blk-h"><' + h + ' class="bt" id="prog-h">' + inl(PROG.title || PROG.nav) + '</' + h + '>' +
+      '<span class="tools"><span id="pmap-copy"></span></span></header>' +
+      '<p class="prog-cap">' + inl(PROG.cap || 'Each tagged line jumps to the section that explains it.') + '</p>' +
+      '<div class="prog-body"><div class="pmap" id="pmap"></div><ul class="prog-secs" id="prog-secs" aria-label="Sections this file touches"></ul></div></article>';
+  }
   var sh = '', nav = '';
   GROUPS.forEach(function (g) {
     g.cards = g.sections.reduce(function (n, s) { return n + s.cards; }, 0);
@@ -4721,10 +4818,7 @@ spec:
       '<h2>' + esc(g.name) + '</h2><p class="gq">' + esc(g.q) + '</p><div class="gchips">' + g.sections.map(function (s) {
         return '<button class="gchip" type="button" data-to="s-' + s.id + '"><span class="c">' + s.code + '</span>' + esc(s.name) + '</button>';
       }).join('') + '</div></div>';
-    if (PROG && g.id === PROG.group) sh += '<article class="blk prog" id="prog" aria-labelledby="prog-h"><header class="blk-h"><h3 class="bt" id="prog-h">' + inl(PROG.title || PROG.nav) + '</h3>' +
-      '<span class="tools"><span id="pmap-copy"></span></span></header>' +
-      '<p class="prog-cap">' + inl(PROG.cap || 'Each tagged line jumps to the section that explains it.') + '</p>' +
-      '<div class="prog-body"><div class="pmap" id="pmap"></div><ul class="prog-secs" id="prog-secs" aria-label="Sections this file touches"></ul></div></article>';
+    if (PROG && g.id === PROG.group) sh += progHTML();
     nav += '<div class="nav-g" data-g="' + g.id + '"><button class="nav-gh" type="button" aria-expanded="true" title="' + esc(g.q) + '"><span>' + esc(g.name) + '</span><span class="chev">' + chev + '</span></button><ul class="nav-list">';
     if (PROG && g.id === PROG.group) nav += '<li>' + progRow + '</li>';
     g.sections.forEach(function (s) {
@@ -4735,6 +4829,10 @@ spec:
   });
   $('#secs').innerHTML = sh;
   $('#nav').innerHTML = nav;
+  if (PROG_TOP) {
+    $('#map').insertAdjacentHTML('beforebegin', progHTML());
+    $('#nav-top').insertAdjacentHTML('afterbegin', progRow.replace('class="nav-i"', 'class="nav-i nav-top"'));
+  }
   $('#side-meta').textContent = many(CARDS, 'card') + ' · ' + many(SECS.length, 'section') + ' · ' + many(GROUPS.length, 'group');
 
   /* ---- page furniture that the sheet words: hero, map blurb, legend, search hints, footer ---- */
@@ -4770,17 +4868,23 @@ spec:
   /* ---- the annotated file ---- */
   if (PROG) {
     $('#pmap').innerHTML = PROG.lines.map(function (p) {
-      var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], PROG.lang || DEF) : ' ') + '</code>';
+      var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], p[2] || PROG.lang || DEF) : ' ') + '</code>';
       if (!s) return '<div class="pl"><span class="pg"></span>' + code + '</div>';
       return '<div class="pl to" data-to="s-' + s.id + '" data-s="' + s.id + '" title="' + esc(s.name) + '"><button class="pg" type="button" data-to="s-' + s.id + '" aria-label="' + esc(s.name) + '">' + s.code + '</button>' + code + '</div>';
     }).join('');
     $('#pmap-copy').outerHTML = cpBtn('prog', PROG.lines.map(function (p) { return p[1]; }).join('\n'), PROG.copy || 'Copy the file');
     var progSeen = {}, progSecs = [];
     PROG.lines.forEach(function (p) { var x = SEC[p[0]]; if (x) { if (!progSeen[x.id]) { progSeen[x.id] = { s: x, n: 0 }; progSecs.push(progSeen[x.id]); } progSeen[x.id].n++; } });
-    $('#prog-secs').innerHTML = '<li class="glabel">Sections this file touches</li>' + progSecs.map(function (x) {
+    var progLi = function (x) {
       return '<li><button class="grow" type="button" data-to="s-' + x.s.id + '" data-s="' + x.s.id + '"><span class="c">' + x.s.code + '</span><span class="n">' + esc(x.s.name) + '</span>' +
         '<span class="ct">' + x.n + (x.n === 1 ? ' line' : ' lines') + '</span></button></li>';
-    }).join('');
+    };
+    /* at the top of the page the list is the key to every tag, so it follows the groups; inside a group it follows the file */
+    $('#prog-secs').innerHTML = PROG_TOP ? GROUPS.map(function (g) {
+      var rows = progSecs.filter(function (x) { return x.s.g === g; })
+        .sort(function (a, b) { return g.sections.indexOf(a.s) - g.sections.indexOf(b.s); });
+      return rows.length ? '<li class="glabel">' + esc(g.name) + '</li>' + rows.map(progLi).join('') : '';
+    }).join('') : '<li class="glabel">Sections this file touches</li>' + progSecs.map(progLi).join('');
     var progHot = function (id) {
       $$('#prog .hot').forEach(function (x) { if (x.getAttribute('data-s') !== id) x.classList.remove('hot'); });
       if (id) $$('#prog [data-s="' + id + '"]').forEach(function (x) { x.classList.add('hot'); });
@@ -4987,7 +5091,7 @@ spec:
       s.hidden = !vis;
       var ni = $('.nav-i[data-to="' + s.id + '"]'); if (ni) ni.parentNode.hidden = !vis;
     });
-    if (PROG) $('.nav-i[data-to="prog"]').parentNode.hidden = active;     /* the annotated file is not a search result */
+    if (PROG && !PROG_TOP) $('.nav-i[data-to="prog"]').parentNode.hidden = active;     /* the annotated file is not a search result */
     $$('.nav-g').forEach(function (g) { g.hidden = !$$('.nav-list li', g).some(function (li) { return !li.hidden; }); });
     /* a sub-heading stays only while one of the cards under it matches */
     $$('.blks').forEach(function (list) {
@@ -5036,5 +5140,3 @@ spec:
 </script>
 </body>
 </html>
-
-</body></html>

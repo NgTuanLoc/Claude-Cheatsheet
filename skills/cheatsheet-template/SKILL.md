@@ -56,6 +56,8 @@ Plan before writing. Decide the groups first, then sections, then cards:
   the reader's words ("How do I serve HTTP requests?").
 - **Sections** (2 to 6 per group), one topic each, with a 2 to 6 letter code.
 - **Cards** (roughly 4 to 12 per section). One idea per card.
+- **The annotated file**: one real file that puts the whole topic to work, shown at the top of the page (see "The
+  annotated file at the top" in step 3). Sketch it with the outline: it shows which sections the topic needs.
 
 For a large topic, show Loc the outline of groups and sections and ask which areas matter most before writing
 hundreds of cards. For a small one, just build it.
@@ -73,6 +75,10 @@ python3 kit/split.py <saved-page>.html sheet
 
 Edit the files in `sheet/`, rebuild, check, and publish to the **same URL**. If `split.py` reports that the page's
 engine differs from the kit, that is fine: the rebuild uses the current kit, and the checks in step 4 cover it.
+
+If the sheet has no annotated file, or its file still opens a group (`group` is set in `prog`, as on sheets made
+before kit 1.1), tell Loc and offer to move it to the top and widen it to the whole topic. Do that only when he
+says yes.
 
 ## 3. Write the content
 
@@ -97,6 +103,26 @@ What makes these sheets useful, and why:
   and give every group at least one.
 - **Title:** two to four words, the name of the thing ("React Cheatsheet"), no subtitle.
 
+### The annotated file at the top
+
+Every sheet opens with one real file that shows the whole topic at work, each line tagged with the section that
+explains it. On the .NET sheet it is `shop.cs`, a complete orders API in about 100 lines. Loc asked for it because
+it reveals the topic in a single file, and it doubles as a map: a click on a line jumps to its section. It is `prog`
+in `00-meta.js` (KIT.md has the fields; the starter has a small one). Leave out `group`, so the file sits at the top
+of the page, right under the hero, with a key to its tags beside it.
+
+- **One plausible program, not a list of snippets.** Write what a reader would really build, with the same names
+  as the cards (if the cards use `AppDb` and `OrderService`, so does the file), so the code they land on matches.
+- **Reach most sections, force none.** Aim for a tag in every group and most sections, and skip a section rather
+  than bend the file to reach it. The .NET file tags 25 of its 27 sections.
+- **Tag the line that teaches.** A tag names the section that explains that exact line; a line that needs no
+  explaining gets `''`. A short comment at the end of a line can say why it is there.
+- **50 to 110 lines, each under about 76 characters**, so it reads without scrolling sideways on a laptop. Leave
+  out imports and small types it only refers to, and say so in `cap`.
+- **Embedded code keeps its language:** a SQL string inside C# gets `'sql'` as the line's third cell.
+- Write it after the cards, then check each tag by hand. The build rejects a tag that is not a section id, but
+  only you can tell whether that section really explains the line.
+
 ## 4. Build, check, look
 
 ```bash
@@ -105,8 +131,9 @@ python3 kit/shot.py <name>-cheatsheet.html --shots shots # must end with "no pro
 ```
 
 Fix every reported problem in the sheet, not in the kit. Then Read four or five of the screenshots it lists (at
-least one light, one dark, one phone) and look at them properly: is a diagram cramped, a label cut, a card mostly
-empty, a widget confusing? The checks cannot judge that. Notes printed by the build are suggestions worth following.
+least one light, one dark, one phone, and one of the top of the page with the annotated file) and look at them
+properly: is a diagram cramped, a label cut, a card mostly empty, a widget confusing, a file line cut off? The
+checks cannot judge that. Notes printed by the build are suggestions worth following.
 
 When you update an existing sheet, also confirm that cards you did not touch are unchanged (compare the old and new
 `sheet/` files).

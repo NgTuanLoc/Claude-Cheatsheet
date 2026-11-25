@@ -1,11 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="generator" content="cheatsheet-kit 1.0">
+<meta name="generator" content="cheatsheet-kit 1.1">
 <title>SQL Server Cheatsheet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -489,6 +488,14 @@ body.searching .short,body.searching .jump{display:none}
   .prog-body{grid-template-columns:minmax(0,1fr)}
   .prog-secs{border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fill,minmax(13.5rem,1fr))}
   .prog-secs .glabel{grid-column:1/-1}
+}
+
+/* the annotated file at the top of the page: the list beside it is the key to its tags and stays in view */
+.prog.prog-top{overflow:clip}
+.prog-top .prog-secs .glabel:not(:first-child){margin-top:6px}
+.prog-top .prog-secs .grow{padding-block:3px}
+@media (min-width:1121px){
+  .prog-top .prog-secs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;max-height:calc(100vh - 84px);max-height:calc(100dvh - 84px);overflow-y:auto;scrollbar-width:thin}
 }
 
 /* section header on a phone: title and toggle share one row */
@@ -1016,7 +1023,7 @@ window.NCS_LANGDEFS = {
 window.NCS_META = {
   title: 'SQL Server Cheatsheet',
   lang: 'sql',
-  lede: 'Copy-paste T-SQL for **SQL Server 2025** and **Azure SQL**. The sections are sorted into six groups, and each group answers one question. Pick a section or a task from the map, or search for a keyword, a function or an error number.',
+  lede: 'Copy-paste T-SQL for **SQL Server 2025** and **Azure SQL**. The sections are sorted into six groups, and each group answers one question. Start with `shop.sql` below, one script that touches all six groups, each line linked to the section that explains it. Then pick a section or a task from the map, or search for a keyword, a function or an error number.',
   now: { label: 'Release status, November 2026', items: [
     { tone: 'g', t: 'SQL Server 2025, level 170', d: 'What this sheet targets. Released November 18, 2025. The latest update is CU10 (October 22, 2026).' },
     { tone: 'a', t: 'Azure SQL Database', d: 'Always runs the newest engine. New databases start at compatibility level 170.' },
@@ -1037,60 +1044,119 @@ window.NCS_META = {
     'The SQL Server Cheatsheet: {count}. Written for SQL Server 2025 (compatibility level 170) and Azure SQL. Version badges and the (2022+) marks in the code show what needs a newer version; everything else works on SQL Server 2017 and later. Release dates, support dates and feature status checked on November 14, 2026.',
     'Companions in this library: the [.NET Cheatsheet](https://ngtuanloc.github.io/Claude-Cheatsheet/dotnet-cheatsheet.html) for EF Core, Dapper and the application side, the [React & JavaScript Cheatsheet](https://ngtuanloc.github.io/Claude-Cheatsheet/react-javascript-cheatsheet.html), and [Failure Modes & Fixes](https://ngtuanloc.github.io/Claude-Cheatsheet/failure-modes-and-fixes.html) for the production bugs.'
   ],
-  /* one script, line by line: [section id or '', code]. It opens the Program group. */
   prog: {
-    group: 'program', code: 'DEMO', nav: 'One script, annotated', title: 'One script, annotated', copy: 'Copy the script',
-    cap: 'A table, a procedure, a permission and a report query. Each tagged line jumps to the section that explains it.',
+    code: 'FILE', nav: 'shop.sql, annotated', title: 'The whole database in one script: `shop.sql`',
+    cap: 'An orders database in one deploy script, plus the checks you run by hand: settings, a table and its index, three procedures and their permissions. Each tagged line jumps to the section that explains it, and the list beside the file is the key to the tags. `dbo.Customers` and `dbo.Payments` are left out: the script assumes they exist.',
+    copy: 'Copy shop.sql', lang: 'sql',
     lines: [
-    ['tbl', 'CREATE TABLE dbo.Payments'],
-    ['tbl', '('],
-    ['tbl', '    Id        bigint IDENTITY CONSTRAINT PK_Payments PRIMARY KEY,'],
-    ['tbl', '    AccountId int NOT NULL CONSTRAINT FK_Payments_Accounts'],
-    ['tbl', '                  REFERENCES dbo.Accounts (Id),'],
-    ['type', '    BankRef   varchar(35) NOT NULL,'],
-    ['type', '    Amount    decimal(19, 4) NOT NULL,'],
-    ['type', '    BookedAt  datetime2(3) NOT NULL,'],
-    ['json', '    Details   json NULL,'],
-    ['iso', '    RowVer    rowversion NOT NULL,'],
-    ['tbl', '    CONSTRAINT UQ_Payments_Account_Ref UNIQUE (AccountId, BankRef)'],
-    ['', ');'],
-    ['idx', 'CREATE INDEX IX_Payments_Account_Booked'],
-    ['idx', '    ON dbo.Payments (AccountId, BookedAt) INCLUDE (Amount);'],
-    ['', 'GO'],
-    ['proc', 'CREATE OR ALTER PROCEDURE api.SavePayment'],
-    ['sarg', '    @AccountId int, @BankRef varchar(35),'],
-    ['sarg', '    @Amount decimal(19, 4), @BookedAt datetime2(3)'],
-    ['', 'AS'],
-    ['', 'BEGIN'],
-    ['tx', '    SET NOCOUNT, XACT_ABORT ON;'],
-    ['tx', '    BEGIN TRANSACTION;'],
-    ['lock', '    UPDATE dbo.Payments WITH (UPDLOCK, SERIALIZABLE)'],
-    ['dml', '    SET Amount = @Amount, BookedAt = @BookedAt'],
-    ['dml', '    WHERE AccountId = @AccountId AND BankRef = @BankRef;'],
-    ['dml', '    IF @@ROWCOUNT = 0'],
-    ['dml', '        INSERT dbo.Payments (AccountId, BankRef, Amount, BookedAt)'],
-    ['dml', '        OUTPUT inserted.Id'],
-    ['dml', '        VALUES (@AccountId, @BankRef, @Amount, @BookedAt);'],
-    ['tx', '    COMMIT;'],
-    ['', 'END;'],
-    ['', 'GO'],
-    ['sec', 'GRANT EXECUTE ON SCHEMA::api TO [payments-api];'],
-    ['', 'GO'],
-    ['cte', 'WITH monthly AS ('],
-    ['fn', '    SELECT AccountId, DATETRUNC(month, BookedAt) AS [Month],'],
-    ['agg', '           SUM(Amount) AS Total'],
-    ['', '    FROM dbo.Payments'],
-    ['sarg', '    WHERE BookedAt >= \'20260101\' AND BookedAt < \'20261001\''],
-    ['agg', '    GROUP BY AccountId, DATETRUNC(month, BookedAt)'],
-    ['cte', ')'],
-    ['', 'SELECT a.Iban, m.[Month], m.Total,'],
-    ['win', '       m.Total - LAG(m.Total) OVER (PARTITION BY m.AccountId'],
-    ['win', '                                    ORDER BY m.[Month]) AS Change'],
-    ['', 'FROM monthly AS m'],
-    ['join', 'JOIN dbo.Accounts AS a ON a.Id = m.AccountId'],
-    ['sel', 'ORDER BY a.Iban, m.[Month];']
-    ]
-  }
+      ['ver', '-- shop.sql: the Shop orders database, on SQL Server 2025 or Azure SQL'],
+      ['adm', '-- deploy: sqlcmd -S . -d Shop -b -I -i shop.sql   (-b: stop at an error)'],
+      ['', ''],
+      ['ver', 'ALTER DATABASE CURRENT SET COMPATIBILITY_LEVEL = 170;  -- the 2025 rules'],
+      ['iso', 'ALTER DATABASE CURRENT SET READ_COMMITTED_SNAPSHOT ON  -- versioned reads'],
+      ['iso', '    WITH ROLLBACK IMMEDIATE;                           -- cuts others off'],
+      ['qs', 'ALTER DATABASE CURRENT SET QUERY_STORE = ON;           -- records plans'],
+      ['hist', 'ALTER DATABASE CURRENT SET CHANGE_TRACKING = ON;       -- for the CRM sync'],
+      ['', 'GO'],
+      ['sec', 'CREATE SCHEMA api AUTHORIZATION dbo;       -- the procedures the app calls'],
+      ['', 'GO'],
+      ['', ''],
+      ['tbl', 'CREATE TABLE dbo.Orders'],
+      ['', '('],
+      ['type', '    Id         bigint IDENTITY NOT NULL,'],
+      ['', '    CustomerId int NOT NULL,'],
+      ['type', '    Status     varchar(10) NOT NULL DEFAULT \'Open\',  -- a code: varchar'],
+      ['type', '    Total      decimal(19, 4) NOT NULL,              -- exact: never float'],
+      ['type', '    CreatedAt  datetime2(3) NOT NULL DEFAULT SYSUTCDATETIME(),  -- UTC'],
+      ['json', '    Extra      json NULL,                            -- 2025: checked JSON'],
+      ['iso', '    RowVer     rowversion NOT NULL,                  -- new on every update'],
+      ['tbl', '    CONSTRAINT PK_Orders PRIMARY KEY CLUSTERED (Id),'],
+      ['tbl', '    CONSTRAINT FK_Orders_Customers FOREIGN KEY (CustomerId)'],
+      ['tbl', '        REFERENCES dbo.Customers (Id),'],
+      ['tbl', '    CONSTRAINT CK_Orders_Status CHECK (Status IN (\'Open\', \'Paid\'))'],
+      ['', ');'],
+      ['idx', 'CREATE INDEX IX_Orders_Customer_Created         -- also serves the FK'],
+      ['idx', '    ON dbo.Orders (CustomerId, CreatedAt DESC) INCLUDE (Total, Status);'],
+      ['hist', 'ALTER TABLE dbo.Orders ENABLE CHANGE_TRACKING;'],
+      ['', 'GO'],
+      ['', ''],
+      ['proc', 'CREATE OR ALTER PROCEDURE api.MarkPaid'],
+      ['proc', '    @OrderId bigint, @RowVer binary(8), @Amount decimal(19, 4)'],
+      ['', 'AS'],
+      ['', 'BEGIN'],
+      ['tx', '    SET NOCOUNT, XACT_ABORT ON;       -- any error rolls it all back'],
+      ['', '    BEGIN TRY'],
+      ['tx', '        BEGIN TRANSACTION;'],
+      ['lock', '        -- Orders, then Payments: the same order in every procedure'],
+      ['dml', '        UPDATE dbo.Orders SET Status = \'Paid\''],
+      ['iso', '        WHERE Id = @OrderId AND RowVer = @RowVer;  -- if nobody changed it'],
+      ['iso', '        IF @@ROWCOUNT = 0'],
+      ['tx', '            THROW 50409, N\'The order was changed. Reload it.\', 1;'],
+      ['dml', '        INSERT dbo.Payments (OrderId, Amount)'],
+      ['dml', '        OUTPUT inserted.Id                   -- the new id, back to the app'],
+      ['', '        VALUES (@OrderId, @Amount);'],
+      ['tx', '        COMMIT;'],
+      ['', '    END TRY'],
+      ['', '    BEGIN CATCH'],
+      ['tx', '        IF @@TRANCOUNT > 0 ROLLBACK;'],
+      ['tx', '        THROW;                            -- re-raise the original error'],
+      ['', '    END CATCH'],
+      ['', 'END;'],
+      ['', 'GO'],
+      ['', ''],
+      ['dyn', 'CREATE OR ALTER PROCEDURE api.SearchOrders'],
+      ['proc', '    @CustomerId int = NULL, @Status varchar(10) = NULL      -- optional'],
+      ['', 'AS'],
+      ['', 'BEGIN'],
+      ['proc', '    SET NOCOUNT ON;'],
+      ['dyn', '    DECLARE @sql nvarchar(max) ='],
+      ['dyn', '        N\'SELECT Id, Status, Total FROM dbo.Orders WHERE 1 = 1\';'],
+      ['dyn', '    IF @CustomerId IS NOT NULL'],
+      ['dyn', '        SET @sql += N\' AND CustomerId = @CustomerId\';    -- only if given'],
+      ['dyn', '    IF @Status IS NOT NULL'],
+      ['dyn', '        SET @sql += N\' AND Status = @Status\';'],
+      ['dyn', '    EXEC sys.sp_executesql @sql,                 -- values stay parameters'],
+      ['dyn', '        N\'@CustomerId int, @Status varchar(10)\', @CustomerId, @Status;'],
+      ['', 'END;'],
+      ['', 'GO'],
+      ['', ''],
+      ['proc', 'CREATE OR ALTER PROCEDURE api.MonthlyRevenue'],
+      ['sarg', '    @From datetime2(3), @To datetime2(3)           -- the column\'s own type'],
+      ['', 'AS'],
+      ['', 'BEGIN'],
+      ['', '    SET NOCOUNT ON;'],
+      ['cte', '    WITH monthly AS (                    -- one row per customer and month'],
+      ['fn', '        SELECT CustomerId, DATETRUNC(month, CreatedAt) AS [Month],'],
+      ['agg', '               SUM(Total) AS Revenue'],
+      ['', '        FROM dbo.Orders'],
+      ['sarg', '        WHERE Status = \'Paid\' AND CreatedAt >= @From AND CreatedAt < @To'],
+      ['agg', '        GROUP BY CustomerId, DATETRUNC(month, CreatedAt)'],
+      ['', '    )'],
+      ['', '    SELECT c.Name, m.[Month], m.Revenue,'],
+      ['win', '           m.Revenue - LAG(m.Revenue) OVER (PARTITION BY m.CustomerId'],
+      ['win', '               ORDER BY m.[Month]) AS Change  -- vs their previous month'],
+      ['', '    FROM monthly AS m'],
+      ['join', '    JOIN dbo.Customers AS c ON c.Id = m.CustomerId'],
+      ['sel', '    ORDER BY m.CustomerId, m.[Month]   -- unique: a stable order'],
+      ['sniff', '    OPTION (RECOMPILE);                -- a day or a year: a plan for each'],
+      ['', 'END;'],
+      ['', 'GO'],
+      ['', ''],
+      ['sec', 'CREATE USER [payments-api] FROM EXTERNAL PROVIDER;   -- a managed identity'],
+      ['sec', 'GRANT EXECUTE ON SCHEMA::api TO [payments-api];      -- every api procedure'],
+      ['dyn', 'GRANT SELECT ON dbo.Orders TO [payments-api];      -- for the dynamic SQL'],
+      ['', 'GO'],
+      ['', ''],
+      ['', '-- ops.sql: by hand, not part of the deploy'],
+      ['plan', 'SET STATISTICS IO, TIME ON;   -- reads and CPU per query'],
+      ['proc', 'EXEC api.MonthlyRevenue @From = \'20260101\', @To = \'20270101\';'],
+      ['', 'SET STATISTICS IO, TIME OFF;'],
+      ['adm', 'EXEC sp_help N\'dbo.Orders\';   -- columns, indexes, constraints'],
+      ['bak', 'BACKUP DATABASE Shop TO DISK = N\'D:\\backup\\Shop_full.bak\'  -- SQL Server'],
+      ['bak', '    WITH COMPRESSION, CHECKSUM;  -- Azure SQL takes its own backups'],
+      ['az', '-- Azure SQL: how close is the database to its tier\'s limits?'],
+      ['az', 'SELECT TOP (4) * FROM sys.dm_db_resource_stats ORDER BY end_time DESC;']
+    ] }
 };
 
 /* T-SQL for the highlighter: @variables, NAME( as a function call, and these words as keywords (types included) */
@@ -5261,10 +5327,19 @@ ORDER BY qs.total_worker_time DESC;`,
       }).join('') + '</div>' : '') +
       '<div class="blks" id="b-' + s.id + '">' + s.blocks.map(blockHTML).join('') + '</div></section>';
   }
-  /* optional: one annotated file that opens a group and links each line to the section that explains it */
+  /* optional: one annotated file whose lines link to the sections that explain them. With a group it opens
+     that group; without one it sits at the top of the page, right under the hero, and comes first in the sidebar */
   var PROG = META.prog && META.prog.lines && META.prog.lines.length ? META.prog : null;
+  var PROG_TOP = !!PROG && !PROG.group;
   var progCode = PROG ? esc(PROG.code || 'MAIN') : '', progNav = PROG ? esc(PROG.nav || 'Annotated file') : '';
   var progRow = '<button class="nav-i" type="button" data-to="prog"><span class="c">' + progCode + '</span><span class="n">' + progNav + '</span></button>';
+  function progHTML() {
+    var h = PROG_TOP ? 'h2' : 'h3';
+    return '<article class="blk prog' + (PROG_TOP ? ' prog-top' : '') + '" id="prog" aria-labelledby="prog-h"><header class="blk-h"><' + h + ' class="bt" id="prog-h">' + inl(PROG.title || PROG.nav) + '</' + h + '>' +
+      '<span class="tools"><span id="pmap-copy"></span></span></header>' +
+      '<p class="prog-cap">' + inl(PROG.cap || 'Each tagged line jumps to the section that explains it.') + '</p>' +
+      '<div class="prog-body"><div class="pmap" id="pmap"></div><ul class="prog-secs" id="prog-secs" aria-label="Sections this file touches"></ul></div></article>';
+  }
   var sh = '', nav = '';
   GROUPS.forEach(function (g) {
     g.cards = g.sections.reduce(function (n, s) { return n + s.cards; }, 0);
@@ -5272,10 +5347,7 @@ ORDER BY qs.total_worker_time DESC;`,
       '<h2>' + esc(g.name) + '</h2><p class="gq">' + esc(g.q) + '</p><div class="gchips">' + g.sections.map(function (s) {
         return '<button class="gchip" type="button" data-to="s-' + s.id + '"><span class="c">' + s.code + '</span>' + esc(s.name) + '</button>';
       }).join('') + '</div></div>';
-    if (PROG && g.id === PROG.group) sh += '<article class="blk prog" id="prog" aria-labelledby="prog-h"><header class="blk-h"><h3 class="bt" id="prog-h">' + inl(PROG.title || PROG.nav) + '</h3>' +
-      '<span class="tools"><span id="pmap-copy"></span></span></header>' +
-      '<p class="prog-cap">' + inl(PROG.cap || 'Each tagged line jumps to the section that explains it.') + '</p>' +
-      '<div class="prog-body"><div class="pmap" id="pmap"></div><ul class="prog-secs" id="prog-secs" aria-label="Sections this file touches"></ul></div></article>';
+    if (PROG && g.id === PROG.group) sh += progHTML();
     nav += '<div class="nav-g" data-g="' + g.id + '"><button class="nav-gh" type="button" aria-expanded="true" title="' + esc(g.q) + '"><span>' + esc(g.name) + '</span><span class="chev">' + chev + '</span></button><ul class="nav-list">';
     if (PROG && g.id === PROG.group) nav += '<li>' + progRow + '</li>';
     g.sections.forEach(function (s) {
@@ -5286,6 +5358,10 @@ ORDER BY qs.total_worker_time DESC;`,
   });
   $('#secs').innerHTML = sh;
   $('#nav').innerHTML = nav;
+  if (PROG_TOP) {
+    $('#map').insertAdjacentHTML('beforebegin', progHTML());
+    $('#nav-top').insertAdjacentHTML('afterbegin', progRow.replace('class="nav-i"', 'class="nav-i nav-top"'));
+  }
   $('#side-meta').textContent = many(CARDS, 'card') + ' · ' + many(SECS.length, 'section') + ' · ' + many(GROUPS.length, 'group');
 
   /* ---- page furniture that the sheet words: hero, map blurb, legend, search hints, footer ---- */
@@ -5321,17 +5397,23 @@ ORDER BY qs.total_worker_time DESC;`,
   /* ---- the annotated file ---- */
   if (PROG) {
     $('#pmap').innerHTML = PROG.lines.map(function (p) {
-      var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], PROG.lang || DEF) : ' ') + '</code>';
+      var s = SEC[p[0]], code = '<code>' + (p[1] ? hlLine(p[1], p[2] || PROG.lang || DEF) : ' ') + '</code>';
       if (!s) return '<div class="pl"><span class="pg"></span>' + code + '</div>';
       return '<div class="pl to" data-to="s-' + s.id + '" data-s="' + s.id + '" title="' + esc(s.name) + '"><button class="pg" type="button" data-to="s-' + s.id + '" aria-label="' + esc(s.name) + '">' + s.code + '</button>' + code + '</div>';
     }).join('');
     $('#pmap-copy').outerHTML = cpBtn('prog', PROG.lines.map(function (p) { return p[1]; }).join('\n'), PROG.copy || 'Copy the file');
     var progSeen = {}, progSecs = [];
     PROG.lines.forEach(function (p) { var x = SEC[p[0]]; if (x) { if (!progSeen[x.id]) { progSeen[x.id] = { s: x, n: 0 }; progSecs.push(progSeen[x.id]); } progSeen[x.id].n++; } });
-    $('#prog-secs').innerHTML = '<li class="glabel">Sections this file touches</li>' + progSecs.map(function (x) {
+    var progLi = function (x) {
       return '<li><button class="grow" type="button" data-to="s-' + x.s.id + '" data-s="' + x.s.id + '"><span class="c">' + x.s.code + '</span><span class="n">' + esc(x.s.name) + '</span>' +
         '<span class="ct">' + x.n + (x.n === 1 ? ' line' : ' lines') + '</span></button></li>';
-    }).join('');
+    };
+    /* at the top of the page the list is the key to every tag, so it follows the groups; inside a group it follows the file */
+    $('#prog-secs').innerHTML = PROG_TOP ? GROUPS.map(function (g) {
+      var rows = progSecs.filter(function (x) { return x.s.g === g; })
+        .sort(function (a, b) { return g.sections.indexOf(a.s) - g.sections.indexOf(b.s); });
+      return rows.length ? '<li class="glabel">' + esc(g.name) + '</li>' + rows.map(progLi).join('') : '';
+    }).join('') : '<li class="glabel">Sections this file touches</li>' + progSecs.map(progLi).join('');
     var progHot = function (id) {
       $$('#prog .hot').forEach(function (x) { if (x.getAttribute('data-s') !== id) x.classList.remove('hot'); });
       if (id) $$('#prog [data-s="' + id + '"]').forEach(function (x) { x.classList.add('hot'); });
@@ -5538,7 +5620,7 @@ ORDER BY qs.total_worker_time DESC;`,
       s.hidden = !vis;
       var ni = $('.nav-i[data-to="' + s.id + '"]'); if (ni) ni.parentNode.hidden = !vis;
     });
-    if (PROG) $('.nav-i[data-to="prog"]').parentNode.hidden = active;     /* the annotated file is not a search result */
+    if (PROG && !PROG_TOP) $('.nav-i[data-to="prog"]').parentNode.hidden = active;     /* the annotated file is not a search result */
     $$('.nav-g').forEach(function (g) { g.hidden = !$$('.nav-list li', g).some(function (li) { return !li.hidden; }); });
     /* a sub-heading stays only while one of the cards under it matches */
     $$('.blks').forEach(function (list) {
@@ -5587,5 +5669,3 @@ ORDER BY qs.total_worker_time DESC;`,
 </script>
 </body>
 </html>
-
-</body></html>
