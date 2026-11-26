@@ -528,6 +528,17 @@ body.searching .short,body.searching .jump{display:none}
 /* SameSite simulator */
 .ss-out{min-width:0}
 .ss-note{margin:0;font-size:13px;line-height:1.5;color:var(--ink-2)}
+
+/* Step-through diagrams */
+.walk-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px}
+.walk-bar .wdg-row{flex:1 1 320px;min-width:0}
+.walk-nav{display:flex;gap:8px;flex:none}
+.walk-btn{font:600 13px/1 var(--f-sans);color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:999px;padding:8px 14px;cursor:pointer}
+.walk-btn:hover:not(:disabled){border-color:var(--accent)}
+.walk-btn:disabled{opacity:.45;cursor:default}
+.walk-x{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;background:var(--violet-soft);border-radius:10px;padding:12px 14px;min-height:4.4em}
+.walk-x p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink)}
+.walk-n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;border:2px solid var(--violet);color:var(--violet);font:700 13px/1 var(--f-sans)}
 </style>
 </head>
 <body>
@@ -949,19 +960,19 @@ window.NCS_LANGDEFS = {
 window.NCS_META = {
   title: 'Auth Workflows Cheatsheet',
   lang: 'http',
-  lede: 'Every common way to prove who is calling: Basic auth and API keys, sessions and cookies, passkeys, JWTs, OAuth 2, OpenID Connect, single sign-on and SAML. Start with `Program.cs` below, one file that touches all six groups, each line linked to the section that explains it. Each section says **what it is**, **when to use it** and **what goes wrong**, with the HTTP on the wire and ASP.NET Core and TypeScript code.',
+  lede: 'Every common way to prove who is calling, explained with pictures: Basic auth and API keys, sessions and cookies, passkeys, JWTs, OAuth 2, OpenID Connect, single sign-on and SAML. New to the words? **TERMS** explains each one in a line. `Program.cs` below puts it all to work, each line linked to its section.',
   now: { label: 'What this sheet follows', items: [
     { tone: 'g', t: 'OAuth security best practice', d: 'RFC 9700 (2025) and RFC 10017 for browser apps (Aug 2026). OAuth 2.1 is still a draft; its rules apply today.' },
     { tone: 'a', t: '.NET 10 LTS and .NET 11', d: 'ASP.NET Core samples run on .NET 10. Cards marked `.NET 11` need the 10 Nov 2026 release.' },
     { tone: 'b', t: 'NIST SP 800-63B-4', d: 'Passwords: 15+ characters when used alone, no composition rules, no forced rotation.' }
   ] },
-  map: 'Six groups in learning order: the basic ideas, signing users in, tokens and keys, OAuth 2, single sign-on, then fixing and hardening. Read top to bottom once; after that, search or jump from a task.',
+  map: 'Six groups in learning order: the basic ideas and the glossary, signing users in, tokens and keys, OAuth 2, single sign-on, then fixing and hardening. Every section opens with a picture.',
   badges: [
     { match: '\\.NET 11', tone: 'next', eg: '.NET 11', d: 'new in .NET 11 (STS, 10 Nov 2026)' },
     { match: '\\.NET (9|10)', tone: 'new', eg: '.NET 10', d: 'needs .NET 9 or 10 (10 is the LTS)' },
     { eg: 'RFC 7636', d: 'the standard the card follows' }
   ],
-  tryIt: 'Diagrams with two buttons flip between the problem and the fix. The JWT decoder, the cookie simulator and the pickers react to what you choose.',
+  tryIt: 'Step-through diagrams explain a flow one arrow at a time: press **Next**. Diagrams with two buttons flip between the problem and the fix. The JWT decoder, the cookie simulator and the pickers react to what you choose.',
   search: {
     placeholder: 'Search flows, headers and errors: “PKCE”, “SameSite”, “invalid_grant”',
     hint: 'a flow, a header or an error: “refresh”, “WWW-Authenticate”, “redirect_uri”.',
@@ -1078,7 +1089,7 @@ window.NCS_LANGS = {
 
 /* Groups in learning order. Each answers one question. */
 window.NCS_GROUPS = [
-  { id: 'start', name: 'Start here', q: 'What are the moving parts, and which method fits my app?', secs: ['core', 'http', 'pick'] },
+  { id: 'start', name: 'Start here', q: 'What are the moving parts, and which method fits my app?', secs: ['core', 'terms', 'http', 'pick'] },
   { id: 'signin', name: 'Sign users in', q: 'How do people prove who they are, and stay signed in?', secs: ['pwd', 'sess', 'mfa', 'passk'] },
   { id: 'tokens', name: 'Tokens and API keys', q: 'How does an API know who is calling?', secs: ['jwt', 'key', 'sig'] },
   { id: 'oauth', name: 'OAuth 2', q: 'How does an app call an API for a user, without the user’s password?', secs: ['oauth', 'code', 'token', 'spa', 'native', 's2s'] },
@@ -1088,7 +1099,8 @@ window.NCS_GROUPS = [
 
 /* "I want to…" rows on the map: [task, hint, [card ids]]. The first card decides the group. */
 window.NCS_TASKS = [
-  ['Choose an auth method for my app', 'picker', ['pick-method', 'pick-compare']],
+  ['Choose an auth method for my app', 'decision tree, picker', ['pick-tree', 'pick-method']],
+  ['Look up a technical term', 'glossary', ['terms-who', 'terms-tok', 'terms-flow', 'terms-sec']],
   ['Understand 401 vs 403', 'who you are vs what you may do', ['http-401-403', 'core-authz']],
   ['Decide between sessions and tokens', 'stateful or stateless', ['core-vs']],
   ['Send Basic auth from curl or C#', 'base64 of user:password', ['http-basic', 'http-basic-cs']],
@@ -1108,31 +1120,32 @@ window.NCS_TASKS = [
   ['Add passkeys to my app', 'WebAuthn, .NET 10', ['pk-identity', 'pk-js']],
 
   ['Decode a JWT and read its claims', 'header, payload, exp', ['jwt-decode', 'jwt-claims']],
+  ['See what an API checks in a JWT', 'signature, iss, aud, exp', ['jwt-check', 'jwt-life']],
   ['Validate JWTs in an ASP.NET Core API', 'AddJwtBearer', ['jwt-aspnet']],
-  ['Validate JWTs in Node', 'jose', ['jwt-node']],
   ['Survive signing-key rotation', 'JWKS and kid', ['jwt-jwks']],
   ['Issue and check API keys', 'prefix, hash, handler', ['key-make', 'key-handler']],
   ['Rotate an API key without downtime', 'two keys at once', ['key-rotate']],
   ['Verify a webhook signature', 'HMAC-SHA256 over the raw body', ['sig-verify', 'sig-steps']],
 
   ['Pick the right OAuth grant', 'code, client credentials, device', ['oauth-grant']],
-  ['Implement authorization code + PKCE', 'verifier and challenge', ['code-flow', 'code-pkce-ts']],
+  ['Implement authorization code + PKCE', 'verifier and challenge', ['code-walk', 'code-pkce-ts']],
   ['Read an authorize URL and a token response', 'state, nonce, code', ['code-authorize', 'code-token']],
   ['Check scopes in my API', 'scp or scope', ['oauth-scopes']],
+  ['See which token goes where', 'access, refresh, ID token', ['tok-three', 'tok-types']],
   ['Refresh tokens without a stampede', 'one refresh at a time', ['tok-fetch', 'tok-refresh']],
   ['Catch stolen refresh tokens', 'rotation and reuse detection', ['tok-reuse']],
   ['Revoke tokens at sign-out', 'RFC 7009', ['tok-revoke']],
   ['Keep tokens out of the browser', 'backend-for-frontend', ['spa-bff', 'spa-bff-aspnet']],
   ['Get Entra ID tokens in React or Angular', 'MSAL.js v5', ['spa-msal']],
   ['Fix silent renew that stopped working', 'third-party cookies', ['spa-renew']],
-  ['Sign in from a CLI or a TV', 'device code', ['native-device', 'native-device-http']],
+  ['Sign in from a CLI or a TV', 'device code', ['native-walk', 'native-device-http']],
   ['Call an API from a background service', 'client credentials', ['s2s-cc', 's2s-cache']],
   ['Drop secrets: use managed identity', 'Azure.Identity', ['s2s-mi', 's2s-creds']],
   ['Deploy from GitHub Actions without a secret', 'OIDC federation', ['s2s-gha']],
   ['Call a downstream API for the user', 'on-behalf-of, token exchange', ['s2s-obo', 's2s-obo-http']],
   ['Require client certificates (mTLS)', 'AddCertificate', ['s2s-mtls']],
 
-  ['Add OpenID Connect sign-in', 'AddOpenIdConnect', ['oidc-flow', 'code-aspnet']],
+  ['Add OpenID Connect sign-in', 'AddOpenIdConnect', ['oidc-walk', 'code-aspnet']],
   ['Read an ID token', 'nonce, auth_time, amr', ['oidc-idtoken']],
   ['Fix claims renamed by ASP.NET Core', 'MapInboundClaims', ['oidc-claims-map']],
   ['Sign out of every app', 'end_session, back-channel logout', ['sso-logout', 'sso-aspnet-logout']],
@@ -1155,13 +1168,28 @@ window.NCS_TASKS = [
 /* ===== [10-start.js] Group: Start here ===== */
 window.NCS.push({
   id: 'core', code: 'CORE', name: 'Core ideas',
-  blurb: 'Authentication (**authn**) proves who is calling. Authorization (**authz**) decides what they may do. Every method on this page does the same job: check a credential once, then carry proof of that check on each request.',
+  blurb: 'Every protected request answers two questions: **who are you?** (authentication, or “authn”) and **may you do this?** (authorization, or “authz”). You prove who you are once, then send a cheap proof, a cookie or a token, with every request.',
   short: [
-    'Authn answers “who are you?” and fails with **401**. Authz answers “may you do this?” and fails with **403**.',
-    'A sign-in swaps an expensive credential (a password, a passkey, a client secret) for a cheap one to send on every request: a cookie or a token.',
-    'An identity provider (IdP) checks credentials; your app or API only checks the cookie or token it receives.'
+    'Fails “who are you?”: **401 Unauthorized**.',
+    'Passes that but fails “may you?”: **403 Forbidden**.',
+    'Signed in does not mean allowed: check both, on every request.'
   ],
   blocks: [
+    { k: 'dg', id: 'core-checks', t: 'Two checks on every request',
+      cap: '**Two gates, two errors:** a missing or bad cookie or token stops at the first gate (401). A signed-in user without the right role, scope or ownership stops at the second (403).',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 88, minw: 520,
+        nodes: [
+          { id: 'req', x: 0, y: 0, w: 118, l: 'Request', sub: 'with a cookie or token', s: 'browser' },
+          { id: 'authn', x: 1, y: 0, w: 118, l: 'Who are you?', sub: 'authentication', k: 'a' },
+          { id: 'authz', x: 2, y: 0, w: 118, l: 'May you?', sub: 'authorization', k: 'a' },
+          { id: 'ok', x: 3, y: 0, w: 118, l: '200 OK', sub: 'your code runs', s: 'pill', k: 'g' },
+          { id: 'e401', x: 1, y: 1, w: 118, l: '401', sub: 'unknown caller', s: 'pill', k: 'b' },
+          { id: 'e403', x: 2, y: 1, w: 118, l: '403', sub: 'known, not allowed', s: 'pill', k: 'w' }
+        ],
+        edges: [
+          { f: 'req', t: 'authn' }, { f: 'authn', t: 'authz', l: 'yes', ly: -13 }, { f: 'authz', t: 'ok', l: 'yes', ly: -13 },
+          { f: 'authn', t: 'e401', l: 'no', lx: 16 }, { f: 'authz', t: 'e403', l: 'no', lx: 16 }
+        ] } },
     { k: 'snip', id: 'core-one-request', t: 'One request, four ways to say who you are', code: `
 GET /api/orders HTTP/1.1
 Host: shop.example
@@ -1177,10 +1205,10 @@ Cookie: __Host-sid=8f1c0b6e4d2a...
 
 # 4. Bearer token: signed proof issued by an identity provider
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6...`,
-      note: 'A real request carries one of these. The rest of the sheet is how each one is issued, checked and kept safe.' },
+      note: 'A real request carries just one of these. Each has its own section below.' },
     { k: 'dg', id: 'core-vs', t: 'Session or token: where the truth lives', seg: ['Session', 'Token'],
-      capB: '**Session:** the cookie holds only a random ID. The server looks it up on every request, so deleting the row signs the user out at once.',
-      capF: '**Token:** the token carries the claims and a signature. Any API with the public key can check it without a lookup, but it stays valid until it expires.',
+      capB: '**Session:** the cookie holds only a random ID. The server looks it up on every request, so deleting the record signs the user out at once.',
+      capF: '**Token:** the token carries the user’s details and a signature. An API checks it with a public key and no lookup, but it stays valid until it expires.',
       b: { type: 'flow', w: 680, cols: 4, rows: 1, ch: 100, minw: 520,
         nodes: [
           { id: 'br', x: 0, y: 0, w: 132, l: 'Browser', sub: 'sends the cookie', s: 'browser' },
@@ -1196,19 +1224,6 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6...`,
           { id: 'api', x: 2, y: 1, l: 'API', sub: 'checks the signature', k: 'g' }
         ],
         edges: [{ f: 'idp', t: 'cl', l: 'token' }, { f: 'cl', t: 'api', l: 'Bearer token' }, { f: 'keys', t: 'api', l: 'verify', d: true }] } },
-    { k: 'table', id: 'core-terms', t: 'Words you will meet',
-      cols: ['Term', 'Means', 'Example'],
-      rows: [
-        ['Identity provider (IdP)', 'The service that checks credentials and issues tokens or assertions', 'Entra ID, Okta, Keycloak, Google'],
-        ['Client, relying party (RP)', 'The app that sends users to the IdP and trusts what comes back', 'your web, mobile or single-page app'],
-        ['Resource server', 'The API that accepts access tokens', '`api.shop.example`'],
-        ['Principal', 'The signed-in user or service, as your code sees it', '`HttpContext.User`'],
-        ['Claim', 'One fact about the principal: a name and a value', '`sub`, `email`, `roles`'],
-        ['Scope', 'A named permission an app asks for', '`orders.read`'],
-        ['Credential', 'Whatever proves identity', 'password, passkey, client secret, certificate'],
-        ['Federation', 'Trusting another organisation’s IdP', 'staff of a customer sign in with their own Entra ID'],
-        ['Single sign-on (SSO)', 'One sign-in that opens many apps', 'one Microsoft sign-in for Outlook and Teams']
-      ] },
     { k: 'gb', id: 'core-authz', t: 'Signed in is not the same as allowed', lang: 'cs',
       bad: `
 app.MapDelete("/orders/{id}", async (int id,
@@ -1228,18 +1243,102 @@ app.MapDelete("/orders/{id}", async (int id,
     await db.DeleteOrderAsync(id);
     return Results.NoContent();
 }).RequireAuthorization();`,
-      goodNote: 'Checks *who* is calling against *what* they touch. A missing check like this is the top API risk in the OWASP API Top 10 (broken object level authorization).',
+      goodNote: 'Checks *who* is calling against *what* they touch. Forgetting this is the top risk in the OWASP API Top 10.',
       call: { kind: 'key', text: 'Authenticate once, in middleware. Authorize on every resource, in a policy or in your own code.' } }
   ]
 });
 
 window.NCS.push({
-  id: 'http', code: 'HTTP', name: 'HTTP auth: Basic and Bearer',
-  blurb: 'HTTP has one built-in pattern for authentication. The server answers **401** with a `WWW-Authenticate` header that names a scheme; the client retries with an `Authorization` header in that scheme. Basic and Bearer are the two schemes you meet every day.',
+  id: 'terms', code: 'TERMS', name: 'Words you need',
+  blurb: 'Every technical word on this page, in one plain line. The **See** column names the section that shows it in a picture.',
   short: [
-    '**401 Unauthorized** means “I don’t know who you are”. **403 Forbidden** means “I know who you are, and the answer is no”.',
-    'Basic sends `user:password` in base64 on every request. Anyone can decode base64, so use it only over HTTPS.',
-    'Bearer means “whoever holds this token gets in”. Send tokens in the header, never in a URL.'
+    '**Identity provider (IdP)**: the service that checks who you are and hands out tokens.',
+    '**Token**: a signed proof of sign-in that an app sends instead of the password.',
+    '**OAuth 2** lets an app call an API for you; **OpenID Connect** signs you in; **SAML** is the older enterprise way to sign in.'
+  ],
+  blocks: [
+    { k: 'table', id: 'terms-who', t: 'Who is involved',
+      cols: ['Term', 'In plain words', 'See'],
+      rows: [
+        ['Identity provider (IdP)', 'the service that checks credentials and issues tokens: Entra ID, Okta, Keycloak, Google', '**CORE**'],
+        ['Authorization server', 'OAuth’s name for the IdP: it runs sign-in and issues tokens', '**OAUTH**'],
+        ['Client', 'your app, when it asks an IdP for tokens', '**OAUTH**'],
+        ['Relying party (RP), service provider (SP)', 'your app, as OpenID Connect (RP) or SAML (SP) calls it', '**OIDC**, **SAML**'],
+        ['Resource server', 'the API that accepts access tokens', '**OAUTH**'],
+        ['Resource owner', 'the user whose data the app wants to reach', '**OAUTH**'],
+        ['Confidential or public client', 'an app that can keep a secret (a server) or one that cannot (a SPA, a mobile app)', '**OAUTH**'],
+        ['Principal, claims', 'the signed-in user as your code sees it (`HttpContext.User`), and the facts about them', '**JWT**'],
+        ['Tenant', 'one organisation’s own space in a shared IdP, such as a company in Entra ID', '**ENT**']
+      ] },
+    { k: 'table', id: 'terms-tok', t: 'What gets sent',
+      cols: ['Term', 'In plain words', 'See'],
+      rows: [
+        ['Credential', 'anything that proves identity: a password, passkey, API key, client secret or certificate', '**CORE**'],
+        ['Session, cookie', 'the server remembering a signed-in user; a cookie is the small value the browser sends back each time', '**SESS**'],
+        ['Token', 'a string that proves a sign-in happened, sent instead of the password', '**TOKEN**'],
+        ['Bearer token', 'a token that works for whoever holds it, like cash', '**HTTP**'],
+        ['Access token', 'what an app sends to an API; lives minutes to an hour', '**TOKEN**'],
+        ['Refresh token', 'used only to get new access tokens without a new sign-in', '**TOKEN**'],
+        ['ID token', 'tells your app who signed in; never sent to an API', '**OIDC**'],
+        ['JWT', 'a token in three dot-separated parts: header, claims, signature', '**JWT**'],
+        ['Claim', 'one fact inside a token, such as `sub` (user ID) or `exp` (expiry time)', '**JWT**'],
+        ['Scope', 'a named permission an app asks for, such as `orders.read`', '**OAUTH**'],
+        ['Issuer (`iss`), audience (`aud`)', 'who made the token, and who it is for', '**JWT**'],
+        ['Signature, JWKS, `kid`', 'proof the IdP made the token; the IdP’s list of public keys; which key was used', '**JWT**'],
+        ['Opaque token', 'a random string with nothing inside; the API asks the IdP what it means', '**TOKEN**'],
+        ['API key, client secret', 'long random passwords for programs', '**KEY**, **S2S**']
+      ] },
+    { k: 'table', id: 'terms-flow', t: 'How it happens',
+      cols: ['Term', 'In plain words', 'See'],
+      rows: [
+        ['OAuth 2', 'a standard for letting an app call an API for a user, without the user’s password', '**OAUTH**'],
+        ['OpenID Connect (OIDC)', 'sign-in built on top of OAuth 2: adds the ID token', '**OIDC**'],
+        ['SAML 2.0', 'an older, XML-based standard for company sign-in', '**SAML**'],
+        ['Single sign-on (SSO)', 'sign in once, then open other apps with no new prompt', '**SSO**'],
+        ['Federation', 'trusting another organisation’s IdP to sign its own people in', '**SSO**'],
+        ['Grant, flow', 'one of OAuth’s ways to get a token: code, client credentials, device code', '**OAUTH**'],
+        ['Authorization code', 'a one-time code that the app swaps for tokens', '**CODE**'],
+        ['PKCE', 'a one-time secret proving the app that finishes a sign-in is the one that started it', '**CODE**'],
+        ['`state`, `nonce`', 'random values that tie the answer to the request (`state`) and the ID token to the sign-in (`nonce`)', '**CODE**'],
+        ['Redirect URI', 'the address the IdP sends the browser back to; must be registered exactly', '**OAUTH**'],
+        ['Front channel, back channel', 'messages carried by the user’s browser (redirects), or sent server to server', '**CODE**'],
+        ['Consent', 'the screen where a user approves what an app may access', '**OAUTH**'],
+        ['Discovery document', 'a JSON file listing an IdP’s addresses and keys', '**OIDC**'],
+        ['Client credentials', 'a service gets a token for itself, with no user', '**S2S**'],
+        ['Device code', 'sign in on your phone for a TV or CLI that shows a short code', '**NATIVE**'],
+        ['On-behalf-of, token exchange', 'an API swaps a user’s token for one meant for another API', '**S2S**'],
+        ['BFF (backend-for-frontend)', 'a small server beside a SPA that keeps the tokens out of the browser', '**SPA**'],
+        ['Managed identity', 'an identity Azure gives a cloud resource: no secret to store', '**S2S**'],
+        ['WebAuthn, passkey', 'the browser standard for signing in with a key pair; a passkey is one such key pair', '**PASSK**'],
+        ['Kerberos, NTLM, LDAP', 'Windows network sign-in (NTLM is the deprecated one), and the protocol for reading a directory', '**ENT**'],
+        ['SCIM', 'a standard API an IdP calls to create and disable users in your app', '**ENT**']
+      ] },
+    { k: 'table', id: 'terms-sec', t: 'Attacks and protections',
+      cols: ['Term', 'In plain words', 'See'],
+      rows: [
+        ['Hash, salt', 'a one-way fingerprint of data; a random value mixed in so equal passwords hash differently', '**PWD**'],
+        ['HMAC', 'a hash made with a secret key: proves who sent a message and that it did not change', '**SIG**'],
+        ['MFA, TOTP', 'sign-in with two kinds of proof; the 6-digit codes from an authenticator app', '**MFA**'],
+        ['Phishing', 'a fake site that tricks people into typing their credentials', '**PASSK**'],
+        ['XSS (cross-site scripting)', 'an attacker’s script running inside your page, with your page’s access', '**SPA**'],
+        ['CSRF (cross-site request forgery)', 'another site making the browser send a request with your cookie', '**SESS**'],
+        ['CORS', 'the browser rules for which other sites may call your API from JavaScript', '**SPA**'],
+        ['`HttpOnly`, `Secure`, `SameSite`', 'cookie settings: hidden from scripts, HTTPS only, not sent from other sites', '**SESS**'],
+        ['Replay', 'reusing a captured token or request', '**SIG**'],
+        ['Credential stuffing', 'trying passwords leaked from other sites, at scale', '**PWD**'],
+        ['mTLS', 'both sides of a connection show a certificate', '**S2S**'],
+        ['DPoP', 'binding a token to a key the app holds, so a stolen token is useless without that key', '**TOKEN**']
+      ] }
+  ]
+});
+
+window.NCS.push({
+  id: 'http', code: 'HTTP', name: 'HTTP auth: Basic and Bearer',
+  blurb: 'HTTP’s built-in way to ask for credentials: the server answers **401** with a `WWW-Authenticate` header naming a **scheme** (a format, such as Basic or Bearer), and the client retries with an `Authorization` header in that format.',
+  short: [
+    '**Basic** = user name and password in base64: anyone can decode it, so HTTPS only.',
+    '**Bearer** = a token; whoever holds it gets in. Never put one in a URL.',
+    'On a 401, read `WWW-Authenticate`: it says what went wrong.'
   ],
   blocks: [
     { k: 'dg', id: 'http-challenge', t: 'The challenge and the retry',
@@ -1295,7 +1394,7 @@ WWW-Authenticate: Bearer error="insufficient_scope", scope="orders.write"
 
 HTTP/1.1 401 Unauthorized
 WWW-Authenticate: Bearer                      # no error at all: no token was sent`,
-      note: 'RFC 6750 defines three codes: `invalid_request`, `invalid_token` and `insufficient_scope`. ASP.NET Core adds `error_description` while `JwtBearerOptions.IncludeErrorDetails` is on, which is the default.' },
+      note: 'Three codes, from RFC 6750: `invalid_request`, `invalid_token`, `insufficient_scope`. ASP.NET Core adds the description by default.' },
     { k: 'gb', id: 'http-url', t: 'Keep tokens out of URLs',
       bad: `
 GET /export?access_token=eyJhbGc... HTTP/1.1  # ✗`,
@@ -1305,28 +1404,33 @@ GET /export HTTP/1.1
 Authorization: Bearer eyJhbGc...              # ✓`,
       goodNote: 'Headers are not logged by default and never leak through `Referer`. OAuth 2.1 drops the query-string option entirely.',
       call: { kind: 'trap', text: 'Browser WebSockets cannot set headers, so SignalR puts the token in the query string. Keep those tokens short-lived and scrub them from logs.' } },
-    { k: 'table', id: 'http-schemes', t: 'Schemes you may see in Authorization', first: 'mono',
-      cols: ['Scheme', 'What it is', 'Use it?'],
-      rows: [
-        ['Basic', 'user:password in base64 (RFC 7617)', 'scripts and internal tools, over HTTPS only'],
-        ['Bearer', 'a token from an identity provider (RFC 6750)', 'yes: the default for APIs'],
-        ['Digest', 'a hashed password challenge (RFC 7616)', 'no: legacy; use Basic over TLS, or tokens'],
-        ['Negotiate', 'Kerberos (or NTLM) on Windows domains (RFC 4559)', 'intranet apps on Active Directory (**ENT**)'],
-        ['DPoP', 'a token bound to a key the client holds (RFC 9449)', 'when stolen tokens are a real risk (**TOKEN**)'],
-        ['AWS4-HMAC-SHA256', 'every request signed with a secret key', 'AWS APIs; the SDK does it (**SIG**)']
-      ] }
   ]
 });
 
 window.NCS.push({
   id: 'pick', code: 'PICK', name: 'Choosing a method',
-  blurb: 'Pick by two questions: **who** is calling (a person or a program), and **where** the calling code runs (a server you control, a browser, a phone, a device without a keyboard). The answer is almost always one of a few patterns.',
+  blurb: 'Two questions pick the method: **who** is calling (a person or a program) and **where** their code runs (your server, a browser, a phone, a TV). The tree below covers almost every case.',
   short: [
-    'A person signing in to your web app: OpenID Connect with a cookie session, or your own sign-in form if you keep users yourself.',
-    'An app calling an API for a user: OAuth 2 authorization code with PKCE. A program calling as itself: client credentials or a managed identity.',
-    'Never collect a user’s password for another service. Delegation without sharing passwords is why OAuth exists.'
+    'A person on your website: OpenID Connect sign-in, then a cookie.',
+    'An app calling an API for a person: OAuth code + PKCE.',
+    'A program calling as itself: client credentials, a managed identity or an API key.'
   ],
   blocks: [
+    { k: 'dg', id: 'pick-tree', t: 'Which method? Follow the arrows',
+      cap: '**Who is calling decides it:** people sign in through a browser (or a phone, for a TV); programs use client credentials or an API key. Each answer has its own section.',
+      d: { type: 'flow', w: 680, cols: 3, rows: 5, ch: 64, minw: 560,
+        nodes: [
+          { id: 'q', x: 0, y: 2, w: 150, l: 'Who is calling?', s: 'pill', k: 'a' },
+          { id: 'p', x: 1, y: 1, w: 150, l: 'A person' },
+          { id: 'm', x: 1, y: 3, w: 150, l: 'A program' },
+          { id: 'web', x: 2, y: 0, l: 'OIDC + cookie', sub: 'signs in to your website', k: 'g' },
+          { id: 'api', x: 2, y: 1, l: 'OAuth code + PKCE', sub: 'an app calls an API for them', k: 'g' },
+          { id: 'tv', x: 2, y: 2, l: 'Device code', sub: 'on a TV or in a CLI', k: 'g' },
+          { id: 'cc', x: 2, y: 3, l: 'Client credentials', sub: 'a service or a job', k: 's' },
+          { id: 'key', x: 2, y: 4, l: 'API key', sub: 'a partner’s script', k: 's' }
+        ],
+        edges: [{ f: 'q', t: 'p' }, { f: 'q', t: 'm' }, { f: 'p', t: 'web' }, { f: 'p', t: 'api' }, { f: 'p', t: 'tv' },
+                { f: 'm', t: 'cc' }, { f: 'm', t: 'key' }] } },
     { k: 'widget', id: 'pick-method', w: 'picker', t: 'Pick the method for what you are building', prompt: 'I am building', label: 'What you are building',
       items: [
         { need: 'A server-rendered web app (MVC, Razor Pages, Blazor Server)', use: 'OpenID Connect code flow + a cookie session', hint: 'confidential client', lang: 'cs', code: `
@@ -1400,13 +1504,32 @@ grant_type=client_credentials&client_id=billing
 /* ===== [20-signin.js] Group: Sign users in ===== */
 window.NCS.push({
   id: 'pwd', code: 'PWD', name: 'Passwords',
-  blurb: 'If your app keeps its own passwords, store only a slow, salted hash, check new passwords against breached lists, and make every sign-in and reset path give away nothing about which accounts exist.',
+  blurb: 'If you store passwords, store only a **hash**: a one-way fingerprint, made slow on purpose and mixed with a random **salt**, so a stolen database does not give away the passwords.',
   short: [
-    'Hash with an algorithm made for passwords: Argon2id, scrypt, bcrypt or PBKDF2. A plain SHA-256 can be guessed billions of times a second.',
-    'NIST SP 800-63B-4: at least 15 characters when the password is the only factor, no composition rules, no forced rotation, and a breached-password check.',
-    'Say “email or password is wrong”, never which one, and slow down repeated failures.'
+    'Use Argon2id or PBKDF2 (ASP.NET Core Identity does), never plain SHA-256.',
+    'NIST: 15+ characters, no forced symbols, no forced changes, block leaked passwords.',
+    'Say “email or password is wrong”, never which one, and slow down repeated tries.'
   ],
   blocks: [
+    { k: 'dg', id: 'pwd-store', t: 'Store a fingerprint, not the password', seg: ['Sign-up', 'Sign-in'],
+      capB: '**Sign-up:** the password is mixed with a random salt and run through a deliberately slow hash. Only the salt and the hash are stored.',
+      capF: '**Sign-in:** the typed password is hashed the same way, with the stored salt, and the two hashes are compared. The database never holds a password.',
+      b: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 80, minw: 520,
+        nodes: [
+          { id: 'pw', x: 0, y: 0, w: 132, l: 'Password', sub: 'what the user typed', s: 'pill' },
+          { id: 'salt', x: 0, y: 1, w: 132, l: 'Random salt', sub: 'new for every user', s: 'doc' },
+          { id: 'h', x: 1.5, y: 0, dy: 40, w: 132, l: 'Slow hash', sub: 'Argon2id or PBKDF2', k: 'a' },
+          { id: 'db', x: 3, y: 0, dy: 40, w: 132, l: 'Database', sub: 'salt + hash only', s: 'db', k: 'g' }
+        ],
+        edges: [{ f: 'pw', t: 'h' }, { f: 'salt', t: 'h' }, { f: 'h', t: 'db', l: 'store', ly: -13 }] },
+      f: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 80, minw: 520,
+        nodes: [
+          { id: 'pw', x: 0, y: 0, w: 132, l: 'Typed password', s: 'pill' },
+          { id: 'db', x: 0, y: 1, w: 132, l: 'Database', sub: 'salt + stored hash', s: 'db' },
+          { id: 'h', x: 1.5, y: 0, dy: 40, w: 132, l: 'Same slow hash', sub: 'with the stored salt', k: 'a' },
+          { id: 'eq', x: 3, y: 0, dy: 40, w: 132, l: 'Equal?', sub: 'yes: signed in', s: 'pill', k: 'g' }
+        ],
+        edges: [{ f: 'pw', t: 'h' }, { f: 'db', t: 'h', l: 'salt', ly: -10 }, { f: 'h', t: 'eq', l: 'compare', ly: -13 }] } },
     { k: 'gb', id: 'pwd-hash', t: 'Store a password', lang: 'cs',
       bad: `
 var hash = Convert.ToHexString(SHA256.HashData(
@@ -1420,7 +1543,7 @@ var r = hasher.VerifyHashedPassword(
     u, u.PasswordHash, input);
 if (r is PasswordVerificationResult.SuccessRehashNeeded)
     u.PasswordHash = hasher.HashPassword(u, input);`,
-      goodNote: 'Salted PBKDF2 with a version prefix, so you can raise the cost later: `SuccessRehashNeeded` upgrades old hashes at the next sign-in.',
+      goodNote: 'Salted PBKDF2 with a version prefix: `SuccessRehashNeeded` upgrades old hashes at the next sign-in.',
       call: { kind: 'tip', text: 'Identity’s default is 100,000 rounds of PBKDF2-HMAC-SHA512; OWASP now asks for 220,000. Raise `PasswordHasherOptions.IterationCount`.' } },
     { k: 'table', id: 'pwd-algos', t: 'Password hash settings (OWASP minimums)', first: 'mono',
       cols: ['Algorithm', 'Minimum setting', 'Notes'],
@@ -1485,7 +1608,7 @@ var sha1 = Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(password)));
 var body = await http.GetStringAsync("https://api.pwnedpasswords.com/range/" + sha1[..5]);
 var breached = body.Split('\\n').Any(line => line.StartsWith(sha1[5..] + ":"));
 if (breached) return Problem("This password appeared in a data breach. Choose another.");`,
-      note: 'NIST requires checking new passwords against a blocklist. The Pwned Passwords range API is free and only ever sees a 5-character prefix (k-anonymity).',
+      note: 'NIST requires a breached-password check. The API only ever sees the first 5 characters of the hash.',
       call: { kind: 'tip', text: 'SHA-1 here is only a lookup key into the breach list, not how you store passwords.' } },
     { k: 'snip', id: 'pwd-limit', lang: 'cs', t: 'Slow down guessing on the sign-in endpoint', code: `
 builder.Services.AddRateLimiter(o =>
@@ -1498,35 +1621,34 @@ builder.Services.AddRateLimiter(o =>
 
 app.UseRateLimiter();
 app.MapPost("/login", SignInAsync).RequireRateLimiting("login");`,
-      note: 'Per-IP limits slow one attacker. Per-account lockout (`lockoutOnFailure: true`) slows a botnet aimed at one user. Use both.',
+      note: 'Per-IP limits slow one attacker; per-account lockout slows many attackers aimed at one user. Use both.',
       call: { kind: 'trap', text: 'Behind a proxy every request shares the proxy’s IP. Configure `UseForwardedHeaders` first, or all users share one limit.' } }
   ]
 });
 
 window.NCS.push({
   id: 'sess', code: 'SESS', name: 'Sessions and cookies',
-  blurb: 'After sign-in the server gives the browser a cookie, and the browser sends it back on every request to that site. The cookie holds either a random **session ID** that points at data on the server, or the identity itself, encrypted (ASP.NET Core’s authentication cookie).',
+  blurb: 'After sign-in the server gives the browser a **cookie**, which the browser sends back on every request. Like a cloakroom ticket, it means nothing on its own, but the server knows whose coat it is.',
   short: [
-    'Mark auth cookies `HttpOnly`, `Secure` and `SameSite=Lax` (or `Strict`), and use the `__Host-` name prefix.',
-    'Issue a fresh session at sign-in and destroy it at sign-out. A session that survives either is a hole.',
-    'Browsers attach cookies by themselves, so every request that changes data needs CSRF protection.'
+    'Mark it `HttpOnly` (scripts can’t read it), `Secure` (HTTPS only) and `SameSite=Lax` (not sent from other sites).',
+    'Issue a fresh cookie at sign-in; delete it at sign-out.',
+    'Browsers send cookies by themselves, so forms need CSRF protection.'
   ],
   blocks: [
     { k: 'sub', t: 'The session' },
-    { k: 'dg', id: 'sess-flow', t: 'Sign in once, then every request carries the cookie',
-      cap: '**The cookie is the session:** whoever presents it is signed in, so it must be unguessable, unreadable by scripts and never sent over plain HTTP.',
-      d: { type: 'seq', w: 680, minw: 520, actors: [{ l: 'Browser', s: 'browser', k: 'a' }, 'App', { l: 'Session store', s: 'db' }],
-        steps: [
-          { f: 0, t: 1, l: 'POST /login (email, password)' },
-          { self: 1, l: 'check the password' },
-          { f: 1, t: 2, l: 'save session 8f1c → alice' },
-          { f: 1, t: 0, l: '302 + Set-Cookie: __Host-sid=8f1c', d: true, k: 'g' },
-          { div: 'every later request' },
-          { f: 0, t: 1, l: 'GET /orders + Cookie: __Host-sid=8f1c' },
-          { f: 1, t: 2, l: 'look up 8f1c' },
-          { f: 2, t: 1, l: 'alice, roles', d: true },
-          { f: 1, t: 0, l: '200 OK', d: true, k: 'g' }
-        ] } },
+    { k: 'widget', id: 'sess-walk', w: 'walk', t: 'Sign in once, then every request carries the cookie',
+      actors: [{ l: 'Browser', s: 'browser', k: 'a' }, 'App', { l: 'Session store', s: 'db' }],
+      steps: [
+        { f: 0, t: 1, l: 'POST /login (email, password)', x: 'The user sends the sign-in form. HTTPS encrypts the password on the way.' },
+        { self: 1, l: 'check the password', x: 'The app hashes the typed password and compares it with the stored hash (**PWD**).' },
+        { f: 1, t: 2, l: 'save session 8f1c → alice', x: 'It creates a **session**: a random ID, `8f1c…`, that points to alice and her roles.' },
+        { f: 1, t: 0, l: '302 + Set-Cookie: __Host-sid=8f1c', d: true, k: 'g', x: 'It sends that ID back as a **cookie** and redirects. The browser keeps the cookie for this site.' },
+        { div: 'every later request' },
+        { f: 0, t: 1, l: 'GET /orders + Cookie: __Host-sid=8f1c', x: 'From now on the browser attaches the cookie to every request to this site, by itself.' },
+        { f: 1, t: 2, l: 'look up 8f1c', x: 'The app looks the ID up to learn who is calling.' },
+        { f: 2, t: 1, l: 'alice, roles', d: true, x: 'Found: it is alice. No password again until the session ends.' },
+        { f: 1, t: 0, l: '200 OK', d: true, k: 'g', x: 'Alice gets her orders. Signing out deletes the session, so the cookie stops working at once.' }
+      ] },
     { k: 'snip', id: 'sess-setcookie', t: 'A safe Set-Cookie line', code: `
 Set-Cookie: __Host-sid=8f1c0b6e4d2a9a7f; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=28800
 
@@ -1599,7 +1721,7 @@ app.MapPost("/login", async (LoginForm f, HttpContext ctx, UserService users) =>
          type="hidden" value="CfDJ8N...">  <!-- ✓ -->
   <input name="email">
 </form>`,
-      goodNote: 'Layers: `SameSite=Lax`, a hidden anti-forgery token the other site cannot read (`AddAntiforgery()` + `UseAntiforgery()`; Razor forms add it for you), and in .NET 11 the automatic cross-origin check.',
+      goodNote: 'A hidden anti-forgery token the other site cannot read (`AddAntiforgery()` + `UseAntiforgery()`; Razor forms add it for you), plus `SameSite=Lax`.',
       call: { kind: 'key', text: 'APIs that take a bearer token in a header are not exposed to CSRF: the browser never adds that header by itself.' } },
     { k: 'snip', id: 'sess-net11', v: '.NET 11', t: 'Automatic CSRF protection in .NET 11', code: `
 POST /account/email HTTP/1.1
@@ -1610,37 +1732,36 @@ POST /account/email HTTP/1.1
 Host: shop.example
 Sec-Fetch-Site: cross-site             # rejected before the endpoint runs
 Origin: https://evil.example`,
-      note: 'Apps built with `WebApplication.CreateBuilder` now reject unsafe (POST, PUT, PATCH, DELETE) cross-origin browser requests by reading `Sec-Fetch-Site`, with `Origin` as the fallback. No tokens, no Data Protection. Keep anti-forgery tokens too: this is one more layer.' },
-    { k: 'gb', id: 'sess-fixation', t: 'Session fixation', lang: 'cs',
-      bad: `
-// after checking the password
-HttpContext.Session.SetString(
-    "userId", user.Id);                    // ✗`,
-      badNote: 'The session ID was issued before sign-in and does not change. Whoever planted that ID (on a shared PC, or from a sibling subdomain) is now signed in too.',
-      good: `
-// a fresh auth cookie at every sign-in
-await HttpContext.SignInAsync(principal);  // ✓
-// keep ISession for harmless data: a cart`,
-      goodNote: 'Use the authentication cookie for identity: `SignInAsync` issues a new one every time. ASP.NET Core’s `ISession` keeps its ID across sign-in.' },
+      note: 'Apps built with `WebApplication.CreateBuilder` now reject cross-origin POST, PUT, PATCH and DELETE from browsers, by reading `Sec-Fetch-Site` (or `Origin`). Keep anti-forgery tokens too.' },
     { k: 'snip', id: 'sess-logout', lang: 'cs', t: 'Sign out properly', code: `
 app.MapPost("/logout", async (HttpContext ctx) =>
 {
     await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);   // deletes the cookie
     return Results.Redirect("/");
 }).RequireAuthorization();       // POST with an anti-forgery token: a GET link could be forged`,
-      note: 'A self-contained cookie is only deleted from this browser: a stolen copy keeps working until it expires. With an IdP, also end the IdP session (**SSO**).' }
+      note: 'This deletes the cookie in this browser only; a stolen copy works until it expires. With an IdP, also sign out there (**SSO**).' }
   ]
 });
 
 window.NCS.push({
   id: 'mfa', code: 'MFA', name: 'Multi-factor authentication',
-  blurb: 'A second factor means a stolen password is not enough. Factors are something you **know** (a password), something you **have** (a phone, a security key) and something you **are** (a fingerprint or face that unlocks a key).',
+  blurb: '**Multi-factor authentication (MFA)** asks for two different kinds of proof, such as a password plus a code from your phone, so a stolen password alone is not enough.',
   short: [
-    'Authenticator-app codes (TOTP) are a sound default. SMS codes are weaker: NIST SP 800-63B-4 lists them as restricted.',
-    'Give recovery codes at enrolment, store them hashed, and accept each one once.',
-    'Codes and push prompts can be phished or spammed. Passkeys and security keys cannot be phished.'
+    'Authenticator-app codes (**TOTP**: time-based one-time passwords) are a good default.',
+    'SMS codes are weaker: phone numbers can be hijacked.',
+    'Codes can be phished; passkeys and security keys cannot.'
   ],
   blocks: [
+    { k: 'dg', id: 'mfa-totp', t: 'How an authenticator code is made',
+      cap: '**Phone and server compute the same code:** both know the secret and the time, so nothing is sent to the phone and it works offline.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 74, minw: 520,
+        nodes: [
+          { id: 'sec', x: 0, y: 0, w: 140, l: 'Shared secret', sub: 'set once, by QR code', s: 'doc' },
+          { id: 'clk', x: 0, y: 1, w: 140, l: 'Clock', sub: 'Unix time ÷ 30 s', s: 'pill' },
+          { id: 'mac', x: 1.5, y: 0, dy: 37, w: 140, l: 'HMAC-SHA1', sub: 'secret + time step', k: 'a' },
+          { id: 'code', x: 3, y: 0, dy: 37, w: 140, l: '492 039', sub: '6 digits, 30 s', s: 'pill', k: 'g' }
+        ],
+        edges: [{ f: 'sec', t: 'mac' }, { f: 'clk', t: 'mac' }, { f: 'mac', t: 'code', l: 'truncate', ly: -13 }] } },
     { k: 'table', id: 'mfa-factors', t: 'Second factors compared',
       cols: ['Factor', 'Resists phishing?', 'Watch out'],
       rows: [
@@ -1651,16 +1772,6 @@ window.NCS.push({
         ['Passkey or security key', 'yes', 'bound to your domain (**PASSK**)'],
         ['Recovery codes', 'no', 'the backup factor: hashed, single-use, shown once']
       ] },
-    { k: 'dg', id: 'mfa-totp', t: 'How an authenticator code is made',
-      cap: '**Both sides compute the same code:** the phone and the server share a secret and a clock. Nothing is sent to the phone, which is why TOTP works offline (RFC 6238).',
-      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 74, minw: 520,
-        nodes: [
-          { id: 'sec', x: 0, y: 0, w: 140, l: 'Shared secret', sub: 'set once, by QR code', s: 'doc' },
-          { id: 'clk', x: 0, y: 1, w: 140, l: 'Clock', sub: 'Unix time ÷ 30 s', s: 'pill' },
-          { id: 'mac', x: 1.5, y: 0, dy: 37, w: 140, l: 'HMAC-SHA1', sub: 'secret + time step', k: 'a' },
-          { id: 'code', x: 3, y: 0, dy: 37, w: 140, l: '492 039', sub: '6 digits, 30 s', s: 'pill', k: 'g' }
-        ],
-        edges: [{ f: 'sec', t: 'mac' }, { f: 'clk', t: 'mac' }, { f: 'mac', t: 'code', l: 'truncate', ly: -13 }] } },
     { k: 'snip', id: 'mfa-uri', lang: 'text', t: 'What the QR code contains', code: `
 otpauth://totp/Shop:alice@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Shop&digits=6&period=30`,
       note: 'The secret is base32. Show it as text next to the QR code for users who cannot scan. Store it encrypted: anyone who has it can make valid codes.' },
@@ -1693,17 +1804,17 @@ builder.Services.AddAuthorization(o =>
     o.AddPolicy("mfa", p => p.RequireClaim("amr", "mfa")));    // needs MapInboundClaims = false
 
 app.MapPost("/payouts", CreatePayoutAsync).RequireAuthorization("mfa");`,
-      note: 'This is **step-up authentication**: sign in normally, then require a stronger sign-in for risky actions. RFC 9470 defines the `insufficient_user_authentication` error an API returns to ask the client for it; with OIDC the client sends `acr_values` or `max_age` (**SSO**).' }
+      note: 'This is **step-up authentication**: a stronger sign-in only for risky actions. An API asks for it with the `insufficient_user_authentication` error (RFC 9470); the client then sends `acr_values` or `max_age` (**SSO**).' }
   ]
 });
 
 window.NCS.push({
   id: 'passk', code: 'PASSK', name: 'Passkeys (WebAuthn)',
-  blurb: 'A passkey is a key pair that the user’s device makes for one site. The site stores only the **public key**; the private key stays on the device or in the user’s password manager, and the browser uses it only on the site it was made for. There is nothing to phish, reuse or leak from your database.',
+  blurb: 'A **passkey** replaces the password with a key pair made by the user’s device. Your server keeps only the **public key**; the device keeps the private key and uses it only on your real domain, so there is nothing to phish or leak.',
   short: [
-    'Registration: the device makes a key pair and sends the public key. Sign-in: the device signs a fresh random challenge from the server.',
-    'Each passkey is bound to your domain, the **RP ID**. A look-alike phishing domain has no passkey to use.',
-    'Verify responses with a maintained library. .NET 10 builds passkeys into ASP.NET Core Identity.'
+    'Register: the device makes a key pair and sends you the public key.',
+    'Sign in: the device signs a random one-time **challenge** from your server.',
+    '.NET 10’s ASP.NET Core Identity supports passkeys out of the box.'
   ],
   blocks: [
     { k: 'dg', id: 'pk-ceremony', t: 'Register a passkey, then sign in with it', seg: ['Register', 'Sign in'],
@@ -1762,7 +1873,7 @@ const assertion = await navigator.credentials.get({
   mediation: 'conditional',                         // needs <input autocomplete="username webauthn">
 });
 await post('/passkey/sign-in', assertion);`,
-      note: 'The JSON helpers are Baseline 2025: Chrome and Edge 129, Firefox 119, Safari 18.4. Passkeys need HTTPS (or `localhost`).' },
+      note: 'Supported in Chrome and Edge 129, Firefox 119 and Safari 18.4 and later. Passkeys need HTTPS (or `localhost`).' },
     { k: 'snip', id: 'pk-identity', lang: 'cs', v: '.NET 10', t: 'Server side with ASP.NET Core Identity', code: `
 builder.Services.AddIdentityCore<AppUser>(o =>
         o.Stores.SchemaVersion = IdentitySchemaVersions.Version3)          // adds the passkey table
@@ -1790,29 +1901,30 @@ var result = await signInManager.PasskeySignInAsync(credentialJson);`,
         ['Device-bound passkey', 'a security key (YubiKey) or one device’s chip', 'gone: register two', 'admins and high-risk staff'],
         ['Phone as the key (hybrid)', 'a phone; the laptop shows a QR code, Bluetooth checks the phone is near', 'as for the phone’s own passkeys', 'first sign-in on a new computer']
       ] },
-    { k: 'table', id: 'pk-store', t: 'What the server keeps per passkey', first: 'mono',
-      cols: ['Field', 'Why'],
-      rows: [
-        ['credential ID', 'finds the passkey at sign-in'],
-        ['public key', 'verifies every signature'],
-        ['sign count', 'a counter that should grow; synced passkeys often always send 0'],
-        ['user handle', 'the random user ID you gave at registration, never the email'],
-        ['name, created, last used', 'so users can see and remove their passkeys'],
-        ['backup flags (BE, BS)', 'whether the passkey is synced: useful for risk decisions']
-      ] }
   ]
 });
 /*@@FILE sheet/30-tokens.js@@*/
 /* ===== [30-tokens.js] Group: Tokens and API keys ===== */
 window.NCS.push({
   id: 'jwt', code: 'JWT', name: 'JSON Web Tokens (JWT)',
-  blurb: 'A JWT (say “jot”) is three base64url parts joined by dots: a **header**, a **payload** of claims, and a **signature**. Anyone can read the first two; only the holder of the signing key could have made the third. Most access tokens, and every OpenID Connect ID token, are JWTs.',
+  blurb: 'A **JWT** (JSON Web Token, say “jot”) is a token in three parts: a header, a payload of **claims** (facts such as the user ID and expiry) and a **signature** that proves who made it. Anyone can read it; nobody can change it without breaking the signature.',
   short: [
-    'A JWT is signed, not encrypted. Never put secrets, or personal data the client must not see, in one.',
-    'Validate on every request: the signature, `alg` from an allow-list, `iss`, `aud`, `exp` and `nbf`. Use a library, never your own parser.',
-    'Prefer asymmetric keys (RS256, ES256): the IdP signs with a private key, and APIs verify with public keys from its JWKS endpoint.'
+    'Signed, not encrypted: never put secrets in it.',
+    'An API checks signature, issuer (`iss`), audience (`aud`) and expiry (`exp`), with a library.',
+    'APIs get the IdP’s public keys from its **JWKS** address.'
   ],
   blocks: [
+    { k: 'dg', id: 'jwt-life', t: 'Signed by one, checked by many',
+      cap: '**Two keys:** the IdP signs each token with its private key; any API checks it with the matching public key, which the IdP publishes. No call to the IdP per request.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 86, minw: 520,
+        nodes: [
+          { id: 'idp', x: 0, y: 0, w: 132, l: 'Identity provider', sub: 'signs with its private key', k: 's' },
+          { id: 'tok', x: 1.5, y: 0, w: 132, l: 'The JWT', sub: 'header · claims · signature', s: 'doc' },
+          { id: 'api', x: 3, y: 0, w: 132, l: 'Your API', sub: 'checks with the public key', k: 'g' },
+          { id: 'jwks', x: 1.5, y: 1, w: 132, l: 'JWKS', sub: 'the IdP’s public keys', s: 'doc' }
+        ],
+        edges: [{ f: 'idp', t: 'tok', l: 'issues', ly: -13 }, { f: 'tok', t: 'api', l: 'Bearer', ly: -13 },
+                { f: 'idp', t: 'jwks', l: 'publishes', d: true }, { f: 'jwks', t: 'api', l: 'read, cached', d: true }] } },
     { k: 'sub', t: 'Read a token' },
     { k: 'widget', id: 'jwt-decode', w: 'jwt', t: 'Decode a JWT, in your browser',
       expect: { iss: 'https://login.shop.example/', aud: 'api://orders', algs: ['RS256', 'ES256'] } },
@@ -1832,7 +1944,7 @@ window.NCS.push({
 }
 
 // signature = RS256( base64url(header) + "." + base64url(payload), the IdP's private key )`,
-      note: '`typ: at+jwt` marks an OAuth access token in the RFC 9068 format, so it cannot be mistaken for an ID token.',
+      note: '`typ: at+jwt` marks an access token (RFC 9068), so it can’t be mistaken for an ID token.',
       call: { kind: 'tip', text: 'A token with **five** dot-separated parts is a JWE: encrypted, and readable only by whoever holds the decryption key.' } },
     { k: 'table', id: 'jwt-claims', t: 'Registered claims and what to check', first: 'mono',
       cols: ['Claim', 'Means', 'Check'],
@@ -1849,6 +1961,20 @@ window.NCS.push({
       ],
       call: { kind: 'tip', text: 'Key users by `iss` + `sub`, not by email: emails change and can be given to someone else.' } },
     { k: 'sub', t: 'Check a token' },
+    { k: 'dg', id: 'jwt-check', t: 'What an API checks, in order',
+      cap: '**Three checks, then the claims:** the signature proves your IdP made it, issuer and audience prove it is meant for this API, and the expiry proves it is still valid. Any failure: 401.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 86, minw: 560,
+        nodes: [
+          { id: 'tok', x: 0, y: 0, w: 120, l: 'Bearer token', sub: 'from the request', s: 'doc' },
+          { id: 'sig', x: 1, y: 0, w: 120, l: '1. Signature', sub: 'made by your IdP?' },
+          { id: 'aud', x: 2, y: 0, w: 120, l: '2. iss and aud', sub: 'meant for this API?' },
+          { id: 'time', x: 3, y: 0, w: 120, l: '3. exp', sub: 'still valid?' },
+          { id: 'no', x: 2, y: 1, w: 120, l: '401', sub: 'a check failed', s: 'pill', k: 'b' },
+          { id: 'ok', x: 3, y: 1, w: 120, l: 'Accept', sub: 'claims become the user', s: 'pill', k: 'g' }
+        ],
+        edges: [{ f: 'tok', t: 'sig' }, { f: 'sig', t: 'aud' }, { f: 'aud', t: 'time' },
+                { f: 'time', t: 'ok', l: 'all pass', lx: 30 },
+                { f: 'sig', t: 'no', d: true, k: 'b' }, { f: 'aud', t: 'no', d: true, k: 'b' }, { f: 'time', t: 'no', d: true, k: 'b' }] } },
     { k: 'snip', id: 'jwt-aspnet', lang: 'cs', t: 'Validate JWTs in an ASP.NET Core API', code: `
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
@@ -1864,21 +1990,7 @@ builder.Services.AddAuthorization();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapGet("/orders", ListOrdersAsync).RequireAuthorization();`,
-      note: '`Authority` gives the issuer and the signing keys. The handler then checks signature, `iss`, `aud` and lifetime, caches the keys, and fetches them again when a token arrives with an unknown `kid`.' },
-    { k: 'snip', id: 'jwt-node', lang: 'ts', t: 'Validate JWTs in Node with jose', code: `
-import { createRemoteJWKSet, jwtVerify } from 'jose';
-
-const jwks = createRemoteJWKSet(new URL('https://login.shop.example/.well-known/jwks.json'));   // cached
-
-export async function verify(token: string) {
-  const { payload } = await jwtVerify(token, jwks, {
-    issuer: 'https://login.shop.example/',
-    audience: 'api://orders',
-    algorithms: ['RS256', 'ES256'],
-    clockTolerance: 60,
-  });
-  return payload;                 // throws if any check fails
-}` },
+      note: '`Authority` gives the issuer and the keys; the handler checks the rest and re-reads the keys when it meets a new `kid`.' },
     { k: 'gb', id: 'jwt-decode-gb', t: 'Decoding is not validating', lang: 'ts',
       bad: `
 const claims = JSON.parse(
@@ -1915,30 +2027,28 @@ if (payload.role === 'admin') grant(); // ✓`,
           { f: 1, t: 0, l: 'GET jwks.json' },
           { f: 0, t: 1, l: 'keys: k2, k3', d: true, k: 'g' }
         ] } },
-    { k: 'sub', t: 'Issue a token' },
-    { k: 'snip', id: 'jwt-mint', lang: 'cs', t: 'Make a JWT (for tests, or your own issuer)', code: `
-var key = new RsaSecurityKey(RSA.Create(2048)) { KeyId = "test-1" };
-var token = new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
-{
-    Issuer = "https://login.shop.example/",
-    Audience = "api://orders",
-    Subject = new ClaimsIdentity([new Claim("sub", "42"), new Claim("scope", "orders.read")]),
-    Expires = DateTime.UtcNow.AddMinutes(10),
-    SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256),
-});`,
-      note: 'For local testing, `dotnet user-jwts` is simpler (**TEST**). In production, let a real IdP issue tokens.' }
   ]
 });
 
 window.NCS.push({
   id: 'key', code: 'KEY', name: 'API keys',
-  blurb: 'An API key is one long random secret that identifies a calling **program**, not a person. It is the simplest credential for partner and public APIs, and the easiest to leak: treat it like a password that a machine types.',
+  blurb: 'An **API key** is a long random password for a program. The program sends it in a header, and the API looks it up. Simple, and easy to leak.',
   short: [
-    'Send keys in a header, never in the URL. Make them long and random, with a prefix that secret scanners can spot.',
-    'Store only a hash of each key, and show the full key once, when it is created.',
-    'Let each client hold two keys at a time, so a rotation needs no downtime.'
+    'Send it in a header, never in a URL or in front-end code.',
+    'Store only its hash; show the full key once.',
+    'Allow two keys per client, so you can swap without downtime.'
   ],
   blocks: [
+    { k: 'dg', id: 'key-flow', t: 'One request with an API key',
+      cap: '**The API keeps only hashes:** it hashes the key it receives and looks that up, so a leaked database holds no working keys.',
+      d: { type: 'seq', w: 680, minw: 520, actors: [{ l: 'Partner script', k: 'a' }, { l: 'Your API', k: 'g' }, { l: 'Key table', s: 'db' }],
+        steps: [
+          { f: 0, t: 1, l: 'GET /rates + X-Api-Key: shop_live_9fQ…' },
+          { self: 1, l: 'SHA-256 of the key' },
+          { f: 1, t: 2, l: 'find this hash' },
+          { f: 2, t: 1, l: 'client partner-7, not expired', d: true },
+          { f: 1, t: 0, l: '200 OK', d: true, k: 'g' }
+        ] } },
     { k: 'snip', id: 'key-make', lang: 'cs', t: 'Make a key that scanners can recognise', code: `
 // 32 random bytes as base64url (System.Buffers.Text), with a prefix saying what it is
 var apiKey = "shop_live_" + Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
@@ -1947,7 +2057,7 @@ var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(apiKey)));
 db.ApiKeys.Add(new ApiKey(clientId, Prefix: apiKey[..14], Hash: hash, ExpiresAt: now.AddDays(90)));
 await db.SaveChangesAsync();
 return apiKey;                    // show it once; you cannot show it again`,
-      note: 'SHA-256 is right here, unlike for passwords: nobody can guess 256 random bits, so a slow hash adds nothing. Keep the short prefix in clear text so users can tell their keys apart.',
+      note: 'Plain SHA-256 is fine here, unlike for passwords: nobody can guess 256 random bits. The short prefix helps users tell keys apart.',
       call: { kind: 'tip', text: 'Prefixes such as `ghp_` and `sk_live_` let GitHub secret scanning and similar tools find leaked keys in public code.' } },
     { k: 'snip', id: 'key-handler', lang: 'cs', t: 'An API key authentication handler', code: `
 public sealed class ApiKeyHandler(
@@ -2009,11 +2119,11 @@ const res = await fetch('/api/maps/route');  // ✓
 
 window.NCS.push({
   id: 'sig', code: 'SIG', name: 'Signed requests and webhooks',
-  blurb: 'Instead of sending a secret, the caller sends a **signature**: an HMAC of the request, made with a secret both sides know. The secret never crosses the network, and any change to the body breaks the signature. Webhooks from Stripe, GitHub, Slack and most SaaS products work this way.',
+  blurb: 'Instead of sending a secret, the sender sends a **signature**: an **HMAC** (a hash made with a shared secret) of the request body. Your endpoint computes the same HMAC; if they match, the request is genuine and unchanged. Webhooks work this way.',
   short: [
-    'Compute the HMAC over the **raw body bytes** exactly as received, before any JSON parsing.',
-    'Compare signatures in constant time, and reject requests whose timestamp is more than a few minutes old.',
-    'A signature proves who sent the request and that nothing changed. It does not hide the body, so keep using HTTPS.'
+    'Hash the raw body bytes, before any JSON parsing.',
+    'Compare in constant time, and reject old timestamps.',
+    'Use the sender’s SDK when it has one.'
   ],
   blocks: [
     { k: 'dg', id: 'sig-flow', t: 'How a signed webhook travels',
@@ -2044,7 +2154,7 @@ app.MapPost("/webhooks/shop", async (HttpRequest req, IConfiguration cfg, ShopEv
     await events.HandleAsync(JsonSerializer.Deserialize<ShopEvent>(body)!);   // parse only after the check
     return Results.Ok();
 });`,
-      note: 'This is the GitHub style (HMAC of the body, hex, `sha256=` prefix). Stripe and Slack also sign a timestamp: see the table below. Use the sender’s SDK when it has one.' },
+      note: 'GitHub style: an HMAC of the body, in hex. Stripe and Slack also sign a timestamp (see the table).' },
     { k: 'widget', id: 'sig-steps', w: 'steps', t: 'Check a webhook in this order', label: 'Version', modes: ['Safe order', 'Common mistakes'],
       good: [
         ['Read the raw body', 'The bytes exactly as sent. Re-serialised JSON changes spacing and breaks the HMAC.'],
@@ -2073,11 +2183,11 @@ app.MapPost("/webhooks/shop", async (HttpRequest req, IConfiguration cfg, ShopEv
 /* ===== [40-oauth.js] Group: OAuth 2 ===== */
 window.NCS.push({
   id: 'oauth', code: 'OAUTH', name: 'OAuth 2 in plain words',
-  blurb: 'OAuth 2 lets a user give an app limited access to an API **without giving it their password**. The app sends the user to an **authorization server**, the user signs in and approves, and the app gets an **access token** for exactly that access. OAuth is about access to APIs; signing users in is OpenID Connect (**OIDC**), built on top.',
+  blurb: '**OAuth 2** lets a user give an app limited access to an API without giving it their password, like a valet key that starts the car but cannot open the boot. The app gets an **access token** carrying only the permissions (**scopes**) the user approved.',
   short: [
-    'Four roles: the resource owner (the user), the client (the app), the authorization server (sign-in and tokens) and the resource server (the API).',
-    'Scopes name the access the app asks for. The token carries what was actually granted.',
-    'Authorization code + PKCE for apps with users, client credentials for services. The implicit and password grants are gone in OAuth 2.1.'
+    'Four roles: the user, the app (client), the authorization server (sign-in, tokens) and the API (resource server).',
+    'Apps with users: authorization code + PKCE. Services: client credentials.',
+    'OAuth is about reaching APIs. Signing users in is OpenID Connect.'
   ],
   blocks: [
     { k: 'dg', id: 'oauth-roles', t: 'Four roles',
@@ -2129,7 +2239,7 @@ builder.Services.AddAuthorization(o => o.AddPolicy("orders.read", p => p.Require
     (ctx.User.FindFirstValue("scp") ?? ctx.User.FindFirstValue("scope") ?? "")
         .Split(' ').Contains("Orders.Read"))));
 app.MapGet("/orders", ListOrdersAsync).RequireAuthorization("orders.read");`,
-      note: 'Entra ID puts delegated scopes in `scp` and app permissions in `roles`; RFC 9068 tokens use `scope`. Both hold one space-separated string, which is why `RequireClaim("scp", "Orders.Read")` fails once a token has two scopes.' },
+      note: 'Entra ID puts scopes in `scp`, other IdPs in `scope`: one space-separated string either way, so split it before you compare.' },
     { k: 'table', id: 'oauth-clients', t: 'Confidential or public client',
       cols: ['Question', 'Confidential client', 'Public client'],
       rows: [
@@ -2139,20 +2249,6 @@ app.MapGet("/orders", ListOrdersAsync).RequireAuthorization("orders.read");`,
         ['Refresh tokens', 'normal lifetimes', 'short or rotated (Entra ID: 24 hours for SPAs)']
       ],
       call: { kind: 'trap', text: 'A “secret” shipped inside a mobile app or a JavaScript bundle is not a secret. Register such apps as public clients.' } },
-    { k: 'table', id: 'oauth-endpoints', t: 'Endpoints, and how a client finds them', first: 'mono',
-      cols: ['Endpoint', 'Called by', 'For'],
-      rows: [
-        ['authorize', 'the browser (front channel)', 'sign-in and consent; returns a code'],
-        ['token', 'the client, directly (back channel)', 'swap a code, refresh token or credentials for tokens'],
-        ['/.well-known/openid-configuration', 'libraries, at start-up', 'every other endpoint, the issuer and the key URL'],
-        ['jwks_uri', 'APIs', 'public keys for checking signatures'],
-        ['pushed_authorization_request_endpoint', 'the client', 'send the authorize parameters first (RFC 9126)'],
-        ['revocation_endpoint', 'the client', 'revoke a refresh or access token (RFC 7009)'],
-        ['introspection_endpoint', 'an API', 'ask whether an opaque token is active (RFC 7662)'],
-        ['device_authorization_endpoint', 'a CLI or TV', 'start the device flow (RFC 8628)'],
-        ['userinfo, end_session_endpoint', 'the client', 'OpenID Connect profile and sign-out']
-      ],
-      note: 'Paths differ per IdP, so read them from discovery instead of hard-coding them. Plain OAuth servers publish the same list at `/.well-known/oauth-authorization-server` (RFC 8414).' },
     { k: 'gb', id: 'oauth-redirect', t: 'Register exact redirect URIs', lang: 'text',
       bad: `
 Allowed redirect URIs
@@ -2174,37 +2270,36 @@ Allowed redirect URIs
         ['Bearer token in the query string', 'allowed', 'not allowed'],
         ['Refresh tokens for public clients', 'no rule', 'sender-constrained, or rotated on every use']
       ],
-      note: 'OAuth 2.1 is still an IETF draft (draft 16, September 2026), but its rules already are the security best practice of RFC 9700 (January 2025). Treat them as today’s rules.' }
+      note: 'OAuth 2.1 is still a draft (draft 16, September 2026), but these rules are already today’s best practice (RFC 9700).' }
   ]
 });
 
 window.NCS.push({
   id: 'code', code: 'CODE', name: 'Authorization code + PKCE',
-  blurb: 'The main OAuth flow, used by web, mobile and single-page apps. The browser brings back a one-time **code**; the app swaps it for tokens in a direct call to the token endpoint. **PKCE** (say “pixie”) ties the code to the app that started the flow, so a stolen code is useless.',
+  blurb: 'The standard OAuth flow. The browser brings back a one-time **code**; your app swaps it for tokens in a direct call. **PKCE** (Proof Key for Code Exchange, say “pixie”) is a one-time secret that proves the app swapping the code is the one that asked for it.',
   short: [
-    'Every client uses PKCE with `S256`: a random `code_verifier` stays in the app; its SHA-256 hash, the `code_challenge`, goes in the authorize URL.',
-    'Send a random `state` and check it on the way back. With OpenID Connect, also send a `nonce` and find it in the ID token.',
-    'The code is single-use and lives for seconds to minutes. Tokens come only from the back-channel token call, never in a URL.'
+    'Always use PKCE, with the `S256` method.',
+    'Send a random `state` and check it when the browser comes back.',
+    'Tokens never travel in the URL: only in the direct token call.'
   ],
   blocks: [
     { k: 'sub', t: 'The flow' },
-    { k: 'dg', id: 'code-flow', t: 'The whole flow',
-      cap: '**Two channels:** the browser carries only the short-lived code (front channel). Tokens travel on the direct call from the app to the server (back channel), where the verifier proves it is the same app.',
-      d: { type: 'seq', w: 680, minw: 560, actors: [{ l: 'Browser', s: 'browser' }, { l: 'App', k: 'a' }, { l: 'Auth server', k: 's' }, { l: 'API', k: 'g' }],
-        steps: [
-          { f: 0, t: 1, l: 'click “Sign in”' },
-          { self: 1, l: 'new verifier, challenge, state' },
-          { f: 1, t: 0, l: '302 to /authorize?…code_challenge, state', d: true },
-          { f: 0, t: 2, l: 'GET /authorize' },
-          { self: 2, l: 'sign-in, MFA, consent' },
-          { f: 2, t: 0, l: '302 to /callback?code=…&state=…', d: true },
-          { f: 0, t: 1, l: 'GET /callback?code&state' },
-          { self: 1, l: 'state matches?' },
-          { f: 1, t: 2, l: 'POST /token: code + code_verifier' },
-          { self: 2, l: 'SHA-256(verifier) = challenge?' },
-          { f: 2, t: 1, l: 'access, refresh and ID tokens', d: true, k: 'g' },
-          { f: 1, t: 3, l: 'GET /orders, Bearer access token' }
-        ] } },
+    { k: 'widget', id: 'code-walk', w: 'walk', t: 'Authorization code + PKCE, step by step', minw: 560,
+      actors: [{ l: 'Browser', s: 'browser' }, { l: 'App', k: 'a' }, { l: 'Auth server', k: 's' }, { l: 'API', k: 'g' }],
+      steps: [
+        { f: 0, t: 1, l: 'click “Sign in”', x: 'The user clicks **Sign in** in your app.' },
+        { self: 1, l: 'new verifier, challenge, state', x: 'The app makes a random **verifier** (kept secret), its SHA-256 hash, the **challenge**, and a random **state**.' },
+        { f: 1, t: 0, l: '302 to /authorize?…code_challenge, state', d: true, x: 'It redirects the browser to the auth server with the challenge and the state, never the verifier.' },
+        { f: 0, t: 2, l: 'GET /authorize', x: 'The browser opens the auth server’s sign-in page.' },
+        { self: 2, l: 'sign-in, MFA, consent', x: 'The user signs in there (your app never sees the password) and approves the scopes, the permissions asked for.' },
+        { f: 2, t: 0, l: '302 to /callback?code=…&state=…', d: true, x: 'The auth server sends the browser back with a one-time **code** and the same state.' },
+        { f: 0, t: 1, l: 'GET /callback?code&state', x: 'The browser delivers the code to your app’s registered **redirect URI**.' },
+        { self: 1, l: 'state matches?', x: 'The app checks the state is the one it sent, so this answer belongs to its own request.' },
+        { f: 1, t: 2, l: 'POST /token: code + code_verifier', x: 'Now a direct server-to-server call (the **back channel**): the code plus the secret verifier.' },
+        { self: 2, l: 'SHA-256(verifier) = challenge?', x: 'The auth server hashes the verifier. It must equal the challenge from step 3: proof it is the same app.' },
+        { f: 2, t: 1, l: 'access, refresh and ID tokens', d: true, k: 'g', x: 'Only then does it return the tokens.' },
+        { f: 1, t: 3, l: 'GET /orders, Bearer access token', x: 'The app calls the API with the access token in the `Authorization` header.' }
+      ] },
     { k: 'snip', id: 'code-authorize', t: 'Step 1: the authorize request', code: `
 GET /authorize?response_type=code
   &client_id=shop-web
@@ -2215,7 +2310,7 @@ GET /authorize?response_type=code
   &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM # SHA-256 of the verifier
   &code_challenge_method=S256 HTTP/1.1
 Host: login.shop.example`,
-      note: 'Shown on several lines to read; it is one URL, and the `#` notes are not part of it. The challenge here is the worked example from RFC 7636.' },
+      note: 'One URL, split over lines to read; the `#` notes are not part of it.' },
     { k: 'snip', id: 'code-token', t: 'Step 2: swap the code for tokens', code: `
 GET /signin-oidc?code=SplxlOBeZQQYbYS6WxSbIA&state=af0ifjsldkj HTTP/1.1       # the browser comes back
 Host: shop.example
@@ -2247,7 +2342,7 @@ const verifier = b64url(
 const hash = await crypto.subtle.digest('SHA-256',
   new TextEncoder().encode(verifier));
 const challenge = b64url(new Uint8Array(hash));`,
-      note: 'Keep the verifier in `sessionStorage` for this one flow, and delete it after the token call.' },
+      note: 'Keep the verifier in `sessionStorage` for this one sign-in, then delete it.' },
     { k: 'snip', id: 'code-pkce-cs', half: true, lang: 'cs', t: '…and in C#', code: `
 // Base64Url: System.Buffers.Text (.NET 9+)
 var verifier = Base64Url.EncodeToString(
@@ -2255,7 +2350,7 @@ var verifier = Base64Url.EncodeToString(
 var challenge = Base64Url.EncodeToString(
     SHA256.HashData(
         Encoding.ASCII.GetBytes(verifier)));`,
-      note: 'MSAL, oidc-client-ts, AppAuth and ASP.NET Core do this for you. Knowing it helps you read a failing request.' },
+      note: 'Libraries (MSAL, oidc-client-ts, ASP.NET Core) do this for you.' },
     { k: 'dg', id: 'code-pkce-why', t: 'What PKCE stops', seg: ['Without PKCE', 'With PKCE'],
       capB: '**Without PKCE:** on a phone, another app can register the same redirect scheme and catch the code. The token endpoint cannot tell the two apps apart.',
       capF: '**With PKCE:** the code only works together with the verifier, which never left your app. The stolen code is worthless.',
@@ -2297,21 +2392,6 @@ builder.Services.AddAuthentication(o =>
 // later, in an endpoint: the access token for calling the API
 var accessToken = await HttpContext.GetTokenAsync("access_token");`,
       call: { kind: 'trap', text: '`SaveTokens = true` stores the tokens inside the cookie, which grows large (ASP.NET Core splits it into chunks). With many tokens, keep the session server-side with an `ITicketStore`.' } },
-    { k: 'snip', id: 'code-par', v: '.NET 9+', t: 'Pushed authorization requests (PAR)', code: `
-POST /par HTTP/1.1                                         # 1. the app sends the parameters itself
-Host: login.shop.example
-Authorization: Basic c2hvcC13ZWI6czNjcjN0
-Content-Type: application/x-www-form-urlencoded
-
-response_type=code&client_id=shop-web&redirect_uri=...&scope=...&state=...
-&code_challenge=...&code_challenge_method=S256
-
-HTTP/1.1 201 Created
-{ "request_uri": "urn:ietf:params:oauth:request_uri:6esc_11ACC5bwc", "expires_in": 60 }
-
-# 2. the browser goes to the authorize endpoint with only a reference
-GET /authorize?client_id=shop-web&request_uri=urn:ietf:params:oauth:request_uri:6esc_11ACC5bwc HTTP/1.1`,
-      note: 'The parameters never pass through the browser, so nobody can change or read them on the way (RFC 9126). ASP.NET Core uses PAR whenever the IdP advertises it (`PushedAuthorizationBehavior.UseIfAvailable`); FAPI 2.0 requires it.' },
     { k: 'table', id: 'code-mistakes', t: 'Classic mistakes',
       cols: ['Mistake', 'What happens', 'Fix'],
       rows: [
@@ -2326,13 +2406,24 @@ GET /authorize?client_id=shop-web&request_uri=urn:ietf:params:oauth:request_uri:
 
 window.NCS.push({
   id: 'token', code: 'TOKEN', name: 'Access and refresh tokens',
-  blurb: 'OAuth hands out two tokens. The **access token** goes to APIs and lives for minutes to an hour. The **refresh token** goes only to the authorization server, to get new access tokens without bothering the user. OpenID Connect adds a third, the **ID token**, which only the client reads.',
+  blurb: 'OAuth hands out an **access token** (sent to APIs; lives minutes to an hour) and a **refresh token** (gets new access tokens without asking the user again). OpenID Connect adds an **ID token**, which only your app reads.',
   short: [
-    'Keep access tokens short-lived: a JWT cannot be called back before it expires.',
-    'Rotate refresh tokens: each use returns a new one, and the reuse of an old one is treated as theft.',
-    'Ask for `offline_access` to get a refresh token, and revoke it at sign-out.'
+    'Short access tokens: a stolen one expires soon.',
+    'Rotate refresh tokens: each use returns a new one.',
+    'Revoke the refresh token at sign-out.'
   ],
   blocks: [
+    { k: 'dg', id: 'tok-three', t: 'Where each token goes',
+      cap: '**One destination each:** the access token goes to APIs, the refresh token only back to the authorization server, and the ID token never leaves your app.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 86, minw: 520,
+        nodes: [
+          { id: 'as', x: 0, y: 0, w: 132, l: 'Authorization server', sub: 'issues all three', k: 's' },
+          { id: 'app', x: 1.5, y: 0, w: 132, l: 'Your app', sub: 'the client', s: 'browser', k: 'a' },
+          { id: 'api', x: 3, y: 0, w: 132, l: 'API', sub: 'resource server', k: 'g' },
+          { id: 'idt', x: 1.5, y: 1, w: 132, l: 'ID token', sub: 'read here: who signed in', s: 'doc' }
+        ],
+        edges: [{ f: 'app', t: 'as', l: 'refresh token', ly: -13 }, { f: 'app', t: 'api', l: 'access token', ly: -13 },
+                { f: 'idt', t: 'app', l: 'stays', d: true, lx: 30 }] } },
     { k: 'table', id: 'tok-types', t: 'Three tokens, three audiences',
       cols: ['Question', 'Access token', 'Refresh token', 'ID token'],
       rows: [
@@ -2344,7 +2435,7 @@ window.NCS.push({
       ],
       call: { kind: 'trap', text: 'Never send the ID token to your API as a bearer token. Its audience is the client, and it carries no scopes.' } },
     { k: 'dg', id: 'tok-life', t: 'How the two lifetimes play out',
-      cap: '**Each refresh swaps both:** while the user works, the app refreshes about every hour. After a break, the first request refreshes once and carries on. The user signs in again only when the refresh token expires or is revoked.',
+      cap: '**Each refresh swaps both tokens:** the app refreshes about every hour while the user works. The user signs in again only when the refresh token expires or is revoked.',
       d: { type: 'tl', w: 680, span: 10, unit: ' h', lw: 108, minw: 520, lanes: ['Access token', 'Refresh token'],
         bars: [
           { lane: 0, s: 0, e: 1, l: 'AT 1', k: 'g' }, { lane: 0, s: 1, e: 2, l: 'AT 2', k: 'g' }, { lane: 0, s: 2, e: 3, l: 'AT 3', k: 'g' },
@@ -2364,7 +2455,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 { "access_token": "eyJhbGciOi...", "expires_in": 3600, "refresh_token": "Qx2vT9wK4m" }   # a NEW refresh token`,
-      note: 'Store the new refresh token and drop the old one. If the response has no `refresh_token`, keep the one you have. Confidential clients also authenticate here.' },
+      note: 'Keep the new refresh token and drop the old one. No new one in the reply? Keep using the old one.' },
     { k: 'dg', id: 'tok-reuse', t: 'Refresh token rotation catches theft', seg: ['Normal use', 'Stolen token'],
       capB: '**Normal use:** every refresh returns a new refresh token and marks the old one as used. Each refresh token works exactly once.',
       capF: '**Stolen token:** whoever uses the old token second trips reuse detection. The server revokes the whole family, the attacker’s copy included, and the user signs in again.',
@@ -2398,7 +2489,7 @@ export async function api(url: string, init: RequestInit = {}): Promise<Response
   refreshing ??= refreshTokens().finally(() => (refreshing = null));   // ten 401s, one refresh
   return call(await refreshing);                                      // a second 401 means: sign in again
 }`,
-      note: 'Without the shared promise, a page that fires ten requests at once sends ten refreshes, and with rotation nine of them fail as “reuse”.' },
+      note: 'Without the shared promise, ten parallel 401s cause ten refreshes, and with rotation nine of them fail.' },
     { k: 'table', id: 'tok-opaque', t: 'A JWT or an opaque (reference) token?',
       cols: ['Question', 'JWT', 'Opaque token + introspection'],
       rows: [
@@ -2423,26 +2514,16 @@ token=2YotnFZFEjr1zCsicMWpAA
 
 HTTP/1.1 200 OK
 { "active": true, "sub": "248289761001", "scope": "orders.read", "client_id": "shop-web", "exp": 1795238400 }` },
-    { k: 'snip', id: 'tok-dpop', v: 'RFC 9449', t: 'Bind tokens to a key (DPoP)', code: `
-POST /token HTTP/1.1
-Host: login.shop.example
-DPoP: eyJ0eXAiOiJkcG9wK2p3dCIsImFsZyI6IkVTMjU2In0...      # a small JWT signed with the client's private key
-
-GET /orders HTTP/1.1
-Host: api.shop.example
-Authorization: DPoP eyJhbGciOiJSUzI1NiIs...                # the access token is bound to that key
-DPoP: eyJ0eXAiOiJkcG9wK2p3dCIs...                           # a fresh proof: method, URL, time, token hash`,
-      note: 'A stolen DPoP token is useless without the private key, which a browser can keep non-extractable in Web Crypto. Support is growing; check your IdP and libraries.' }
   ]
 });
 
 window.NCS.push({
   id: 'spa', code: 'SPA', name: 'Browser apps and the BFF',
-  blurb: 'A single-page app runs in the user’s browser, where every script on the page, including a compromised npm package, can read what your code can read. **Where the tokens live** decides what one XSS bug can steal. RFC 10017 (August 2026) ranks the options.',
+  blurb: 'A **SPA** (single-page app, such as React or Angular) runs in the browser, where any script on the page can read what your code reads. A **BFF** (backend-for-frontend) is a small server that keeps the tokens and gives the browser only a cookie.',
   short: [
-    'Most secure: a **backend-for-frontend** (BFF) keeps the tokens on the server and gives the browser only an HttpOnly cookie.',
-    'If the SPA must hold tokens: code + PKCE, tokens in memory, short lifetimes and rotated refresh tokens.',
-    'Never the implicit flow, and never tokens in localStorage.'
+    'Best: a BFF, so the browser never sees a token.',
+    'No BFF: code + PKCE, tokens in memory, short-lived.',
+    'Never keep tokens in localStorage.'
   ],
   blocks: [
     { k: 'dg', id: 'spa-bff', t: 'Tokens in the browser, or behind a BFF', seg: ['Tokens in the SPA', 'BFF'],
@@ -2494,7 +2575,7 @@ builder.Services.AddReverseProxy()
     }));
 
 app.MapReverseProxy().RequireAuthorization();`,
-      note: 'This sketch does not refresh tokens or check the CSRF header. Duende.BFF, or Duende.AccessTokenManagement with your own checks, adds refresh, revocation and the `X-CSRF` rule.' },
+      note: 'A sketch: it does not refresh tokens or check the CSRF header. Duende.BFF adds both.' },
     { k: 'snip', id: 'spa-csrf-header', lang: 'ts', t: 'Call the BFF from the SPA', code: `
 // same origin as the BFF, so the cookie goes along by itself
 const res = await fetch('/api/orders', {
@@ -2544,26 +2625,25 @@ policy.WithOrigins("https://shop.example")  // ✓
 
 window.NCS.push({
   id: 'native', code: 'NATIVE', name: 'Mobile, desktop, CLI and TV apps',
-  blurb: 'Apps that are not web pages still use a browser to sign in. Mobile and desktop apps open the **system browser** and catch the redirect (RFC 8252). Devices without a usable browser or keyboard, such as TVs and CLI tools on servers, use the **device authorization grant** (RFC 8628): the user signs in on their phone.',
+  blurb: 'Apps that aren’t web pages still sign in through a browser. Phone and desktop apps open the **system browser** and catch the redirect back. TVs and command-line tools use the **device code** flow: they show a short code, and the user signs in on their phone.',
   short: [
-    'Use the system browser (ASWebAuthenticationSession on iOS, Custom Tabs on Android), never an embedded web view: the app could read the password.',
-    'Come back through a claimed HTTPS link (universal or app link), the loopback address for desktop and CLI apps, or a private URI scheme as a fallback.',
-    'The device flow polls the token endpoint while the user signs in elsewhere. Respect `interval`, and slow down on `slow_down`.'
+    'Use the system browser, never a web view inside your app.',
+    'Desktop and CLI apps get the redirect on `http://127.0.0.1` and a free port.',
+    'The device flow keeps polling until the user finishes on their phone.'
   ],
   blocks: [
-    { k: 'dg', id: 'native-device', t: 'The device authorization grant',
-      cap: '**Sign in on another screen:** the device shows a short code; the user types it on a phone or laptop where they are already signed in, while the device keeps polling.',
-      d: { type: 'seq', w: 680, minw: 520, actors: [{ l: 'TV or CLI', k: 'a' }, { l: 'Auth server', k: 's' }, { l: 'Phone', s: 'browser' }],
-        steps: [
-          { f: 0, t: 1, l: 'POST /devicecode (client_id, scope)' },
-          { f: 1, t: 0, l: 'device_code, user_code WDJB-MJHT, verification_uri, interval 5', d: true },
-          { self: 0, l: 'show the code and the URL (or a QR code)' },
-          { f: 2, t: 1, l: 'open the URL, type WDJB-MJHT, sign in' },
-          { f: 0, t: 1, l: 'poll /token every 5 s' },
-          { f: 1, t: 0, l: 'authorization_pending', d: true, k: 'w' },
-          { f: 0, t: 1, l: 'poll /token' },
-          { f: 1, t: 0, l: 'access + refresh token', d: true, k: 'g' }
-        ] } },
+    { k: 'widget', id: 'native-walk', w: 'walk', t: 'The device code flow, step by step',
+      actors: [{ l: 'TV or CLI', k: 'a' }, { l: 'Auth server', k: 's' }, { l: 'Phone', s: 'browser' }],
+      steps: [
+        { f: 0, t: 1, l: 'POST /devicecode (client_id, scope)', x: 'The TV asks the auth server to start a sign-in.' },
+        { f: 1, t: 0, l: 'device_code, user_code WDJB-MJHT, URL', d: true, x: 'It gets a secret **device code** (kept by the TV) and a short **user code** for people to type.' },
+        { self: 0, l: 'show the code and the URL (or a QR code)', x: 'The TV shows: “Go to login.shop.example/device and enter WDJB-MJHT.”' },
+        { f: 2, t: 1, l: 'open the URL, type WDJB-MJHT, sign in', x: 'On the phone, where typing is easy, the user enters the code and signs in.' },
+        { f: 0, t: 1, l: 'poll /token every 5 s', x: 'Meanwhile the TV asks “done yet?” every few seconds, using the device code.' },
+        { f: 1, t: 0, l: 'authorization_pending', d: true, k: 'w', x: '“Not yet.” The TV waits and asks again (more slowly if told `slow_down`).' },
+        { f: 0, t: 1, l: 'poll /token', x: 'It asks again after the user has finished.' },
+        { f: 1, t: 0, l: 'access + refresh token', d: true, k: 'g', x: 'Now it gets tokens. The user never typed a password on the TV.' }
+      ] },
     { k: 'snip', id: 'native-device-http', v: 'RFC 8628', t: 'The device flow on the wire', code: `
 POST /devicecode HTTP/1.1
 Host: login.shop.example
@@ -2580,7 +2660,7 @@ Host: login.shop.example
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=urn:ietf:params:oauth:grant-type:device_code&device_code=GmRhmhcxhwAz...&client_id=shop-cli`,
-      note: 'While polling: `authorization_pending` means keep waiting, `slow_down` means add 5 seconds, and `access_denied` or `expired_token` mean stop.' },
+      note: 'While polling: `authorization_pending` = keep waiting, `slow_down` = wait 5 s longer, `access_denied` or `expired_token` = stop.' },
     { k: 'table', id: 'native-redirects', t: 'Getting the redirect back into the app',
       cols: ['Redirect URI', 'Example', 'Use for'],
       rows: [
@@ -2611,14 +2691,26 @@ gh auth login                  # GitHub CLI: shows a one-time code to type in th
 
 window.NCS.push({
   id: 's2s', code: 'S2S', name: 'Service to service',
-  blurb: 'When no user is involved, a service proves its own identity. In OAuth that is the **client credentials** grant: the service swaps its credential for an access token. On Azure, a **managed identity** removes even that credential. When an API must call another API *for the user*, it exchanges the user’s token (on-behalf-of).',
+  blurb: 'With no user involved, a service proves its own identity. In OAuth that is **client credentials**: the service swaps its ID and secret for an access token. On Azure, a **managed identity** gives the service an identity with no secret at all.',
   short: [
-    'Client credentials: one token request, then reuse the token until shortly before `expires_in`.',
-    'Prefer, in this order: a managed identity or workload identity federation, then a certificate (private key JWT), then a client secret.',
-    'Never forward a user’s token to a different API. Exchange it for one whose audience is that API.'
+    'Get a token once and reuse it until shortly before it expires.',
+    'Prefer a managed identity, then a certificate, then a secret.',
+    'Calling another API for the user? Exchange the token (**on-behalf-of**); never forward it.'
   ],
   blocks: [
     { k: 'sub', t: 'Client credentials' },
+    { k: 'dg', id: 's2s-flow', t: 'Client credentials: no user, no browser',
+      cap: '**The service signs in as itself:** it asks for a token with its own credentials, caches it, and asks again when it expires. There is no refresh token.',
+      d: { type: 'seq', w: 680, minw: 520, actors: [{ l: 'Your service', k: 'a' }, { l: 'Auth server', k: 's' }, { l: 'Orders API', k: 'g' }],
+        steps: [
+          { f: 0, t: 1, l: 'POST /token: client ID + secret (or a certificate)' },
+          { f: 1, t: 0, l: 'access token, valid 1 hour', d: true, k: 'g' },
+          { self: 0, l: 'cache it' },
+          { f: 0, t: 2, l: 'GET /orders + Bearer token' },
+          { f: 2, t: 0, l: '200 OK', d: true, k: 'g' },
+          { div: 'about an hour later' },
+          { f: 0, t: 1, l: 'POST /token again' }
+        ] } },
     { k: 'snip', id: 's2s-cc', t: 'The client credentials request', code: `
 POST /token HTTP/1.1
 Host: login.shop.example
@@ -2649,16 +2741,6 @@ http.DefaultRequestHeaders.Authorization = new("Bearer", result.AccessToken);`,
         ['Client secret', 'a password-like string', 'simplest, and the one that leaks: rotate it, keep it in Key Vault'],
         ['Mutual TLS client certificate', 'a certificate and its key', 'proves identity in the TLS handshake (RFC 8705)']
       ] },
-    { k: 'snip', id: 's2s-assertion', t: 'A private key JWT instead of a secret', code: `
-POST /token HTTP/1.1
-Host: login.shop.example
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=client_credentials&client_id=billing-worker&scope=api%3A%2F%2Forders%2F.default
-&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer
-&client_assertion=eyJhbGciOiJQUzI1NiIsImtpZCI6...
-
-# client_assertion: a JWT signed with the private key; iss = sub = client_id, aud = the token URL, exp in minutes` },
     { k: 'sub', t: 'Azure without secrets' },
     { k: 'snip', id: 's2s-mi', lang: 'cs', t: 'Managed identity with Azure.Identity', code: `
 // say exactly which credential to use in each environment
@@ -2671,7 +2753,7 @@ var blobs = new BlobServiceClient(new Uri("https://shopdata.blob.core.windows.ne
 
 // calling your own API: ask for a token for its app ID URI
 var token = await credential.GetTokenAsync(new TokenRequestContext(["api://orders/.default"]), ct);`,
-      note: 'Microsoft recommends a specific credential in production rather than `DefaultAzureCredential`, whose fallback chain can pick up the wrong identity. If you keep it, `AZURE_TOKEN_CREDENTIALS=prod` narrows the chain.' },
+      note: 'In production, name the exact credential: `DefaultAzureCredential` tries several and can pick the wrong one.' },
     { k: 'snip', id: 's2s-gha', lang: 'yaml', t: 'GitHub Actions to Azure with no stored secret', code: `
 permissions:
   id-token: write          # lets the job ask GitHub for an OIDC token
@@ -2747,27 +2829,26 @@ builder.Services.AddAuthentication(CertificateAuthenticationDefaults.Authenticat
 /* ===== [50-sso.js] Group: Sign-in and SSO ===== */
 window.NCS.push({
   id: 'oidc', code: 'OIDC', name: 'OpenID Connect',
-  blurb: 'OpenID Connect (OIDC) adds **sign-in** to OAuth 2. Ask for the `openid` scope and the authorization server also returns an **ID token**: a JWT that says who signed in, when and how, addressed to your app. Discovery and standard claims mean one library works with Entra ID, Google, Okta or Keycloak.',
+  blurb: '**OpenID Connect (OIDC)** adds sign-in to OAuth 2. Ask for the `openid` scope and you also get an **ID token**: a JWT saying who signed in, when and how. One library then works with Entra ID, Google, Okta or Keycloak.',
   short: [
-    'OIDC = the OAuth 2 code flow + the `openid` scope + an ID token. The ID token is for your app; the access token is for APIs.',
-    'Validate the ID token like any JWT, plus the `nonce` you sent. Libraries do it once you set `Authority`.',
-    'Everything a client needs is listed at `/.well-known/openid-configuration`.'
+    'OIDC = the OAuth code flow + the `openid` scope + an ID token.',
+    'The ID token is for your app; the access token is for APIs.',
+    'Everything the app needs is listed at `/.well-known/openid-configuration`.'
   ],
   blocks: [
-    { k: 'dg', id: 'oidc-flow', t: 'Signing in with OpenID Connect',
-      cap: '**Sign-in ends in your own session:** the app validates the ID token once, then issues its own cookie. From then on it is an ordinary cookie session (**SESS**).',
-      d: { type: 'seq', w: 680, minw: 520, actors: [{ l: 'Browser', s: 'browser' }, { l: 'Web app', k: 'a' }, { l: 'IdP', k: 's' }],
-        steps: [
-          { f: 0, t: 1, l: 'GET /orders (not signed in)' },
-          { f: 1, t: 0, l: '302 to /authorize?scope=openid profile&nonce&state…', d: true },
-          { f: 0, t: 2, l: 'sign in at the IdP' },
-          { f: 2, t: 0, l: '302 to /signin-oidc?code&state', d: true },
-          { f: 0, t: 1, l: 'GET /signin-oidc?code…' },
-          { f: 1, t: 2, l: 'POST /token (code, verifier, client secret)' },
-          { f: 2, t: 1, l: 'ID token + access token', d: true, k: 'g' },
-          { self: 1, l: 'validate the ID token and nonce, create the session' },
-          { f: 1, t: 0, l: '302 to /orders + Set-Cookie', d: true, k: 'g' }
-        ] } },
+    { k: 'widget', id: 'oidc-walk', w: 'walk', t: 'Signing in with OpenID Connect, step by step',
+      actors: [{ l: 'Browser', s: 'browser' }, { l: 'Web app', k: 'a' }, { l: 'IdP', k: 's' }],
+      steps: [
+        { f: 0, t: 1, l: 'GET /orders (not signed in)', x: 'Someone opens a protected page without a session cookie.' },
+        { f: 1, t: 0, l: '302 to /authorize?scope=openid profile&nonce&state…', d: true, x: 'The app redirects to the IdP and asks for the `openid` scope (sign-in), with random `state` and `nonce` values.' },
+        { f: 0, t: 2, l: 'sign in at the IdP', x: 'The user signs in at the IdP: password, passkey, MFA. Already signed in there? No prompt at all (**SSO**).' },
+        { f: 2, t: 0, l: '302 to /signin-oidc?code&state', d: true, x: 'The IdP sends the browser back with a one-time code.' },
+        { f: 0, t: 1, l: 'GET /signin-oidc?code…', x: 'The browser hands the code to the app.' },
+        { f: 1, t: 2, l: 'POST /token (code, verifier, client secret)', x: 'The app swaps the code for tokens in a direct call (**CODE**).' },
+        { f: 2, t: 1, l: 'ID token + access token', d: true, k: 'g', x: 'It gets an **ID token** (who signed in) and an access token (for APIs).' },
+        { self: 1, l: 'validate the ID token and nonce, create the session', x: 'The app checks the ID token’s signature, issuer, audience, expiry and nonce, then starts its own cookie session.' },
+        { f: 1, t: 0, l: '302 to /orders + Set-Cookie', d: true, k: 'g', x: 'The user lands on the page they wanted, signed in. Later requests use the cookie (**SESS**).' }
+      ] },
     { k: 'snip', id: 'oidc-idtoken', lang: 'jsonc', t: 'What an ID token says', code: `
 {
   "iss": "https://login.shop.example/",   // who signed it
@@ -2793,7 +2874,7 @@ curl -s https://login.shop.example/.well-known/openid-configuration \\
 #   "end_session_endpoint": "https://login.shop.example/logout",
 #   "scopes_supported": ["openid", "profile", "email", "offline_access"]
 # }`,
-      note: 'Set `Authority` to the issuer and the library reads this document. For Entra ID use the `/v2.0` authority; its issuer is `https://login.microsoftonline.com/<tenant-id>/v2.0`.' },
+      note: 'Set `Authority` to the issuer and the library reads this file. Entra ID’s issuer is `https://login.microsoftonline.com/<tenant-id>/v2.0`.' },
     { k: 'table', id: 'oidc-scopes', t: 'Standard scopes and the claims they return', first: 'mono',
       cols: ['Scope', 'Returns'],
       rows: [
@@ -2815,17 +2896,17 @@ o.MapInboundClaims = false;  // OIDC and JWT bearer
 o.TokenValidationParameters.NameClaimType = "name";
 o.TokenValidationParameters.RoleClaimType = "roles";
 var id = User.FindFirstValue("sub");   // ✓`,
-      goodNote: 'Turn mapping off and use the names in the token. Setting the name and role claim types keeps `User.Identity.Name` and `IsInRole` working.' }
+      goodNote: 'Use the token’s own names. The name and role claim types keep `User.Identity.Name` and `IsInRole` working.' }
   ]
 });
 
 window.NCS.push({
   id: 'sso', code: 'SSO', name: 'Single sign-on and sign-out',
-  blurb: 'Single sign-on works because the IdP keeps **its own session cookie**. When a second app sends the user to the IdP, the IdP sees that cookie and sends them straight back with no password prompt. Each app still has its own session too, which is why signing out properly takes more than deleting one cookie.',
+  blurb: '**Single sign-on (SSO)**: sign in once at the IdP, then open other apps with no password prompt. It works because the IdP keeps its own session cookie and recognises you when another app sends you there.',
   short: [
-    'There are several sessions: the IdP’s, plus one in each app. SSO reuses the first; sign-out must end all of them.',
-    '`prompt=login` and `max_age` force a fresh sign-in; `prompt=none` checks silently and fails with `login_required`.',
-    'Use RP-initiated logout to end the IdP session, and back-channel logout so the IdP can tell your other apps.'
+    'Each app also has its own session: sign-out must end all of them.',
+    '`prompt=login` forces a fresh sign-in; `prompt=none` only checks, silently.',
+    'Back-channel logout lets the IdP tell your other apps.'
   ],
   blocks: [
     { k: 'dg', id: 'sso-two', t: 'The first app asks, the second does not', seg: ['First app', 'Second app'],
@@ -2899,7 +2980,7 @@ logout_token=eyJhbGciOiJSUzI1NiIs...
 
 # the logout_token is a JWT: iss, aud (your client ID), iat, jti, sid and/or sub,
 # and events: { "http://schemas.openid.net/event/backchannel-logout": {} }. It never has a nonce.`,
-      note: 'Validate it like an ID token, then delete every session with that `sid` or `sub`. That needs server-side sessions (or an `ITicketStore`): nobody can kill a self-contained cookie from outside.' },
+      note: 'Check it like an ID token, then delete every session with that `sid` or `sub`. That needs sessions stored on the server.' },
     { k: 'dg', id: 'sso-broker', t: 'Federation through one broker',
       cap: '**One trust for the app:** the app speaks OIDC to one IdP, which brokers to social and enterprise IdPs over OIDC or SAML. A new customer means configuring the broker, not every app.',
       d: { type: 'flow', w: 680, cols: 4, rows: 3, ch: 66, minw: 520,
@@ -2916,16 +2997,16 @@ logout_token=eyJhbGciOiJSUzI1NiIs...
 
 window.NCS.push({
   id: 'saml', code: 'SAML', name: 'SAML 2.0',
-  blurb: 'SAML 2.0 is the older, XML-based standard for enterprise SSO, still the default in many company IdPs and SaaS products. The **identity provider** (IdP) signs an **assertion** about the user; the browser carries it to your app, the **service provider** (SP), in an auto-submitted form.',
+  blurb: '**SAML 2.0** is the older, XML-based standard for company sign-in. The company’s IdP signs an **assertion** (an XML statement about the user), and the browser posts it to your app, which SAML calls the **service provider (SP)**.',
   short: [
-    'You meet SAML when enterprise customers ask for SSO. For new integrations, prefer OIDC if their IdP offers it.',
-    'The assertion arrives through the browser, so its signature is the only thing that makes it trustworthy. Validate it with a maintained library.',
-    'SAML signs users in; it does not give you tokens for APIs. Pair it with a cookie session, or broker it to OIDC.'
+    'You meet it when enterprise customers ask for SSO; prefer OIDC if they offer it.',
+    'The signature is all that makes it trustworthy: use a maintained library.',
+    'SAML signs users in; it gives you no tokens for APIs.'
   ],
   blocks: [
     { k: 'dg', id: 'saml-sp', t: 'SP-initiated or IdP-initiated', seg: ['SP-initiated', 'IdP-initiated'],
       capB: '**SP-initiated:** your app starts with an `AuthnRequest`, and the response must answer that request (`InResponseTo`). Prefer this flow.',
-      capF: '**IdP-initiated:** the user starts from the company portal, and an unsolicited response arrives. Nothing ties it to a request, so it is easier to replay or inject: accept it only if you must, with strict time and replay checks.',
+      capF: '**IdP-initiated:** the user starts from the company portal and an unrequested response arrives. Nothing ties it to a request, so it is easier to replay: accept it only if you must, with strict checks.',
       b: { type: 'seq', w: 680, minw: 520, actors: [{ l: 'Browser', s: 'browser' }, { l: 'Your app (SP)', k: 'a' }, { l: 'Company IdP', k: 's' }],
         steps: [
           { f: 0, t: 1, l: 'GET /reports' },
@@ -2961,7 +3042,7 @@ window.NCS.push({
     </saml:AttributeStatement>
   </saml:Assertion>
 </samlp:Response>`,
-      note: 'Check every time: a signature over the assertion itself, `Issuer`, `Audience`, `NotBefore` and `NotOnOrAfter`, `Destination` and, for SP-initiated flows, `InResponseTo`.',
+      note: 'Check every time: the signature covers this assertion, and `Issuer`, `Audience`, the time window, `Destination` and `InResponseTo` are right.',
       call: { kind: 'trap', text: '**XML signature wrapping:** an attacker moves the signed assertion aside and adds an unsigned one that a naive parser reads instead. Never pick assertions out with your own XPath; use what the library verified.' } },
     { k: 'snip', id: 'saml-metadata', lang: 'xml', t: 'Metadata: what you swap with the customer', code: `
 <!-- you send this: your SP metadata -->
@@ -2989,13 +3070,24 @@ window.NCS.push({
 
 window.NCS.push({
   id: 'ent', code: 'ENT', name: 'Company directories: Entra ID, Kerberos, LDAP, SCIM',
-  blurb: 'Apps for a company’s own staff plug into its directory: **Microsoft Entra ID** (or Okta) in the cloud, **Active Directory** on premises. Users sign in with SSO (OIDC, SAML, or Windows sign-in through Kerberos), and **SCIM** creates and removes their accounts in your app automatically.',
+  blurb: 'Apps for a company’s staff connect to its **directory**, the company’s list of users: Entra ID in the cloud, Active Directory on site. Sign-in comes from the directory, and **SCIM** keeps your own user list in step with it.',
   short: [
-    'Cloud apps: sign in with OIDC against Entra ID, and read app roles (or groups) from the token.',
-    'Intranet apps on a Windows domain: Negotiate (Kerberos) signs users in with no prompt. NTLM is deprecated.',
-    'SCIM keeps your user list in step with the directory, so a leaver loses access the day IT disables them.'
+    'Cloud apps: OIDC against Entra ID; read app roles from the `roles` claim.',
+    'Windows intranet: **Kerberos** signs users in silently. NTLM is deprecated.',
+    'SCIM disables a leaver’s account the day IT does.'
   ],
   blocks: [
+    { k: 'dg', id: 'ent-map', t: 'Two links to the company directory',
+      cap: '**Sign-in and the user list:** sign-in (OIDC, SAML, or Kerberos on a Windows network) says who the user is; SCIM keeps your user list in step, so leavers lose access the day IT disables them.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 92, minw: 520,
+        nodes: [
+          { id: 'staff', x: 0, y: 0, w: 132, l: 'Staff member', sub: 'browser or Windows PC', s: 'pill' },
+          { id: 'dir', x: 1.5, y: 0, w: 132, l: 'Company directory', sub: 'Entra ID, Okta, Active Directory', k: 's' },
+          { id: 'app', x: 3, y: 0, w: 132, l: 'Your app: sign-in', k: 'a' },
+          { id: 'users', x: 3, y: 1, w: 132, l: 'Your app: user list', s: 'db', k: 'a' }
+        ],
+        edges: [{ f: 'staff', t: 'dir', l: 'signs in once', ly: -13 }, { f: 'dir', t: 'app', l: 'OIDC or SAML', ly: -13 },
+                { f: 'dir', t: 'users', l: 'SCIM: add, disable' }] } },
     { k: 'snip', id: 'ent-entra', lang: 'cs', t: 'Staff sign-in with Entra ID (Microsoft.Identity.Web)', code: `
 // appsettings.json:
 // "AzureAd": { "Instance": "https://login.microsoftonline.com/", "TenantId": "<tenant-id>", "ClientId": "<client-id>" }
@@ -3004,7 +3096,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(o =>
     o.AddPolicy("admins", p => p.RequireRole("Reports.Admin")));       // an app role, sent in "roles"`,
-      note: 'App roles are defined on the app registration and assigned to users or groups; they arrive in the `roles` claim and work with `RequireRole`. Prefer them to raw group IDs: users in more than 200 groups get an overage claim instead of the list.' },
+      note: 'App roles are set on the app registration and arrive in `roles`. Prefer them to group IDs: past 200 groups, Entra ID stops listing them.' },
     { k: 'table', id: 'ent-roles', t: 'Roles, groups or scopes?', first: 'mono',
       cols: ['Claim', 'Comes from', 'Use for'],
       rows: [
@@ -3063,13 +3155,27 @@ Content-Type: application/scim+json
 /* ===== [60-fix.js] Group: Fix and harden ===== */
 window.NCS.push({
   id: 'dbg', code: 'DBG', name: 'Debugging 401s, 403s and redirects',
-  blurb: 'Most auth failures are a mismatch between what was issued and what is expected: the wrong audience, issuer, scheme, scope, clock or redirect URI. Find **which check failed** first; the error usually names it, if you know where to look.',
+  blurb: 'Most auth failures are a mismatch between what the token says and what the API expects: audience, issuer, expiry, scope or redirect address. First find **which check failed**.',
   short: [
-    'Read the evidence in order: the `WWW-Authenticate` header, the IdP’s error page or redirect, then the server log.',
-    'Decode the token (locally) and compare `iss`, `aud`, `exp` and `scp` or `roles` with what the API expects.',
-    'In ASP.NET Core the middleware order matters: CORS, then `UseAuthentication`, then `UseAuthorization`.'
+    '401: the token failed a check. 403: the token was fine, a rule said no.',
+    'Read `WWW-Authenticate`, then decode the token, then the logs.',
+    'Middleware order: CORS, then authentication, then authorization.'
   ],
   blocks: [
+    { k: 'dg', id: 'dbg-map', t: 'Read the status first',
+      cap: '**Two different trails:** a 401 means the token failed a check on the top row, in that order; a 403 means it passed them all and a rule on the bottom row said no.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 2, ch: 80, minw: 560,
+        nodes: [
+          { id: 'a', x: 0, y: 0, w: 120, l: '401', sub: 'who are you?', s: 'pill', k: 'b' },
+          { id: 'a1', x: 1, y: 0, w: 120, l: 'Token sent?', sub: 'header or cookie' },
+          { id: 'a2', x: 2, y: 0, w: 120, l: 'Signature, issuer', sub: 'right IdP and tenant' },
+          { id: 'a3', x: 3, y: 0, w: 120, l: 'Audience, expiry', sub: 'for this API, still valid' },
+          { id: 'b', x: 0, y: 1, w: 120, l: '403', sub: 'may you?', s: 'pill', k: 'w' },
+          { id: 'b1', x: 1, y: 1, w: 120, l: 'Role or scope', sub: 'in roles or scp' },
+          { id: 'b2', x: 2, y: 1, w: 120, l: 'Claim names', sub: 'MapInboundClaims' },
+          { id: 'b3', x: 3, y: 1, w: 120, l: 'The policy', sub: 'which scheme, which rule' }
+        ],
+        edges: [{ f: 'a', t: 'a1' }, { f: 'a1', t: 'a2' }, { f: 'a2', t: 'a3' }, { f: 'b', t: 'b1' }, { f: 'b1', t: 'b2' }, { f: 'b2', t: 'b3' }] } },
     { k: 'widget', id: 'dbg-pick', w: 'picker', t: 'I see this error', prompt: 'I see', label: 'Error',
       items: [
         { need: '401: “The audience … is invalid”', use: 'The token was issued for another API', hint: 'aud', lang: 'cs', code: `
@@ -3107,7 +3213,7 @@ o.TokenValidationParameters.ValidAudiences = ["api://orders", "<client-id>"];`, 
     }
   }
 }`,
-      note: 'In development only, `IdentityModelEventSource.ShowPII = true` puts the real values (the expected and actual audience, for example) into error messages instead of `[PII is hidden]`.' },
+      note: 'In development only, `IdentityModelEventSource.ShowPII = true` shows the real values in errors instead of `[PII is hidden]`.' },
     { k: 'gb', id: 'dbg-pipeline', t: 'Middleware order', lang: 'cs',
       bad: `
 app.UseAuthorization();   // ✗ before the user is known
@@ -3150,11 +3256,11 @@ app.MapControllers();`,
 
 window.NCS.push({
   id: 'atk', code: 'ATK', name: 'Attacks and defences',
-  blurb: 'Most auth breaches use a handful of well-known attacks. Each one has a standard defence, and most defences are a setting or a library default that you must simply not turn off.',
+  blurb: 'A handful of attacks cause most auth breaches. Each has a standard defence, usually a library default you just must not turn off.',
   short: [
-    'Credential stuffing and phishing are the most common: breached-password checks, rate limits and phishing-resistant MFA answer them.',
-    'Token theft beats every sign-in check: short lifetimes, sender-constrained tokens, and no tokens in URLs or localStorage.',
-    'Most protocol attacks (code injection, mix-up, open redirects) are stopped by PKCE, `state`, exact redirect URIs and a maintained library.'
+    'Leaked passwords and phishing: breach checks, rate limits, MFA, passkeys.',
+    'Stolen tokens: short lifetimes; no tokens in URLs or localStorage.',
+    'Protocol tricks: PKCE, `state`, exact redirect URIs.'
   ],
   blocks: [
     { k: 'table', id: 'atk-table', t: 'Attacks and defences at a glance',
@@ -3208,13 +3314,22 @@ X-Content-Type-Options: nosniff`,
 
 window.NCS.push({
   id: 'test', code: 'TEST', name: 'Testing auth',
-  blurb: 'Test your authorization rules with fake users, and keep a few end-to-end tests against a real IdP. In ASP.NET Core, swap in a test authentication handler or issue local JWTs, so integration tests run with no network and no sign-in page.',
+  blurb: 'Test your rules with fake users: a test sign-in scheme signs in whoever the test says, so integration tests need no IdP and no network.',
   short: [
-    'Integration tests: replace authentication with a test scheme that signs in whoever the test says.',
-    '`dotnet user-jwts` issues real JWTs that your API accepts in Development, for trying endpoints with curl.',
-    'Test the failures too: no token, expired token, wrong audience, missing scope and another user’s data.'
+    'A test handler fakes the signed-in user; your real rules still run.',
+    '`dotnet user-jwts` makes real tokens for trying things locally.',
+    'Test the failures: no token, wrong audience, missing scope, someone else’s data.'
   ],
   blocks: [
+    { k: 'dg', id: 'test-flow', t: 'Only the sign-in is fake',
+      cap: '**Real rules, fake user:** the test says who it is in a header, the test handler turns that into a signed-in user, and your real policies decide 200, 401 or 403.',
+      d: { type: 'flow', w: 680, cols: 4, rows: 1, ch: 100, minw: 520,
+        nodes: [
+          { id: 't', x: 0, y: 0, w: 132, l: 'xUnit test', sub: 'X-Test-User: alice' },
+          { id: 'h', x: 1.5, y: 0, w: 132, l: 'Test auth handler', sub: 'signs in “alice”', k: 'a' },
+          { id: 'api', x: 3, y: 0, w: 132, l: 'Your API', sub: 'real policies run', k: 'g' }
+        ],
+        edges: [{ f: 't', t: 'h', l: 'request', ly: -13 }, { f: 'h', t: 'api', l: 'fake user', ly: -13 }] } },
     { k: 'snip', id: 'test-handler', lang: 'cs', t: 'A test authentication handler', code: `
 public sealed class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder)
@@ -3282,7 +3397,7 @@ curl -H "Authorization: Bearer <token>" https://localhost:7001/orders`,
   ]
 });
 /*@@FILE sheet/80-widgets.js@@*/
-/* ===== [80-widgets.js] The sheet's own widgets: a JWT decoder and a SameSite cookie simulator =====
+/* ===== [80-widgets.js] The sheet's own widgets: a JWT decoder, a SameSite cookie simulator and step-through diagrams =====
    Nothing at the top level touches the page: the build loads this file in Node first. */
 window.NCS_WIDGETS = window.NCS_WIDGETS || {};
 
@@ -3474,9 +3589,172 @@ window.NCS_WIDGETS = window.NCS_WIDGETS || {};
   }
   sameSiteWidget.text = 'samesite strict lax none cookie csrf iframe fetch cross-site third-party cookies';
 
+  /* ---------- Step-through sequence diagram ----------
+     Card fields: actors, steps (kit seq steps; arrows and self-steps may carry x, a plain explanation).
+     Past arrows keep their colour, the current one is highlighted, later ones are faded. */
+  function walkWidget(el, block, kit) {
+    var steps = block.steps || [], numbered = [];
+    steps.forEach(function (st, i) { if (st.div == null && st.gap == null && st.note == null) numbered.push(i); });
+    var N = numbered.length, cur = 0;
+    var labels = numbered.map(function (_, i) { return String(i + 1); });
+    el.innerHTML =
+      '<div class="walk-bar"><div class="wdg-row"><span class="wdg-lbl">Step</span>' + wrapSeg(kit.seg('step', labels, '1', 'Step')) + '</div>' +
+      '<div class="walk-nav"><button type="button" class="walk-btn" data-d="-1">← Back</button>' +
+      '<button type="button" class="walk-btn" data-d="1">Next →</button></div></div>' +
+      '<div class="walk-x" aria-live="polite"></div>' +
+      '<div class="dg-scroll walk-dg"></div>';
+    var xEl = kit.$('.walk-x', el), dgEl = kit.$('.walk-dg', el);
+    function spec() {
+      var active = numbered[cur];
+      return { type: 'seq', w: block.dw || 680, minw: block.minw || 520, actors: block.actors, alt: block.t,
+        steps: steps.map(function (st, i) {
+          if (st.div != null || st.gap != null || st.note != null) return st;
+          var c = Object.assign({}, st); delete c.x;
+          if (i === active) c.k = 'a'; else if (i > active) c.k = 'm';
+          return c;
+        }) };
+    }
+    function render() {
+      var st = steps[numbered[cur]];
+      xEl.innerHTML = '<span class="walk-n">' + (cur + 1) + '</span><p>' + kit.inl(st.x || st.l || '') + '</p>';
+      dgEl.innerHTML = window.DG.render(spec());
+      kit.$$('.seg[data-k="step"] button', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-v') === String(cur + 1))); });
+      kit.$$('.walk-btn', el).forEach(function (b) { b.disabled = +b.getAttribute('data-d') < 0 ? cur === 0 : cur === N - 1; });
+    }
+    kit.bindSeg(el, function (key, v) { cur = (+v || 1) - 1; render(); });
+    kit.$$('.walk-btn', el).forEach(function (b) {
+      b.addEventListener('click', function () { cur = Math.max(0, Math.min(N - 1, cur + (+b.getAttribute('data-d')))); render(); });
+    });
+    render();
+  }
+  walkWidget.text = function (b) {
+    return (b.steps || []).map(function (st) { return [st.l, st.x, st.div].filter(Boolean).join(' '); }).join(' ');
+  };
+
+  window.NCS_WIDGETS.walk = walkWidget;
+
   window.NCS_WIDGETS.jwt = jwtWidget;
   window.NCS_WIDGETS.samesite = sameSiteWidget;
 })();
+/*@@FILE sheet/90-parked.js@@*/
+/* ===== [90-parked.js] Cards taken off the page in version 3 (26 Nov 2026) to keep the sheet brief.
+   Nothing renders them. To bring one back, move it into a section's blocks and drop its why. ===== */
+window.NCS_PARKED = [
+    { why: 'a reference list; Basic and Bearer cover everyday use',
+      k: 'table', id: 'http-schemes', t: 'Schemes you may see in Authorization', first: 'mono',
+      cols: ['Scheme', 'What it is', 'Use it?'],
+      rows: [
+        ['Basic', 'user:password in base64 (RFC 7617)', 'scripts and internal tools, over HTTPS only'],
+        ['Bearer', 'a token from an identity provider (RFC 6750)', 'yes: the default for APIs'],
+        ['Digest', 'a hashed password challenge (RFC 7616)', 'no: legacy; use Basic over TLS, or tokens'],
+        ['Negotiate', 'Kerberos (or NTLM) on Windows domains (RFC 4559)', 'intranet apps on Active Directory (**ENT**)'],
+        ['DPoP', 'a token bound to a key the client holds (RFC 9449)', 'when stolen tokens are a real risk (**TOKEN**)'],
+        ['AWS4-HMAC-SHA256', 'every request signed with a secret key', 'AWS APIs; the SDK does it (**SIG**)']
+      ] },
+    { why: 'ASP.NET Core issues a fresh auth cookie at every sign-in; the attack is one row in ATK',
+      k: 'gb', id: 'sess-fixation', t: 'Session fixation', lang: 'cs',
+      bad: `
+// after checking the password
+HttpContext.Session.SetString(
+    "userId", user.Id);                    // ✗`,
+      badNote: 'The session ID was issued before sign-in and does not change. Whoever planted that ID (on a shared PC, or from a sibling subdomain) is now signed in too.',
+      good: `
+// a fresh auth cookie at every sign-in
+await HttpContext.SignInAsync(principal);  // ✓
+// keep ISession for harmless data: a cart`,
+      goodNote: 'Use the authentication cookie for identity: `SignInAsync` issues a new one every time. ASP.NET Core’s `ISession` keeps its ID across sign-in.' },
+    { why: 'server internals; ASP.NET Core Identity stores these fields for you',
+      k: 'table', id: 'pk-store', t: 'What the server keeps per passkey', first: 'mono',
+      cols: ['Field', 'Why'],
+      rows: [
+        ['credential ID', 'finds the passkey at sign-in'],
+        ['public key', 'verifies every signature'],
+        ['sign count', 'a counter that should grow; synced passkeys often always send 0'],
+        ['user handle', 'the random user ID you gave at registration, never the email'],
+        ['name, created, last used', 'so users can see and remove their passkeys'],
+        ['backup flags (BE, BS)', 'whether the passkey is synced: useful for risk decisions']
+      ] },
+    { why: 'validating in Node; this sheet’s APIs are ASP.NET Core',
+      k: 'snip', id: 'jwt-node', lang: 'ts', t: 'Validate JWTs in Node with jose', code: `
+import { createRemoteJWKSet, jwtVerify } from 'jose';
+
+const jwks = createRemoteJWKSet(new URL('https://login.shop.example/.well-known/jwks.json'));   // cached
+
+export async function verify(token: string) {
+  const { payload } = await jwtVerify(token, jwks, {
+    issuer: 'https://login.shop.example/',
+    audience: 'api://orders',
+    algorithms: ['RS256', 'ES256'],
+    clockTolerance: 60,
+  });
+  return payload;                 // throws if any check fails
+}` },
+    { why: 'issuing your own tokens is rare; tests use dotnet user-jwts (TEST)',
+      k: 'snip', id: 'jwt-mint', lang: 'cs', t: 'Make a JWT (for tests, or your own issuer)', code: `
+var key = new RsaSecurityKey(RSA.Create(2048)) { KeyId = "test-1" };
+var token = new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
+{
+    Issuer = "https://login.shop.example/",
+    Audience = "api://orders",
+    Subject = new ClaimsIdentity([new Claim("sub", "42"), new Claim("scope", "orders.read")]),
+    Expires = DateTime.UtcNow.AddMinutes(10),
+    SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256),
+});`,
+      note: 'For local testing, `dotnet user-jwts` is simpler (**TEST**). In production, let a real IdP issue tokens.' },
+    { why: 'reference detail; the discovery document (OIDC) lists every endpoint',
+      k: 'table', id: 'oauth-endpoints', t: 'Endpoints, and how a client finds them', first: 'mono',
+      cols: ['Endpoint', 'Called by', 'For'],
+      rows: [
+        ['authorize', 'the browser (front channel)', 'sign-in and consent; returns a code'],
+        ['token', 'the client, directly (back channel)', 'swap a code, refresh token or credentials for tokens'],
+        ['/.well-known/openid-configuration', 'libraries, at start-up', 'every other endpoint, the issuer and the key URL'],
+        ['jwks_uri', 'APIs', 'public keys for checking signatures'],
+        ['pushed_authorization_request_endpoint', 'the client', 'send the authorize parameters first (RFC 9126)'],
+        ['revocation_endpoint', 'the client', 'revoke a refresh or access token (RFC 7009)'],
+        ['introspection_endpoint', 'an API', 'ask whether an opaque token is active (RFC 7662)'],
+        ['device_authorization_endpoint', 'a CLI or TV', 'start the device flow (RFC 8628)'],
+        ['userinfo, end_session_endpoint', 'the client', 'OpenID Connect profile and sign-out']
+      ],
+      note: 'Paths differ per IdP, so read them from discovery instead of hard-coding them. Plain OAuth servers publish the same list at `/.well-known/oauth-authorization-server` (RFC 8414).' },
+    { why: 'pushed authorization requests are for high-security profiles (FAPI 2.0); ASP.NET Core uses PAR by itself when the IdP offers it',
+      k: 'snip', id: 'code-par', v: '.NET 9+', t: 'Pushed authorization requests (PAR)', code: `
+POST /par HTTP/1.1                                         # 1. the app sends the parameters itself
+Host: login.shop.example
+Authorization: Basic c2hvcC13ZWI6czNjcjN0
+Content-Type: application/x-www-form-urlencoded
+
+response_type=code&client_id=shop-web&redirect_uri=...&scope=...&state=...
+&code_challenge=...&code_challenge_method=S256
+
+HTTP/1.1 201 Created
+{ "request_uri": "urn:ietf:params:oauth:request_uri:6esc_11ACC5bwc", "expires_in": 60 }
+
+# 2. the browser goes to the authorize endpoint with only a reference
+GET /authorize?client_id=shop-web&request_uri=urn:ietf:params:oauth:request_uri:6esc_11ACC5bwc HTTP/1.1`,
+      note: 'The parameters never pass through the browser, so nobody can change or read them on the way (RFC 9126). ASP.NET Core uses PAR whenever the IdP advertises it (`PushedAuthorizationBehavior.UseIfAvailable`); FAPI 2.0 requires it.' },
+    { why: 'DPoP support is still uneven across identity providers; the term stays in TERMS',
+      k: 'snip', id: 'tok-dpop', v: 'RFC 9449', t: 'Bind tokens to a key (DPoP)', code: `
+POST /token HTTP/1.1
+Host: login.shop.example
+DPoP: eyJ0eXAiOiJkcG9wK2p3dCIsImFsZyI6IkVTMjU2In0...      # a small JWT signed with the client's private key
+
+GET /orders HTTP/1.1
+Host: api.shop.example
+Authorization: DPoP eyJhbGciOiJSUzI1NiIs...                # the access token is bound to that key
+DPoP: eyJ0eXAiOiJkcG9wK2p3dCIs...                           # a fresh proof: method, URL, time, token hash`,
+      note: 'A stolen DPoP token is useless without the private key, which a browser can keep non-extractable in Web Crypto. Support is growing; check your IdP and libraries.' },
+    { why: 'the private key JWT request in detail; the credentials table names the option',
+      k: 'snip', id: 's2s-assertion', t: 'A private key JWT instead of a secret', code: `
+POST /token HTTP/1.1
+Host: login.shop.example
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=billing-worker&scope=api%3A%2F%2Forders%2F.default
+&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer
+&client_assertion=eyJhbGciOiJQUzI1NiIsImtpZCI6...
+
+# client_assertion: a JWT signed with the private key; iss = sub = client_id, aud = the token URL, exp in minutes` }
+];
 </script>
 <script>
 /*@@FILE kit/30-app.js@@*/
